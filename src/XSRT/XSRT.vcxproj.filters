@@ -8,11 +8,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="Class1.cpp" />
     <ClCompile Include="chakrahost.cpp" />
+    <ClCompile Include="JScriptRuntime.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Class1.h" />
+    <ClInclude Include="JScriptRuntime.h" />
+    <ClInclude Include="chakrahost.h" />
   </ItemGroup>
 </Project>

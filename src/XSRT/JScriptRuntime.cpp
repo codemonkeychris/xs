@@ -1,5 +1,5 @@
 ﻿#include "pch.h"
-#include "Class1.h"
+#include "JScriptRuntime.h"
 
 using namespace XSRT;
 using namespace Platform;
