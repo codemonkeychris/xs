@@ -151,26 +151,27 @@ JsErrorCode DefineHostCallback(JsValueRef globalObject, const wchar_t *callbackN
 
 JsErrorCode DefineHostInspectable(JsValueRef globalObject, const wchar_t *name, IInspectable* value)
 {
+	JsErrorCode c;
 	//
 	// Get property ID.
 	//
 
 	JsPropertyIdRef propertyId;
-	IfFailRet(JsGetPropertyIdFromName(name, &propertyId));
+	IfFailRet(c = JsGetPropertyIdFromName(name, &propertyId));
 
 	//
 	// Create a function
 	//
 
 	JsValueRef obj;
-	IfFailRet(JsInspectableToObject(value, &obj));
+	IfFailRet(c = JsInspectableToObject(value, &obj));
 
 	//
 	// Set the property
 	//
-	IfFailRet(JsSetProperty(globalObject, propertyId, obj, true));
+	IfFailRet(c = JsSetProperty(globalObject, propertyId, obj, true));
 
-	return JsNoError;
+	return c;
 }
 
 //

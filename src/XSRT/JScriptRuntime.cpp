@@ -105,17 +105,18 @@ JsValueRef CALLBACK JScriptRuntime::Echo(JsValueRef callee, bool isConstructCall
 }
 void JScriptRuntime::AddHostObject(Platform::String^ name, Platform::Object^ value)
 {
-	// UNDONE: how do you get from a Platform::Object^ -> IInspectable*
-	DefineHostInspectable(m_hostObject, name->Data(), nullptr);
-
+	JsErrorCode c;
+	IfFailThrowNoRet(c = JsSetCurrentContext(m_context), L"failed to add object");
+	IfFailThrowNoRet(c = DefineHostInspectable(m_hostObject, name->Data(), reinterpret_cast<IInspectable*>(value)), L"failed to add object");
+	IfFailThrowNoRet(c = JsSetCurrentContext(JS_INVALID_REFERENCE), L"failed to add object");
 }
 void JScriptRuntime::AddWinRTNamespace(Platform::String^ name)
 {
 	// UNDONE: throw if error;
 	JsErrorCode c;
-	c = JsSetCurrentContext(m_context);
-	c = JsProjectWinRTNamespace(name->Data());
-	c = JsSetCurrentContext(JS_INVALID_REFERENCE);
+	IfFailThrowNoRet(c = JsSetCurrentContext(m_context), L"failed to add namespace");
+	IfFailThrowNoRet(c = JsProjectWinRTNamespace(name->Data()), L"failed to add namespace");
+	IfFailThrowNoRet(c = JsSetCurrentContext(JS_INVALID_REFERENCE), L"failed to add namespace");
 }
 
 

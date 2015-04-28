@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using XSRT2;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -29,11 +30,12 @@ namespace XSTest
 
             var x = new XSRT.JScriptRuntime();
             x.EchoNotify += X_EchoNotify;
-            x.AddWinRTNamespace("XSRT2");
+            var f = new Test2();
+            x.AddWinRTNamespace("XSRT2"); // must be first
+            x.AddHostObject("foo", f);
             x.Eval("host.echo('echo from JS!');");
-            // UNDONE: this doesn't work
-            //
-            x.Eval("XSRT2.Test.Try('from JS!');");
+            x.Eval("host.foo.echo('from JS!');");
+            x.Eval("XSRT2.Test.try('from JS!');");
         }
 
         private void X_EchoNotify(string message)
@@ -41,5 +43,6 @@ namespace XSTest
             var x = message;
         }
     }
+
 
 }

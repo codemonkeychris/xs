@@ -13,4 +13,12 @@ namespace XSRT2
             var x = message;
         }
     }
+
+    public sealed class Test2
+    {
+        public void Echo(string message)
+        {
+            var x = message;
+        }
+    }
 }

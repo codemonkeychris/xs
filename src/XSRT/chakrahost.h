@@ -45,6 +45,15 @@ if (error != JsNoError) \
         } \
     }
 
+#define IfFailThrowNoRet(v, e) \
+    { \
+    JsErrorCode error = (v); \
+if (error != JsNoError) \
+        { \
+        ThrowException((e)); \
+        } \
+    }
+
 #define IfComFailError(v) \
     { \
     hr = (v); \
