@@ -149,6 +149,30 @@ JsErrorCode DefineHostCallback(JsValueRef globalObject, const wchar_t *callbackN
 	return JsNoError;
 }
 
+JsErrorCode DefineHostInspectable(JsValueRef globalObject, const wchar_t *name, IInspectable* value)
+{
+	//
+	// Get property ID.
+	//
+
+	JsPropertyIdRef propertyId;
+	IfFailRet(JsGetPropertyIdFromName(name, &propertyId));
+
+	//
+	// Create a function
+	//
+
+	JsValueRef obj;
+	IfFailRet(JsInspectableToObject(value, &obj));
+
+	//
+	// Set the property
+	//
+	IfFailRet(JsSetProperty(globalObject, propertyId, obj, true));
+
+	return JsNoError;
+}
+
 //
 // Creates a host execution context and sets up the host object in it.
 //

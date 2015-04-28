@@ -25,9 +25,15 @@ namespace XSTest
         public MainPage()
         {
             this.InitializeComponent();
+            XSRT2.Test.Try("from C#!");
+
             var x = new XSRT.JScriptRuntime();
             x.EchoNotify += X_EchoNotify;
-            x.Eval("host.echo('hi');");
+            x.AddWinRTNamespace("XSRT2");
+            x.Eval("host.echo('echo from JS!');");
+            // UNDONE: this doesn't work
+            //
+            x.Eval("XSRT2.Test.Try('from JS!');");
         }
 
         private void X_EchoNotify(string message)
@@ -35,4 +41,5 @@ namespace XSTest
             var x = message;
         }
     }
+
 }

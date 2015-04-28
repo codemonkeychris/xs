@@ -9,6 +9,8 @@ int JScriptEval(
 	std::wstring script);
 
 JsErrorCode DefineHostCallback(JsValueRef globalObject, const wchar_t *callbackName, JsNativeFunction callback, void *callbackState);
+JsErrorCode DefineHostInspectable(JsValueRef globalObject, const wchar_t *name, IInspectable* value);
+
 
 JsValueRef CALLBACK RunScript(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState);
 

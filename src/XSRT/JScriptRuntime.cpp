@@ -103,6 +103,21 @@ JsValueRef CALLBACK JScriptRuntime::Echo(JsValueRef callee, bool isConstructCall
 
 	return JS_INVALID_REFERENCE;
 }
+void JScriptRuntime::AddHostObject(Platform::String^ name, Platform::Object^ value)
+{
+	// UNDONE: how do you get from a Platform::Object^ -> IInspectable*
+	DefineHostInspectable(m_hostObject, name->Data(), nullptr);
+
+}
+void JScriptRuntime::AddWinRTNamespace(Platform::String^ name)
+{
+	// UNDONE: throw if error;
+	JsErrorCode c;
+	c = JsSetCurrentContext(m_context);
+	c = JsProjectWinRTNamespace(name->Data());
+	c = JsSetCurrentContext(JS_INVALID_REFERENCE);
+}
+
 
 int JScriptRuntime::Eval(String^ script)
 {
