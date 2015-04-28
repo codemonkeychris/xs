@@ -25,7 +25,14 @@ namespace XSTest
         public MainPage()
         {
             this.InitializeComponent();
-            var x = new XSRT.Class1();
+            var x = new XSRT.JScriptRuntime();
+            x.EchoNotify += X_EchoNotify;
+            x.Eval("host.echo('hi');");
+        }
+
+        private void X_EchoNotify(string message)
+        {
+            var x = message;
         }
     }
 }
