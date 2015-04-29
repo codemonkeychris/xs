@@ -23,19 +23,25 @@ namespace XSTest
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        XSRT.JScriptRuntime x = new XSRT.JScriptRuntime();
+        XSRT2.StateManager state = new XSRT2.StateManager();
+
         public MainPage()
         {
             this.InitializeComponent();
-            XSRT2.Test.Try("from C#!");
 
-            var x = new XSRT.JScriptRuntime();
             x.EchoNotify += X_EchoNotify;
-            var f = new Test2();
             x.AddWinRTNamespace("XSRT2"); // must be first
-            x.AddHostObject("foo", f);
-            x.Eval("host.echo('echo from JS!');");
-            x.Eval("host.foo.echo('from JS!');");
-            x.Eval("XSRT2.Test.try('from JS!');");
+            x.AddHostObject("state", state);
+            
+            // this works, yeah!
+            //
+            x.Eval("host.state.addEventListener('render', function() { host.echo('hit'); }); host.state.notifyChanged(); host.state.renderIfNeeded();");
+
+            // this doesn't work, booh!
+            //
+            x.Eval("host.state.notifyChanged();");
+            state.RenderIfNeeded();
         }
 
         private void X_EchoNotify(string message)
