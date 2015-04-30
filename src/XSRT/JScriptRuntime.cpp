@@ -123,12 +123,12 @@ void JScriptRuntime::AddWinRTNamespace(Platform::String^ name)
 void JScriptRuntime::SetActive()
 {
 	JsErrorCode c;
-	IfFailThrowNoRet(c = JsSetCurrentContext(m_context), L"failed to add namespace");
+	IfFailThrowNoRet(c = JsSetCurrentContext(m_context), L"Failed to set the current context");
 }
 void JScriptRuntime::ClearActive()
 {
 	JsErrorCode c;
-	IfFailThrowNoRet(c = JsSetCurrentContext(JS_INVALID_REFERENCE), L"failed to add namespace");
+	IfFailThrowNoRet(c = JsSetCurrentContext(JS_INVALID_REFERENCE), L"Failed to clear the current context");
 }
 
 int JScriptRuntime::Eval(String^ script)
