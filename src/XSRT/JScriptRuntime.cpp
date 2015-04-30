@@ -22,6 +22,11 @@ JsValueRef CALLBACK Shim(JsValueRef callee, bool isConstructCall, JsValueRef *ar
 	}
 }
 
+void CALLBACK EnqueueCallback(JsProjectionCallback jsCallback, JsProjectionCallbackContext jsContext, void *callbackState)
+{
+	jsCallback(jsContext);
+}
+
 JsErrorCode JScriptRuntime::CreateHostContext(JsRuntimeHandle runtime, JsContextRef *context)
 {
 	//
@@ -116,6 +121,7 @@ void JScriptRuntime::AddWinRTNamespace(Platform::String^ name)
 	JsErrorCode c;
 	IfFailThrowNoRet(c = JsSetCurrentContext(m_context), L"failed to add namespace");
 	IfFailThrowNoRet(c = JsProjectWinRTNamespace(name->Data()), L"failed to add namespace");
+	// IfFailThrowNoRet(c = JsSetProjectionEnqueueCallback(EnqueueCallback, nullptr), L"failed to register callback");
 	IfFailThrowNoRet(c = JsSetCurrentContext(JS_INVALID_REFERENCE), L"failed to add namespace");
 }
 
