@@ -6,24 +6,47 @@ using System.Threading.Tasks;
 
 namespace XSRT2
 {
+    public sealed class RenderEventArgs
+    {
+        public object View { get; set; }
+    }
     public sealed class StateManager
     {
         bool isDirty = true;
+        Dictionary<string, string> state = new Dictionary<string, string>();
 
         public void NotifyChanged()
         {
             isDirty = true;
         }
 
-        public event EventHandler<object> Render;
-
-        public void RenderIfNeeded()
+        public void SetState(string key, string value)
         {
+            state[key] = value;
+            NotifyChanged();
+        }
+        public string GetState(string key, string defaultValue)
+        {
+            string value = defaultValue;
+            state.TryGetValue(key, out value);
+            return value;
+        }
+
+        public event EventHandler<RenderEventArgs> Render;
+
+        public RenderEventArgs RenderIfNeeded()
+        {
+            RenderEventArgs e = null;
             if (isDirty)
             {
-                if (Render != null) { Render(null, null); }
+                if (Render != null)
+                {
+                    e = new RenderEventArgs();
+                    Render(null, e);
+                }
                 isDirty = false;
             }
+            return e;
         }
     }
 }

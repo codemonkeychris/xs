@@ -23,38 +23,46 @@ namespace XSTest
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        XSRT.JScriptRuntime x = new XSRT.JScriptRuntime();
+        XSRT.JScriptRuntime jsrt = null;
         XSRT2.StateManager state = new XSRT2.StateManager();
 
         public MainPage()
         {
             this.InitializeComponent();
-
-            x.EchoNotify += X_EchoNotify;
-            x.SetActive();
-            try
-            {
-                x.AddWinRTNamespace("XSRT2"); // must be first
-                x.AddHostObject("state", state);
-
-                // this works, yeah!
-                //
-                x.Eval("host.state.addEventListener('render', function() { host.echo('hit'); }); host.state.notifyChanged(); host.state.renderIfNeeded();");
-
-                // this doesn't work, booh!
-                //
-                x.Eval("host.state.notifyChanged();");
-                state.RenderIfNeeded();
-            }
-            finally
-            {
-                x.ClearActive();
-            }
+            Initialize();
         }
 
-        private void X_EchoNotify(string message)
+        void Initialize()
         {
-            var x = message;
+            if (jsrt != null)
+            {
+                jsrt.ClearActive();
+                jsrt = null;
+            }
+            state.NotifyChanged();
+
+            jsrt = new XSRT.JScriptRuntime();
+            jsrt.SetActive();
+            jsrt.AddWinRTNamespace("XSRT2"); // must be first
+            jsrt.AddHostObject("state", state);
+            jsrt.Eval(@"
+host.state.addEventListener('render', function(ev) { 
+    ev.view = 'hello world!';
+}); 
+");
+            Display(state.RenderIfNeeded());
+        }
+
+        private void Display(RenderEventArgs renderEventArgs)
+        {
+            this.Content = new ContentControl() { FontSize=48, Margin=new Thickness(5), Content = renderEventArgs.View };
+        }
+
+        protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+        {
+            jsrt.ClearActive();
+            jsrt = null;
+            base.OnNavigatingFrom(e);
         }
     }
 
