@@ -111,25 +111,30 @@ JsValueRef CALLBACK JScriptRuntime::Echo(JsValueRef callee, bool isConstructCall
 void JScriptRuntime::AddHostObject(Platform::String^ name, Platform::Object^ value)
 {
 	JsErrorCode c;
-	IfFailThrowNoRet(c = JsSetCurrentContext(m_context), L"failed to add object");
 	IfFailThrowNoRet(c = DefineHostInspectable(m_hostObject, name->Data(), reinterpret_cast<IInspectable*>(value)), L"failed to add object");
-	IfFailThrowNoRet(c = JsSetCurrentContext(JS_INVALID_REFERENCE), L"failed to add object");
 }
 void JScriptRuntime::AddWinRTNamespace(Platform::String^ name)
 {
-	// UNDONE: throw if error;
 	JsErrorCode c;
-	IfFailThrowNoRet(c = JsSetCurrentContext(m_context), L"failed to add namespace");
 	IfFailThrowNoRet(c = JsProjectWinRTNamespace(name->Data()), L"failed to add namespace");
 	// IfFailThrowNoRet(c = JsSetProjectionEnqueueCallback(EnqueueCallback, nullptr), L"failed to register callback");
-	IfFailThrowNoRet(c = JsSetCurrentContext(JS_INVALID_REFERENCE), L"failed to add namespace");
 }
 
+void JScriptRuntime::SetActive()
+{
+	JsErrorCode c;
+	IfFailThrowNoRet(c = JsSetCurrentContext(m_context), L"failed to add namespace");
+}
+void JScriptRuntime::ClearActive()
+{
+	JsErrorCode c;
+	IfFailThrowNoRet(c = JsSetCurrentContext(JS_INVALID_REFERENCE), L"failed to add namespace");
+}
 
 int JScriptRuntime::Eval(String^ script)
 {
 	auto strscript = script->Data();
-	return JScriptEval(m_runtime, m_context, strscript);
+	return JScriptEval(m_runtime, strscript);
 }
 
 JScriptRuntime::~JScriptRuntime()

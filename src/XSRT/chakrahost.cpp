@@ -213,20 +213,12 @@ JsErrorCode PrintScriptException()
 
 int JScriptEval(
 	JsRuntimeHandle runtime,
-	JsContextRef context,
 	wstring script)
 {
 	int returnValue = EXIT_FAILURE;
 
 	try
 	{
-		//
-		// Now set the execution context as being the current one on this thread.
-		//
-
-		IfFailError(JsSetCurrentContext(context), L"failed to set current context.");
-
-
 		if (script.empty())
 		{
 			goto error;
@@ -258,12 +250,6 @@ int JScriptEval(
 		IfFailError(JsConvertValueToNumber(result, &numberResult), L"failed to convert return value.");
 		IfFailError(JsNumberToDouble(numberResult, &doubleResult), L"failed to convert return value.");
 		returnValue = (int)doubleResult;
-
-		//
-		// Clean up the current execution context.
-		//
-
-		IfFailError(JsSetCurrentContext(JS_INVALID_REFERENCE), L"failed to cleanup current context.");
 	}
 	catch (...)
 	{

@@ -5,7 +5,6 @@
 
 int JScriptEval(
 	JsRuntimeHandle runtime,
-	JsContextRef context,
 	std::wstring script);
 
 JsErrorCode DefineHostCallback(JsValueRef globalObject, const wchar_t *callbackName, JsNativeFunction callback, void *callbackState);

@@ -28,6 +28,8 @@ namespace XSRT
 		JsValueRef CALLBACK Echo(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState);
 	public:
 		JScriptRuntime();
+		void SetActive();
+		void ClearActive();
 		void AddWinRTNamespace(Platform::String^ name);
 		void AddHostObject(Platform::String^ name, Platform::Object^ value);
 		int Eval(Platform::String^ script);

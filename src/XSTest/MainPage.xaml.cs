@@ -31,17 +31,25 @@ namespace XSTest
             this.InitializeComponent();
 
             x.EchoNotify += X_EchoNotify;
-            x.AddWinRTNamespace("XSRT2"); // must be first
-            x.AddHostObject("state", state);
-            
-            // this works, yeah!
-            //
-            x.Eval("host.state.addEventListener('render', function() { host.echo('hit'); }); host.state.notifyChanged(); host.state.renderIfNeeded();");
+            x.SetActive();
+            try
+            {
+                x.AddWinRTNamespace("XSRT2"); // must be first
+                x.AddHostObject("state", state);
 
-            // this doesn't work, booh!
-            //
-            x.Eval("host.state.notifyChanged();");
-            state.RenderIfNeeded();
+                // this works, yeah!
+                //
+                x.Eval("host.state.addEventListener('render', function() { host.echo('hit'); }); host.state.notifyChanged(); host.state.renderIfNeeded();");
+
+                // this doesn't work, booh!
+                //
+                x.Eval("host.state.notifyChanged();");
+                state.RenderIfNeeded();
+            }
+            finally
+            {
+                x.ClearActive();
+            }
         }
 
         private void X_EchoNotify(string message)
