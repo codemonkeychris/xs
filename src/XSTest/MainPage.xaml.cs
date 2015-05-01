@@ -66,7 +66,7 @@ var App;
 (function (App) {
     
     App.render = function() {
-        return { type:'TextBlock', Text:'Hello from JS!' };
+        return { type:'TextBlock', text:'Hello from JS!' };
     }
     
 })(App || (App = {}));

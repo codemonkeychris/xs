@@ -29,7 +29,58 @@ namespace XSRT2
             control.Content = CreateFromState(newState);
         }
 
-        static T Creator<T>(JObject obj, IEnumerable<PropSetter<T>> props) where T:new()
+        static TextBlock CreateTextBlock(JObject obj)
+        {
+            TextBlock t = new TextBlock();
+            SetTextBlockProperties(t, obj);
+            return t;
+        }
+        static void SetTextBlockProperties(TextBlock t, JObject obj)
+        {
+            TrySet(obj, "text", t, (target, x) => target.Text = x.ToString());
+            TrySet(obj, "fontSize", t, (target, x) => target.FontSize= x.Value<double>());
+        }
+        delegate void Setter<T>(T target, JToken value);
+        static void TrySet<T>(JObject obj, string name, T target, Setter<T> setter)
+        {
+            JToken tok;
+            if (obj.TryGetValue(name, out tok)) setter(target, tok);
+        }
+
+        static void SetFrameworkElementProperties(FrameworkElement t, JObject obj)
+        {
+
+        }
+        static void SetPanelChildren(Panel t, JObject obj)
+        {
+            SetPanelChildrenWorker(t, obj["children"].AsJEnumerable());
+        }
+        static void SetPanelChildrenWorker(Panel t, IJEnumerable<JToken> items) { 
+            foreach (var child in items)
+            {
+                if (child.Type == JTokenType.Array)
+                {
+                    SetPanelChildrenWorker(t, child.AsJEnumerable());
+                }
+                else
+                {
+                    var instance = Diff.CreateFromState((JObject)child);
+                    t.Children.Add(instance);
+                }
+            }
+        }
+        static void SetPanelProperties(Panel t, JObject obj)
+        {
+            SetFrameworkElementProperties(t, obj);
+            SetPanelChildren(t, obj);
+        }
+        static StackPanel CreateStackPanel(JObject obj)
+        {
+            StackPanel t = new StackPanel();
+            SetPanelProperties(t, obj);
+            return t;
+        }
+        static T Creator<T, V>(JObject obj, IEnumerable<PropSetter<V>> props) where T:V,new()
         {
             T value = new T();
             foreach (var s in props) { s.Set(value, obj); }
@@ -43,18 +94,14 @@ namespace XSRT2
             if (handlers == null)
             {
                 handlers = new Dictionary<string, CreateCallback>();
-                handlers["TextBlock"] = (JObject obj) =>
-                {
-                    return Creator<TextBlock>(obj, new PropSetter<TextBlock>[] {
-                        new TextBlockText()
-                    });
-                };
+                handlers["StackPanel"] = CreateStackPanel;
+                handlers["TextBlock"] = CreateTextBlock ;
             }
             return handlers;
         }
 
 
-        FrameworkElement CreateFromState(JObject item)
+        internal static FrameworkElement CreateFromState(JObject item)
         {
             var type = item["type"].ToString();
             CreateCallback create;
@@ -69,12 +116,5 @@ namespace XSRT2
     {
         public PropSetter() { }
         public abstract void Set(ObjectType target, JObject parentValue);
-    }
-    class TextBlockText : PropSetter<TextBlock>
-    {
-        public override void Set(TextBlock target, JObject parentValue)
-        {
-            target.Text = parentValue["Text"].ToString();
-        }
     }
 }
