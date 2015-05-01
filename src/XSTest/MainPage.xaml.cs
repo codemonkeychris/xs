@@ -60,8 +60,11 @@ namespace XSTest
             StorageFile file;
             try
             {
-                file = await Windows.Storage.ApplicationData.Current.RoamingFolder.CreateFileAsync(path, Windows.Storage.CreationCollisionOption.FailIfExists);
-                await FileIO.WriteTextAsync(file, @"
+                var found = await Windows.Storage.ApplicationData.Current.RoamingFolder.TryGetItemAsync(path);
+                if (found == null)
+                {
+                    file = await Windows.Storage.ApplicationData.Current.RoamingFolder.CreateFileAsync(path, Windows.Storage.CreationCollisionOption.FailIfExists);
+                    await FileIO.WriteTextAsync(file, @"
 var App;
 (function (App) {
     
@@ -71,6 +74,11 @@ var App;
     
 })(App || (App = {}));
 ");
+                }
+                else
+                {
+                    file = (StorageFile)found;
+                }
             }
             catch
             {
