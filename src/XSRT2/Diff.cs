@@ -7,6 +7,8 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Windows.UI.Xaml.Media;
+using Windows.UI;
 
 namespace XSRT2
 {
@@ -27,14 +29,52 @@ namespace XSRT2
             control.Content = CreateFromState(newState);
         }
 
+        static T Creator<T>(JObject obj, IEnumerable<PropSetter<T>> props) where T:new()
+        {
+            T value = new T();
+            foreach (var s in props) { s.Set(value, obj); }
+            return value;
+        }
+        delegate FrameworkElement CreateCallback(JObject obj);
+
+        static Dictionary<string, CreateCallback> handlers;
+        static Dictionary<string, CreateCallback> GetHandlers()
+        {
+            if (handlers == null)
+            {
+                handlers = new Dictionary<string, CreateCallback>();
+                handlers["TextBlock"] = (JObject obj) =>
+                {
+                    return Creator<TextBlock>(obj, new PropSetter<TextBlock>[] {
+                        new TextBlockText()
+                    });
+                };
+            }
+            return handlers;
+        }
+
+
         FrameworkElement CreateFromState(JObject item)
         {
-            switch (item["type"].ToString()) 
+            var type = item["type"].ToString();
+            CreateCallback create;
+            if (GetHandlers().TryGetValue(type, out create))
             {
-                case "TextBlock":
-                    return new TextBlock() { Text = item["Text"].ToString() };
+                return create(item);
             }
             return new TextBlock() { FontSize = 48, Text = "Not found" };
+        }
+    }
+    abstract class PropSetter<ObjectType>
+    {
+        public PropSetter() { }
+        public abstract void Set(ObjectType target, JObject parentValue);
+    }
+    class TextBlockText : PropSetter<TextBlock>
+    {
+        public override void Set(TextBlock target, JObject parentValue)
+        {
+            target.Text = parentValue["Text"].ToString();
         }
     }
 }
