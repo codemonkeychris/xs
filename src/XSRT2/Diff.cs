@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Windows.UI.Xaml.Media;
 using Windows.UI;
+using Windows.UI.Text;
 
 namespace XSRT2
 {
@@ -16,7 +17,6 @@ namespace XSRT2
     {
         ContentControl control;
         JObject lastState;
-
 
         public Diff(ContentControl control)
         {
@@ -35,10 +35,33 @@ namespace XSRT2
             SetTextBlockProperties(t, obj);
             return t;
         }
+        static TextBox CreateTextBox(JObject obj)
+        {
+            TextBox t = new TextBox();
+            SetTextBoxProperties(t, obj);
+            return t;
+        }
+        static void SetTextBoxProperties(TextBox t, JObject obj)
+        {
+            SetControlProperties(t, obj);
+            TrySet(obj, "text", t, (target, x) => target.Text = x.ToString());
+        }
+        static void SetControlProperties(Control t, JObject obj)
+        {
+            SetFrameworkElementProperties(t, obj);
+            TrySet(obj, "background", t, (target, x) => target.Background = XamlStringParse<Brush>(x));
+            TrySet(obj, "foreground", t, (target, x) => target.Foreground = XamlStringParse<Brush>(x));
+            TrySet(obj, "fontFamily", t, (target, x) => target.FontFamily = new FontFamily(x.ToString()));
+            TrySet(obj, "fontSize", t, (target, x) => target.FontSize = x.Value<double>());
+            TrySet(obj, "fontWeight", t, (target, x) => target.FontWeight = ParseEnum<FontWeight>(x));
+        }
         static void SetTextBlockProperties(TextBlock t, JObject obj)
         {
+            SetFrameworkElementProperties(t, obj);
             TrySet(obj, "text", t, (target, x) => target.Text = x.ToString());
+            TrySet(obj, "fontFamily", t, (target, x) => target.FontFamily = new FontFamily(x.ToString()));
             TrySet(obj, "fontSize", t, (target, x) => target.FontSize= x.Value<double>());
+            TrySet(obj, "fontWeight", t, (target, x) => target.FontWeight = ParseEnum<FontWeight>(x));
         }
         delegate void Setter<T>(T target, JToken value);
         static void TrySet<T>(JObject obj, string name, T target, Setter<T> setter)
@@ -47,12 +70,23 @@ namespace XSRT2
             if (obj.TryGetValue(name, out tok)) setter(target, tok);
         }
 
+        static T ParseEnum<T>(JToken v) 
+        {
+            return (T)Enum.Parse(typeof(T), v.ToString());
+        }
+        static T XamlStringParse<T>(JToken v)
+        {
+            return (T)Windows.UI.Xaml.Markup.XamlBindingHelper.ConvertValue(typeof(T), v.ToString());
+        }
         static void SetFrameworkElementProperties(FrameworkElement t, JObject obj)
         {
-
+            TrySet(obj, "horizontalAlignment", t, (target, x) => target.HorizontalAlignment =  ParseEnum<HorizontalAlignment>(x));
+            TrySet(obj, "verticalAlignment", t, (target, x) => target.VerticalAlignment = ParseEnum<VerticalAlignment>(x));
+            TrySet(obj, "margin", t, (target, x) => target.Margin = XamlStringParse<Thickness>(x));
         }
         static void SetPanelChildren(Panel t, JObject obj)
         {
+            SetFrameworkElementProperties(t, obj);
             SetPanelChildrenWorker(t, obj["children"].AsJEnumerable());
         }
         static void SetPanelChildrenWorker(Panel t, IJEnumerable<JToken> items) { 
@@ -96,6 +130,7 @@ namespace XSRT2
                 handlers = new Dictionary<string, CreateCallback>();
                 handlers["StackPanel"] = CreateStackPanel;
                 handlers["TextBlock"] = CreateTextBlock ;
+                handlers["TextBox"] = CreateTextBox;
             }
             return handlers;
         }
@@ -109,7 +144,7 @@ namespace XSRT2
             {
                 return create(item);
             }
-            return new TextBlock() { FontSize = 48, Text = "Not found" };
+            return new TextBlock() { FontSize = 48, Text = "'"+type+"'Not found" };
         }
     }
     abstract class PropSetter<ObjectType>
