@@ -29,6 +29,7 @@ namespace XSTest
         XSRT2.StateManager state = new XSRT2.StateManager();
         Diff diff;
         DispatcherTimer dt;
+        int frame;
         string lastProgram = "";
 
         public MainPage()
@@ -40,6 +41,7 @@ namespace XSTest
         }
         async void Startup()
         {
+            state.SetState("frame", (frame++).ToString());
             await InitFile();
             await CheckFile();
             dt = new DispatcherTimer();
@@ -51,7 +53,9 @@ namespace XSTest
 
         private void dt_Tick(object sender, object e)
         {
+            state.SetState("frame", (frame++).ToString());
             CheckFile();
+            Display(state.RenderIfNeeded());
         }
         const string path = "xs-program.js";
 
