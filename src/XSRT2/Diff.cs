@@ -26,19 +26,20 @@ namespace XSRT2
         public void Process(string state)
         {
             var newState = JObject.Parse(state);
-            control.Content = CreateFromState(newState);
+            control.Content = CreateFromState(newState, lastState);
+            lastState = newState;
         }
 
-        TextBlock CreateTextBlock(JObject obj)
+        TextBlock CreateTextBlock(JObject obj, JObject lastObj)
         {
             TextBlock t = CreateOrGetLast<TextBlock>(obj);
-            SetTextBlockProperties(t, obj);
+            SetTextBlockProperties(t, obj, lastObj);
             return t;
         }
-        TextBox CreateTextBox(JObject obj)
+        TextBox CreateTextBox(JObject obj, JObject lastObj)
         {
             TextBox t = CreateOrGetLast<TextBox>(obj);
-            SetTextBoxProperties(t, obj);
+            SetTextBoxProperties(t, obj, lastObj);
             return t;
         }
         T CreateOrGetLast<T>(JObject obj) where T:new()
@@ -57,33 +58,44 @@ namespace XSRT2
             }
             return new T();
         }
-        void SetTextBoxProperties(TextBox t, JObject obj)
+        void SetTextBoxProperties(TextBox t, JObject obj, JObject lastObj)
         {
-            SetControlProperties(t, obj);
-            TrySet(obj, "text", t, (target, x) => target.Text = x.ToString());
+            SetControlProperties(t, obj, lastObj);
+            TrySet(obj, lastObj, "text", t, (target, x) => target.Text = x.ToString());
         }
-        void SetControlProperties(Control t, JObject obj)
+        void SetControlProperties(Control t, JObject obj, JObject lastObj)
         {
-            SetFrameworkElementProperties(t, obj);
-            TrySet(obj, "background", t, (target, x) => target.Background = XamlStringParse<Brush>(x));
-            TrySet(obj, "foreground", t, (target, x) => target.Foreground = XamlStringParse<Brush>(x));
-            TrySet(obj, "fontFamily", t, (target, x) => target.FontFamily = new FontFamily(x.ToString()));
-            TrySet(obj, "fontSize", t, (target, x) => target.FontSize = x.Value<double>());
-            TrySet(obj, "fontWeight", t, (target, x) => target.FontWeight = ParseEnum<FontWeight>(x));
+            SetFrameworkElementProperties(t, obj, lastObj);
+            TrySet(obj, lastObj, "background", t, (target, x) => target.Background = XamlStringParse<Brush>(x));
+            TrySet(obj, lastObj, "foreground", t, (target, x) => target.Foreground = XamlStringParse<Brush>(x));
+            TrySet(obj, lastObj, "fontFamily", t, (target, x) => target.FontFamily = new FontFamily(x.ToString()));
+            TrySet(obj, lastObj, "fontSize", t, (target, x) => target.FontSize = x.Value<double>());
+            TrySet(obj, lastObj, "fontWeight", t, (target, x) => target.FontWeight = ParseEnum<FontWeight>(x));
         }
-        void SetTextBlockProperties(TextBlock t, JObject obj)
+        void SetTextBlockProperties(TextBlock t, JObject obj, JObject lastObj)
         {
-            SetFrameworkElementProperties(t, obj);
-            TrySet(obj, "text", t, (target, x) => target.Text = x.ToString());
-            TrySet(obj, "fontFamily", t, (target, x) => target.FontFamily = new FontFamily(x.ToString()));
-            TrySet(obj, "fontSize", t, (target, x) => target.FontSize= x.Value<double>());
-            TrySet(obj, "fontWeight", t, (target, x) => target.FontWeight = ParseEnum<FontWeight>(x));
+            SetFrameworkElementProperties(t, obj, lastObj);
+            TrySet(obj, lastObj, "text", t, (target, x) => target.Text = x.ToString());
+            TrySet(obj, lastObj, "fontFamily", t, (target, x) => target.FontFamily = new FontFamily(x.ToString()));
+            TrySet(obj, lastObj, "fontSize", t, (target, x) => target.FontSize= x.Value<double>());
+            TrySet(obj, lastObj, "fontWeight", t, (target, x) => target.FontWeight = ParseEnum<FontWeight>(x));
         }
         delegate void Setter<T>(T target, JToken value);
-        static void TrySet<T>(JObject obj, string name, T target, Setter<T> setter)
+        static void TrySet<T>(JObject obj, JObject last, string name, T target, Setter<T> setter)
         {
             JToken tok;
-            if (obj.TryGetValue(name, out tok)) setter(target, tok);
+            JToken tokLast;
+            if (obj.TryGetValue(name, out tok))
+            {
+                if (last != null && last.TryGetValue(name, out tokLast))
+                {
+                    if (tokLast.ToString() == tok.ToString())
+                    {
+                        return; // bail early if old & new are the same
+                    }
+                }
+                setter(target, tok);
+            }
         }
 
         static T ParseEnum<T>(JToken v) 
@@ -94,21 +106,27 @@ namespace XSRT2
         {
             return (T)Windows.UI.Xaml.Markup.XamlBindingHelper.ConvertValue(typeof(T), v.ToString());
         }
-        void SetFrameworkElementProperties(FrameworkElement t, JObject obj)
+        void SetFrameworkElementProperties(FrameworkElement t, JObject obj, JObject lastObj)
         {
-            TrySet(obj, "horizontalAlignment", t, (target, x) => target.HorizontalAlignment =  ParseEnum<HorizontalAlignment>(x));
-            TrySet(obj, "verticalAlignment", t, (target, x) => target.VerticalAlignment = ParseEnum<VerticalAlignment>(x));
-            TrySet(obj, "margin", t, (target, x) => target.Margin = XamlStringParse<Thickness>(x));
-            TrySet(obj, "name", t, (target, x) => {
+            TrySet(obj, lastObj, "horizontalAlignment", t, (target, x) => target.HorizontalAlignment =  ParseEnum<HorizontalAlignment>(x));
+            TrySet(obj, lastObj, "verticalAlignment", t, (target, x) => target.VerticalAlignment = ParseEnum<VerticalAlignment>(x));
+            TrySet(obj, lastObj, "margin", t, (target, x) => target.Margin = XamlStringParse<Thickness>(x));
+            TrySet(obj, lastObj, "name", t, (target, x) => {
                 target.Name = x.ToString();
                 namedObjectMap[target.Name] = target;
             });
         }
-        void SetPanelChildren(Panel t, JObject obj)
+        void SetPanelChildren(Panel t, JObject obj, JObject lastObj)
         {
-            SetFrameworkElementProperties(t, obj);
+            SetFrameworkElementProperties(t, obj, lastObj);
             List<UIElement> children = new List<UIElement>();
-            CollectPanelChildrenWorker(t, obj["children"].AsJEnumerable(), children);
+            IJEnumerable<JToken> lastChildren = null;
+            JToken last;
+            if (lastObj != null && lastObj.TryGetValue("children", out last))
+            {
+                lastChildren = last.AsJEnumerable();
+            }
+            CollectPanelChildrenWorker(t, obj["children"].AsJEnumerable(), lastChildren, children);
             var setChildrenNeeded = false;
             if (t.Children.Count == children.Count)
             {
@@ -131,32 +149,41 @@ namespace XSRT2
                 foreach (var child in children) { t.Children.Add(child); }
             }
         }
-        void CollectPanelChildrenWorker(Panel t, IJEnumerable<JToken> items, List<UIElement> children) { 
+        void CollectPanelChildrenWorker(Panel t, IJEnumerable<JToken> items, IEnumerable<JToken> lastItems, List<UIElement> children) {
+            IEnumerator<JToken> enumerator = null;
+            if (lastItems != null)
+            {
+                enumerator = lastItems.GetEnumerator();
+                enumerator.Reset();
+            }
             foreach (var child in items)
             {
+                JToken lastChild = null;
+                if (enumerator != null && enumerator.MoveNext()) { lastChild = enumerator.Current; }
+
                 if (child.Type == JTokenType.Array)
                 {
-                    CollectPanelChildrenWorker(t, child.AsJEnumerable(), children);
+                    CollectPanelChildrenWorker(t, child.AsJEnumerable(), lastChild != null ? lastChild.AsJEnumerable() : null, children);
                 }
                 else
                 {
-                    var instance = CreateFromState((JObject)child);
+                    var instance = CreateFromState((JObject)child, lastChild as JObject);
                     children.Add(instance);
                 }
             }
         }
-        void SetPanelProperties(Panel t, JObject obj)
+        void SetPanelProperties(Panel t, JObject obj, JObject lastObj)
         {
-            SetFrameworkElementProperties(t, obj);
-            SetPanelChildren(t, obj);
+            SetFrameworkElementProperties(t, obj, lastObj);
+            SetPanelChildren(t, obj, lastObj);
         }
-        StackPanel CreateStackPanel(JObject obj)
+        StackPanel CreateStackPanel(JObject obj, JObject lastObj)
         {
             StackPanel t = CreateOrGetLast<StackPanel>(obj);
-            SetPanelProperties(t, obj);
+            SetPanelProperties(t, obj, lastObj);
             return t;
         }
-        delegate FrameworkElement CreateCallback(JObject obj);
+        delegate FrameworkElement CreateCallback(JObject obj, JObject lastObj);
 
         Dictionary<string, CreateCallback> handlers;
         Dictionary<string, CreateCallback> GetHandlers()
@@ -172,13 +199,13 @@ namespace XSRT2
         }
 
 
-        internal FrameworkElement CreateFromState(JObject item)
+        internal FrameworkElement CreateFromState(JObject item, JObject lastItem)
         {
             var type = item["type"].ToString();
             CreateCallback create;
             if (GetHandlers().TryGetValue(type, out create))
             {
-                return create(item);
+                return create(item, lastItem);
             }
             return new TextBlock() { FontSize = 48, Text = "'"+type+"'Not found" };
         }
