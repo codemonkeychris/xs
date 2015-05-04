@@ -42,6 +42,12 @@ namespace XSRT2
             SetTextBoxProperties(t, obj, lastObj);
             return t;
         }
+        Button CreateButton(JObject obj, JObject lastObj)
+        {
+            Button t = CreateOrGetLast<Button>(obj);
+            SetButtonProperties(t, obj, lastObj);
+            return t;
+        }
         T CreateOrGetLast<T>(JObject obj) where T:new()
         {
             JToken name;
@@ -61,30 +67,35 @@ namespace XSRT2
         void SetTextBoxProperties(TextBox t, JObject obj, JObject lastObj)
         {
             SetControlProperties(t, obj, lastObj);
-            TrySet(obj, lastObj, "text", t, (target, x) => target.Text = x.ToString());
+            TrySet(obj, lastObj, "text", t, (target, x, lastX) => target.Text = x.ToString());
+        }
+        void SetButtonProperties(Button t, JObject obj, JObject lastObj)
+        {
+            SetControlProperties(t, obj, lastObj);
+            TrySet(obj, lastObj, "content", t, (target, x, lastX) => target.Content = CreateFromState((JObject)x, (JObject)lastX));
         }
         void SetControlProperties(Control t, JObject obj, JObject lastObj)
         {
             SetFrameworkElementProperties(t, obj, lastObj);
-            TrySet(obj, lastObj, "background", t, (target, x) => target.Background = XamlStringParse<Brush>(x));
-            TrySet(obj, lastObj, "foreground", t, (target, x) => target.Foreground = XamlStringParse<Brush>(x));
-            TrySet(obj, lastObj, "fontFamily", t, (target, x) => target.FontFamily = new FontFamily(x.ToString()));
-            TrySet(obj, lastObj, "fontSize", t, (target, x) => target.FontSize = x.Value<double>());
-            TrySet(obj, lastObj, "fontWeight", t, (target, x) => target.FontWeight = ParseEnum<FontWeight>(x));
+            TrySet(obj, lastObj, "background", t, (target, x, lastX) => target.Background = XamlStringParse<Brush>(x));
+            TrySet(obj, lastObj, "foreground", t, (target, x, lastX) => target.Foreground = XamlStringParse<Brush>(x));
+            TrySet(obj, lastObj, "fontFamily", t, (target, x, lastX) => target.FontFamily = new FontFamily(x.ToString()));
+            TrySet(obj, lastObj, "fontSize", t, (target, x, lastX) => target.FontSize = x.Value<double>());
+            TrySet(obj, lastObj, "fontWeight", t, (target, x, lastX) => target.FontWeight = ParseEnum<FontWeight>(x));
         }
         void SetTextBlockProperties(TextBlock t, JObject obj, JObject lastObj)
         {
             SetFrameworkElementProperties(t, obj, lastObj);
-            TrySet(obj, lastObj, "text", t, (target, x) => target.Text = x.ToString());
-            TrySet(obj, lastObj, "fontFamily", t, (target, x) => target.FontFamily = new FontFamily(x.ToString()));
-            TrySet(obj, lastObj, "fontSize", t, (target, x) => target.FontSize= x.Value<double>());
-            TrySet(obj, lastObj, "fontWeight", t, (target, x) => target.FontWeight = ParseEnum<FontWeight>(x));
+            TrySet(obj, lastObj, "text", t, (target, x, lastX) => target.Text = x.ToString());
+            TrySet(obj, lastObj, "fontFamily", t, (target, x, lastX) => target.FontFamily = new FontFamily(x.ToString()));
+            TrySet(obj, lastObj, "fontSize", t, (target, x, lastX) => target.FontSize= x.Value<double>());
+            TrySet(obj, lastObj, "fontWeight", t, (target, x, lastX) => target.FontWeight = ParseEnum<FontWeight>(x));
         }
-        delegate void Setter<T>(T target, JToken value);
+        delegate void Setter<T>(T target, JToken value, JToken lastValue);
         static void TrySet<T>(JObject obj, JObject last, string name, T target, Setter<T> setter)
         {
             JToken tok;
-            JToken tokLast;
+            JToken tokLast = null;
             if (obj.TryGetValue(name, out tok))
             {
                 if (last != null && last.TryGetValue(name, out tokLast))
@@ -94,7 +105,7 @@ namespace XSRT2
                         return; // bail early if old & new are the same
                     }
                 }
-                setter(target, tok);
+                setter(target, tok, tokLast);
             }
         }
 
@@ -108,10 +119,10 @@ namespace XSRT2
         }
         void SetFrameworkElementProperties(FrameworkElement t, JObject obj, JObject lastObj)
         {
-            TrySet(obj, lastObj, "horizontalAlignment", t, (target, x) => target.HorizontalAlignment =  ParseEnum<HorizontalAlignment>(x));
-            TrySet(obj, lastObj, "verticalAlignment", t, (target, x) => target.VerticalAlignment = ParseEnum<VerticalAlignment>(x));
-            TrySet(obj, lastObj, "margin", t, (target, x) => target.Margin = XamlStringParse<Thickness>(x));
-            TrySet(obj, lastObj, "name", t, (target, x) => {
+            TrySet(obj, lastObj, "horizontalAlignment", t, (target, x, lastX) => target.HorizontalAlignment =  ParseEnum<HorizontalAlignment>(x));
+            TrySet(obj, lastObj, "verticalAlignment", t, (target, x, lastX) => target.VerticalAlignment = ParseEnum<VerticalAlignment>(x));
+            TrySet(obj, lastObj, "margin", t, (target, x, lastX) => target.Margin = XamlStringParse<Thickness>(x));
+            TrySet(obj, lastObj, "name", t, (target, x, lastX) => {
                 target.Name = x.ToString();
                 namedObjectMap[target.Name] = target;
             });
@@ -149,7 +160,8 @@ namespace XSRT2
                 foreach (var child in children) { t.Children.Add(child); }
             }
         }
-        void CollectPanelChildrenWorker(Panel t, IJEnumerable<JToken> items, IEnumerable<JToken> lastItems, List<UIElement> children) {
+        void CollectPanelChildrenWorker(Panel t, IJEnumerable<JToken> items, IEnumerable<JToken> lastItems, List<UIElement> children)
+        {
             IEnumerator<JToken> enumerator = null;
             if (lastItems != null)
             {
@@ -194,6 +206,7 @@ namespace XSRT2
                 handlers["StackPanel"] = CreateStackPanel;
                 handlers["TextBlock"] = CreateTextBlock ;
                 handlers["TextBox"] = CreateTextBox;
+                handlers["Button"] = CreateButton;
             }
             return handlers;
         }
