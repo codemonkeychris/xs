@@ -10,6 +10,9 @@ namespace XSRT2
     {
         public object View { get; set; }
     }
+    public sealed class CommandEventArgs
+    {
+    }
     public sealed class StateManager
     {
         bool isDirty = true;
@@ -33,6 +36,7 @@ namespace XSRT2
         }
 
         public event EventHandler<RenderEventArgs> Render;
+        public event EventHandler<CommandEventArgs> Command;
 
         public RenderEventArgs RenderIfNeeded()
         {
@@ -47,6 +51,14 @@ namespace XSRT2
                 isDirty = false;
             }
             return e;
+        }
+
+        public void NotifyCommand()
+        {
+            if (Command != null)
+            {
+                Command(this, new CommandEventArgs());
+            }
         }
     }
 }

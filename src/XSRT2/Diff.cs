@@ -16,18 +16,20 @@ namespace XSRT2
     public sealed class Diff
     {
         ContentControl control;
-        JObject lastState;
+        StateManager stateManager;
+        JObject lastUI;
         Dictionary<string, object> namedObjectMap = new Dictionary<string, object>();
 
-        public Diff(ContentControl control)
+        public Diff(StateManager state, ContentControl control)
         {
+            this.stateManager = state;
             this.control = control;
         }
-        public void Process(string state)
+        public void Process(string ui)
         {
-            var newState = JObject.Parse(state);
-            control.Content = CreateFromState(newState, lastState);
-            lastState = newState;
+            var newUI = JObject.Parse(ui);
+            control.Content = CreateFromState(newUI, lastUI);
+            lastUI = newUI;
         }
 
         TextBlock CreateTextBlock(JObject obj, JObject lastObj)
@@ -71,9 +73,17 @@ namespace XSRT2
         }
         void SetButtonProperties(Button t, JObject obj, JObject lastObj)
         {
+            t.Click -= ButtonClickRouter;
+            t.Click += ButtonClickRouter;
             SetControlProperties(t, obj, lastObj);
             TrySet(obj, lastObj, "content", t, (target, x, lastX) => target.Content = CreateFromState((JObject)x, (JObject)lastX));
         }
+
+        void ButtonClickRouter(object sender, RoutedEventArgs e)
+        {
+            stateManager.NotifyCommand();
+        }
+
         void SetControlProperties(Control t, JObject obj, JObject lastObj)
         {
             SetFrameworkElementProperties(t, obj, lastObj);

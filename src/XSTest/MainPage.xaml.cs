@@ -36,7 +36,7 @@ namespace XSTest
         {
             this.InitializeComponent();
             this.Content = new ContentControl();
-            diff = new Diff((ContentControl)this.Content);
+            diff = new Diff(state, (ContentControl)this.Content);
             Startup();
         }
         async void Startup()
@@ -125,14 +125,22 @@ var App;
 host.state.addEventListener('render', function(ev) { 
     ev.view = App ? JSON.stringify(App.render()) : 'not found';
 }); 
+host.state.addEventListener('command', function(ev) { 
+    if (App && App.command) { 
+        App.command(); 
+    }
+}); 
+if (App && App.setInitialState) { App.setInitialState(); }
 ");
             Display(state.RenderIfNeeded());
         }
 
         private void Display(RenderEventArgs renderEventArgs)
         {
-
-            diff.Process(renderEventArgs.View.ToString());
+            if (renderEventArgs != null)
+            {
+                diff.Process(renderEventArgs.View.ToString());
+            }
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
