@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using Windows.UI.Xaml.Media;
 using Windows.UI;
 using Windows.UI.Text;
+using System.Reflection;
 
 namespace XSRT2
 {
@@ -75,6 +76,7 @@ namespace XSRT2
         {
             SetControlProperties(t, obj, lastObj, namedObjectMap);
             TrySet(obj, lastObj, "content", t, (target, x, lastX) => target.Content = CreateFromState((JObject)x, (JObject)lastX, namedObjectMap));
+            TrySetEvent(obj, lastObj, "click", t, (target, x, lastX) => target.Click += MakeEventHandler<RoutedEventHandler>(x.ToString()));
         }
 
         static void SetControlProperties(Control t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
@@ -95,6 +97,8 @@ namespace XSRT2
             TrySet(obj, lastObj, "fontWeight", t, (target, x, lastX) => target.FontWeight = ParseEnum<FontWeight>(x));
         }
         delegate void Setter<T>(T target, JToken value, JToken lastValue);
+        delegate void EventSetter<T>(T target, JToken value, JToken lastValue);
+
         static void TrySet<T>(JObject obj, JObject last, string name, T target, Setter<T> setter)
         {
             JToken tok;
@@ -102,6 +106,40 @@ namespace XSRT2
             if (obj.TryGetValue(name, out tok))
             {
                 if (last != null && last.TryGetValue(name, out tokLast))
+                {
+                    if (tokLast.ToString() == tok.ToString())
+                    {
+                        return; // bail early if old & new are the same
+                    }
+                }
+                setter(target, tok, tokLast);
+            }
+        }
+
+        public static event EventHandler<CommandEventArgs> Command;
+
+        public static void Router(object a, object b)
+        {
+            if (Command != null)
+            {
+                // UNDONE: route name through
+                Command(null, new CommandEventArgs() { CommandHandlerToken="$1", Sender = a, EventArgs = b });
+            }
+        }
+
+        static T MakeEventHandler<T>(string name) 
+        {
+            var router = typeof(Diff).GetRuntimeMethod("Router", new Type[] { typeof(object), typeof(object) });
+            var callback = router.CreateDelegate(typeof(T));
+            return (T)(object)callback;
+        }
+        static void TrySetEvent<T>(JObject obj, JObject last, string name, T target, Setter<T> setter)
+        {
+            JToken tok;
+            JToken tokLast = null;
+            if (obj.TryGetValue("$" + name, out tok))
+            {
+                if (last != null && last.TryGetValue("$" + name, out tokLast))
                 {
                     if (tokLast.ToString() == tok.ToString())
                     {

@@ -37,6 +37,10 @@ namespace XSTest
             this.InitializeComponent();
             this.Content = new ContentControl();
             diff = new Diff(state, (ContentControl)this.Content);
+            Diff.Command += delegate (object sender, CommandEventArgs e)
+            {
+                state.NotifyCommand(e);
+            };
             Startup();
             
         }
@@ -49,7 +53,6 @@ namespace XSTest
             dt.Interval = TimeSpan.FromMilliseconds(500);
             dt.Tick += dt_Tick;
             dt.Start();
-
         }
 
         private void dt_Tick(object sender, object e)
@@ -123,13 +126,20 @@ var App;
             jsrt.AddHostObject("state", state);
             jsrt.Eval(program);
             jsrt.Eval(@"
+var eventHandlers={};
+function extractEventHandlers(obj) {
+    eventHandlers['$1'] = function() {
+        host.state.setState('x1', 'Clicked!');
+    };
+    return obj;
+}
+
 host.state.addEventListener('render', function(ev) { 
-    ev.view = App ? JSON.stringify(App.render()) : 'not found';
+    ev.view = App ? JSON.stringify(extractEventHandlers(App.render())) : 'not found';
 }); 
 host.state.addEventListener('command', function(ev) { 
-    if (App && App.command) { 
-        App.command(); 
-    }
+    var handler = eventHandlers[ev.commandHandlerToken];
+    if (handler) { handler(ev.sender, ev.eventArgs); }
 }); 
 if (App && App.setInitialState) { App.setInitialState(); }
 ");

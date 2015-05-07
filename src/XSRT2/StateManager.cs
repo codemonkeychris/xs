@@ -12,6 +12,9 @@ namespace XSRT2
     }
     public sealed class CommandEventArgs
     {
+        public string CommandHandlerToken { get; set; }
+        public object Sender { get; set; }
+        public object EventArgs { get; set; }
     }
     public sealed class StateManager
     {
@@ -53,11 +56,11 @@ namespace XSRT2
             return e;
         }
 
-        public void NotifyCommand()
+        public void NotifyCommand(CommandEventArgs e)
         {
             if (Command != null)
             {
-                Command(this, new CommandEventArgs());
+                Command(this, e);
             }
         }
     }
