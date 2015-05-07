@@ -38,6 +38,7 @@ namespace XSTest
             this.Content = new ContentControl();
             diff = new Diff(state, (ContentControl)this.Content);
             Startup();
+            
         }
         async void Startup()
         {

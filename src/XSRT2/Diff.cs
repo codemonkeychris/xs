@@ -28,29 +28,29 @@ namespace XSRT2
         public void Process(string ui)
         {
             var newUI = JObject.Parse(ui);
-            control.Content = CreateFromState(newUI, lastUI);
+            control.Content = CreateFromState(newUI, lastUI, namedObjectMap);
             lastUI = newUI;
         }
 
-        TextBlock CreateTextBlock(JObject obj, JObject lastObj)
+        static TextBlock CreateTextBlock(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
         {
-            TextBlock t = CreateOrGetLast<TextBlock>(obj);
-            SetTextBlockProperties(t, obj, lastObj);
+            TextBlock t = CreateOrGetLast<TextBlock>(obj, namedObjectMap);
+            SetTextBlockProperties(t, obj, lastObj, namedObjectMap);
             return t;
         }
-        TextBox CreateTextBox(JObject obj, JObject lastObj)
+        static TextBox CreateTextBox(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
         {
-            TextBox t = CreateOrGetLast<TextBox>(obj);
-            SetTextBoxProperties(t, obj, lastObj);
+            TextBox t = CreateOrGetLast<TextBox>(obj, namedObjectMap);
+            SetTextBoxProperties(t, obj, lastObj, namedObjectMap);
             return t;
         }
-        Button CreateButton(JObject obj, JObject lastObj)
+        static Button CreateButton(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
         {
-            Button t = CreateOrGetLast<Button>(obj);
-            SetButtonProperties(t, obj, lastObj);
+            Button t = CreateOrGetLast<Button>(obj, namedObjectMap);
+            SetButtonProperties(t, obj, lastObj, namedObjectMap);
             return t;
         }
-        T CreateOrGetLast<T>(JObject obj) where T:new()
+        static T CreateOrGetLast<T>(JObject obj, Dictionary<string, object> namedObjectMap) where T:new()
         {
             JToken name;
             if (obj.TryGetValue("name", out name))
@@ -66,36 +66,29 @@ namespace XSRT2
             }
             return new T();
         }
-        void SetTextBoxProperties(TextBox t, JObject obj, JObject lastObj)
+        static void SetTextBoxProperties(TextBox t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
         {
-            SetControlProperties(t, obj, lastObj);
+            SetControlProperties(t, obj, lastObj, namedObjectMap);
             TrySet(obj, lastObj, "text", t, (target, x, lastX) => target.Text = x.ToString());
         }
-        void SetButtonProperties(Button t, JObject obj, JObject lastObj)
+        static void SetButtonProperties(Button t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
         {
-            t.Click -= ButtonClickRouter;
-            t.Click += ButtonClickRouter;
-            SetControlProperties(t, obj, lastObj);
-            TrySet(obj, lastObj, "content", t, (target, x, lastX) => target.Content = CreateFromState((JObject)x, (JObject)lastX));
+            SetControlProperties(t, obj, lastObj, namedObjectMap);
+            TrySet(obj, lastObj, "content", t, (target, x, lastX) => target.Content = CreateFromState((JObject)x, (JObject)lastX, namedObjectMap));
         }
 
-        void ButtonClickRouter(object sender, RoutedEventArgs e)
+        static void SetControlProperties(Control t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
         {
-            stateManager.NotifyCommand();
-        }
-
-        void SetControlProperties(Control t, JObject obj, JObject lastObj)
-        {
-            SetFrameworkElementProperties(t, obj, lastObj);
+            SetFrameworkElementProperties(t, obj, lastObj, namedObjectMap);
             TrySet(obj, lastObj, "background", t, (target, x, lastX) => target.Background = XamlStringParse<Brush>(x));
             TrySet(obj, lastObj, "foreground", t, (target, x, lastX) => target.Foreground = XamlStringParse<Brush>(x));
             TrySet(obj, lastObj, "fontFamily", t, (target, x, lastX) => target.FontFamily = new FontFamily(x.ToString()));
             TrySet(obj, lastObj, "fontSize", t, (target, x, lastX) => target.FontSize = x.Value<double>());
             TrySet(obj, lastObj, "fontWeight", t, (target, x, lastX) => target.FontWeight = ParseEnum<FontWeight>(x));
         }
-        void SetTextBlockProperties(TextBlock t, JObject obj, JObject lastObj)
+        static void SetTextBlockProperties(TextBlock t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
         {
-            SetFrameworkElementProperties(t, obj, lastObj);
+            SetFrameworkElementProperties(t, obj, lastObj, namedObjectMap);
             TrySet(obj, lastObj, "text", t, (target, x, lastX) => target.Text = x.ToString());
             TrySet(obj, lastObj, "fontFamily", t, (target, x, lastX) => target.FontFamily = new FontFamily(x.ToString()));
             TrySet(obj, lastObj, "fontSize", t, (target, x, lastX) => target.FontSize= x.Value<double>());
@@ -127,7 +120,7 @@ namespace XSRT2
         {
             return (T)Windows.UI.Xaml.Markup.XamlBindingHelper.ConvertValue(typeof(T), v.ToString());
         }
-        void SetFrameworkElementProperties(FrameworkElement t, JObject obj, JObject lastObj)
+        static void SetFrameworkElementProperties(FrameworkElement t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
         {
             TrySet(obj, lastObj, "horizontalAlignment", t, (target, x, lastX) => target.HorizontalAlignment =  ParseEnum<HorizontalAlignment>(x));
             TrySet(obj, lastObj, "verticalAlignment", t, (target, x, lastX) => target.VerticalAlignment = ParseEnum<VerticalAlignment>(x));
@@ -137,9 +130,9 @@ namespace XSRT2
                 namedObjectMap[target.Name] = target;
             });
         }
-        void SetPanelChildren(Panel t, JObject obj, JObject lastObj)
+        static void SetPanelChildren(Panel t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
         {
-            SetFrameworkElementProperties(t, obj, lastObj);
+            SetFrameworkElementProperties(t, obj, lastObj, namedObjectMap);
             List<UIElement> children = new List<UIElement>();
             IJEnumerable<JToken> lastChildren = null;
             JToken last;
@@ -147,7 +140,7 @@ namespace XSRT2
             {
                 lastChildren = last.AsJEnumerable();
             }
-            CollectPanelChildrenWorker(t, obj["children"].AsJEnumerable(), lastChildren, children);
+            CollectPanelChildrenWorker(t, obj["children"].AsJEnumerable(), lastChildren, children, namedObjectMap);
             var setChildrenNeeded = false;
             if (t.Children.Count == children.Count)
             {
@@ -170,7 +163,7 @@ namespace XSRT2
                 foreach (var child in children) { t.Children.Add(child); }
             }
         }
-        void CollectPanelChildrenWorker(Panel t, IJEnumerable<JToken> items, IEnumerable<JToken> lastItems, List<UIElement> children)
+        static void CollectPanelChildrenWorker(Panel t, IJEnumerable<JToken> items, IEnumerable<JToken> lastItems, List<UIElement> children, Dictionary<string, object> namedObjectMap)
         {
             IEnumerator<JToken> enumerator = null;
             if (lastItems != null)
@@ -185,30 +178,30 @@ namespace XSRT2
 
                 if (child.Type == JTokenType.Array)
                 {
-                    CollectPanelChildrenWorker(t, child.AsJEnumerable(), lastChild != null ? lastChild.AsJEnumerable() : null, children);
+                    CollectPanelChildrenWorker(t, child.AsJEnumerable(), lastChild != null ? lastChild.AsJEnumerable() : null, children, namedObjectMap);
                 }
                 else
                 {
-                    var instance = CreateFromState((JObject)child, lastChild as JObject);
+                    var instance = CreateFromState((JObject)child, lastChild as JObject, namedObjectMap);
                     children.Add(instance);
                 }
             }
         }
-        void SetPanelProperties(Panel t, JObject obj, JObject lastObj)
+        static void SetPanelProperties(Panel t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
         {
-            SetFrameworkElementProperties(t, obj, lastObj);
-            SetPanelChildren(t, obj, lastObj);
+            SetFrameworkElementProperties(t, obj, lastObj, namedObjectMap);
+            SetPanelChildren(t, obj, lastObj, namedObjectMap);
         }
-        StackPanel CreateStackPanel(JObject obj, JObject lastObj)
+        static StackPanel CreateStackPanel(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
         {
-            StackPanel t = CreateOrGetLast<StackPanel>(obj);
-            SetPanelProperties(t, obj, lastObj);
+            StackPanel t = CreateOrGetLast<StackPanel>(obj, namedObjectMap);
+            SetPanelProperties(t, obj, lastObj, namedObjectMap);
             return t;
         }
-        delegate FrameworkElement CreateCallback(JObject obj, JObject lastObj);
+        delegate FrameworkElement CreateCallback(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap);
 
-        Dictionary<string, CreateCallback> handlers;
-        Dictionary<string, CreateCallback> GetHandlers()
+        static Dictionary<string, CreateCallback> handlers;
+        static Dictionary<string, CreateCallback> GetHandlers()
         {
             if (handlers == null)
             {
@@ -222,13 +215,13 @@ namespace XSRT2
         }
 
 
-        internal FrameworkElement CreateFromState(JObject item, JObject lastItem)
+        static FrameworkElement CreateFromState(JObject item, JObject lastItem, Dictionary<string, object> namedObjectMap)
         {
             var type = item["type"].ToString();
             CreateCallback create;
             if (GetHandlers().TryGetValue(type, out create))
             {
-                return create(item, lastItem);
+                return create(item, lastItem, namedObjectMap);
             }
             return new TextBlock() { FontSize = 48, Text = "'"+type+"'Not found" };
         }
