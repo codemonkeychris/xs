@@ -134,19 +134,15 @@ var App;
                 return;
             }
             jsrt.Eval(@"
-var eventHandlers={};
-function extractEventHandlers(obj) {
-    return obj;
+function render(ev) {
+    ev.view = App ? JSON.stringify(App.render()) : 'not found';
 }
-
-host.state.addEventListener('render', function(ev) { 
-    ev.view = App ? JSON.stringify(extractEventHandlers(App.render())) : 'not found';
-}); 
-host.state.addEventListener('command', function(ev) { 
+function command(ev) {
     var handler = App && App.eventHandlers && App.eventHandlers[ev.commandHandlerToken];
-    if (!handler) { handler = eventHandlers[ev.commandHandlerToken]; }
     if (handler) { handler(ev.sender, ev.eventArgs); }
-}); 
+}
+host.state.addEventListener('render', render); 
+host.state.addEventListener('command', command); 
 if (App && App.setInitialState) { App.setInitialState(); }
 ");
             Display(state.RenderIfNeeded());
