@@ -128,9 +128,6 @@ var App;
             jsrt.Eval(@"
 var eventHandlers={};
 function extractEventHandlers(obj) {
-    eventHandlers['$1'] = function() {
-        host.state.setState('x1', 'Clicked!');
-    };
     return obj;
 }
 
@@ -138,7 +135,8 @@ host.state.addEventListener('render', function(ev) {
     ev.view = App ? JSON.stringify(extractEventHandlers(App.render())) : 'not found';
 }); 
 host.state.addEventListener('command', function(ev) { 
-    var handler = eventHandlers[ev.commandHandlerToken];
+    var handler = App && App.eventHandlers && App.eventHandlers[ev.commandHandlerToken];
+    if (!handler) { handler = eventHandlers[ev.commandHandlerToken]; }
     if (handler) { handler(ev.sender, ev.eventArgs); }
 }); 
 if (App && App.setInitialState) { App.setInitialState(); }
