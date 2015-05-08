@@ -124,7 +124,15 @@ var App;
             jsrt.SetActive();
             jsrt.AddWinRTNamespace("XSRT2"); // must be first
             jsrt.AddHostObject("state", state);
-            jsrt.Eval(program);
+            try
+            {
+                jsrt.Eval(program);
+            }
+            catch (Exception e)
+            {
+                Display(new RenderEventArgs() { View = "{ type:'TextBlock', text:'Error:"+e.ToString().Replace("\'", "\"")+"' }" });
+                return;
+            }
             jsrt.Eval(@"
 var eventHandlers={};
 function extractEventHandlers(obj) {

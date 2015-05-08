@@ -183,7 +183,7 @@ JsErrorCode DefineHostInspectable(JsValueRef globalObject, const wchar_t *name, 
 // Print out a script exception.
 //
 
-JsErrorCode PrintScriptException()
+JsErrorCode ThrowScriptException()
 {
 	//
 	// Get script exception.
@@ -206,9 +206,7 @@ JsErrorCode PrintScriptException()
 	size_t length;
 	IfFailRet(JsStringToPointer(messageValue, &message, &length));
 
-	fwprintf(stderr, L"chakrahost: exception: %s\n", message);
-
-	return JsNoError;
+	throw ref new Platform::Exception(E_FAIL, ref new Platform::String(message));
 }
 
 int JScriptEval(
@@ -217,44 +215,40 @@ int JScriptEval(
 {
 	int returnValue = EXIT_FAILURE;
 
-	try
+	if (script.empty())
 	{
-		if (script.empty())
-		{
-			goto error;
-		}
-
-		//
-		// Run the script.
-		//
-
-		JsValueRef result;
-		JsErrorCode errorCode = JsRunScript(script.c_str(), currentSourceContext++, L"." /*source URL*/, &result);
-
-		if (errorCode == JsErrorScriptException)
-		{
-			IfFailError(PrintScriptException(), L"failed to print exception");
-			return EXIT_FAILURE;
-		}
-		else
-		{
-			IfFailError(errorCode, L"failed to run script.");
-		}
-
-		//
-		// Convert the return value.
-		//
-
-		JsValueRef numberResult;
-		double doubleResult;
-		IfFailError(JsConvertValueToNumber(result, &numberResult), L"failed to convert return value.");
-		IfFailError(JsNumberToDouble(numberResult, &doubleResult), L"failed to convert return value.");
-		returnValue = (int)doubleResult;
+		goto error;
 	}
-	catch (...)
+
+	//
+	// Run the script.
+	//
+	JsErrorCode errorCode, parseError;
+	JsValueRef result;
+	JsValueRef parsed;
+		
+	parseError = JsParseScript(script.c_str(), currentSourceContext++, L"." /*source URL*/, &parsed);
+	errorCode = JsRunScript(script.c_str(), currentSourceContext++, L"." /*source URL*/, &result);
+
+	if (errorCode == JsErrorScriptException)
 	{
-		fwprintf(stderr, L"chakrahost: fatal error: internal error.\n");
+		IfFailError(ThrowScriptException(), L"failed to print exception");
+		return EXIT_FAILURE;
 	}
+	else
+	{
+		IfFailError(errorCode, L"failed to run script.");
+	}
+
+	//
+	// Convert the return value.
+	//
+
+	JsValueRef numberResult;
+	double doubleResult;
+	IfFailError(JsConvertValueToNumber(result, &numberResult), L"failed to convert return value.");
+	IfFailError(JsNumberToDouble(numberResult, &doubleResult), L"failed to convert return value.");
+	returnValue = (int)doubleResult;
 
 error:
 	return returnValue;
