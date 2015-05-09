@@ -9,7 +9,8 @@ int JScriptEval(
 
 JsErrorCode DefineHostCallback(JsValueRef globalObject, const wchar_t *callbackName, JsNativeFunction callback, void *callbackState);
 JsErrorCode DefineHostInspectable(JsValueRef globalObject, const wchar_t *name, IInspectable* value);
-
+Platform::String^ GetScriptException();
+void ThrowScriptException();
 
 JsValueRef CALLBACK RunScript(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState);
 

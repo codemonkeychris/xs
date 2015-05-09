@@ -30,6 +30,7 @@ namespace XSRT
 		JScriptRuntime();
 		void SetActive();
 		void ClearActive();
+		Platform::String^ GetScriptException();
 		void AddWinRTNamespace(Platform::String^ name);
 		void AddHostObject(Platform::String^ name, Platform::Object^ value);
 		int Eval(Platform::String^ script);

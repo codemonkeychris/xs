@@ -50,7 +50,7 @@ namespace XSTest
             await InitFile();
             await CheckFile();
             dt = new DispatcherTimer();
-            dt.Interval = TimeSpan.FromMilliseconds(500);
+            dt.Interval = TimeSpan.FromMilliseconds(1000);
             dt.Tick += dt_Tick;
             dt.Start();
         }
@@ -59,7 +59,15 @@ namespace XSTest
         {
             state.SetState("frame", (frame++).ToString());
             CheckFile();
-            Display(state.RenderIfNeeded());
+            try
+            {
+                Display(state.RenderIfNeeded());
+            }
+            catch (Exception x)
+            {
+                Display(new RenderEventArgs() { View = "{ type:'TextBlock', text:'Error:" + x.ToString().Replace("\'", "\"") + "' }" });
+                return;
+            }
         }
         const string path = "xs-program.js";
 
@@ -135,7 +143,7 @@ var App;
             }
             jsrt.Eval(@"
 function render(ev) {
-    ev.view = App ? JSON.stringify(App.render()) : 'not found';
+    ev.view = (App && App.render) ? JSON.stringify(App.render()) : 'not found';
 }
 function command(ev) {
     var handler = App && App.eventHandlers && App.eventHandlers[ev.commandHandlerToken];
@@ -145,7 +153,6 @@ host.state.addEventListener('render', render);
 host.state.addEventListener('command', command); 
 if (App && App.setInitialState) { App.setInitialState(); }
 ");
-            Display(state.RenderIfNeeded());
         }
 
         private void Display(RenderEventArgs renderEventArgs)

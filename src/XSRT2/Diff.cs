@@ -35,23 +35,23 @@ namespace XSRT2
 
         static TextBlock CreateTextBlock(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
         {
-            TextBlock t = CreateOrGetLast<TextBlock>(obj, namedObjectMap);
-            SetTextBlockProperties(t, obj, lastObj, namedObjectMap);
-            return t;
+            var t = CreateOrGetLast<TextBlock>(obj, namedObjectMap);
+            SetTextBlockProperties(t.Item2, obj, t.Item1 ? lastObj : null, namedObjectMap);
+            return t.Item2;
         }
         static TextBox CreateTextBox(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
         {
-            TextBox t = CreateOrGetLast<TextBox>(obj, namedObjectMap);
-            SetTextBoxProperties(t, obj, lastObj, namedObjectMap);
-            return t;
+            var t = CreateOrGetLast<TextBox>(obj, namedObjectMap);
+            SetTextBoxProperties(t.Item2, obj, t.Item1 ? lastObj : null, namedObjectMap);
+            return t.Item2;
         }
         static Button CreateButton(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
         {
-            Button t = CreateOrGetLast<Button>(obj, namedObjectMap);
-            SetButtonProperties(t, obj, lastObj, namedObjectMap);
-            return t;
+            var t = CreateOrGetLast<Button>(obj, namedObjectMap);
+            SetButtonProperties(t.Item2, obj, t.Item1 ? lastObj : null, namedObjectMap);
+            return t.Item2;
         }
-        static T CreateOrGetLast<T>(JObject obj, Dictionary<string, object> namedObjectMap) where T:new()
+        static Tuple<bool, T> CreateOrGetLast<T>(JObject obj, Dictionary<string, object> namedObjectMap) where T:new()
         {
             JToken name;
             if (obj.TryGetValue("name", out name))
@@ -61,11 +61,11 @@ namespace XSRT2
                 {
                     if (value != null && value is T)
                     {
-                        return (T)value;
+                        return new Tuple<bool, T>(true, (T)value);
                     }
                 }
             }
-            return new T();
+            return new Tuple<bool, T>(false, new T());
         }
         static void SetTextBoxProperties(TextBox t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
         {
@@ -232,9 +232,9 @@ namespace XSRT2
         }
         static StackPanel CreateStackPanel(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
         {
-            StackPanel t = CreateOrGetLast<StackPanel>(obj, namedObjectMap);
-            SetPanelProperties(t, obj, lastObj, namedObjectMap);
-            return t;
+            var t = CreateOrGetLast<StackPanel>(obj, namedObjectMap);
+            SetPanelProperties(t.Item2, obj, t.Item1 ? lastObj : null, namedObjectMap);
+            return t.Item2;
         }
         delegate FrameworkElement CreateCallback(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap);
 

@@ -119,7 +119,6 @@ JsValueRef CALLBACK RunScript(JsValueRef callee, bool isConstructCall, JsValueRe
 
 	return result;
 }
-
 //
 // Helper to define a host callback method on the global host object.
 //
@@ -183,30 +182,34 @@ JsErrorCode DefineHostInspectable(JsValueRef globalObject, const wchar_t *name, 
 // Print out a script exception.
 //
 
-JsErrorCode ThrowScriptException()
+Platform::String^ GetScriptException()
 {
 	//
 	// Get script exception.
 	//
 
 	JsValueRef exception;
-	IfFailRet(JsGetAndClearException(&exception));
+	IfFailThrowNoRet(JsGetAndClearException(&exception), L"can't get exception");
 
 	//
 	// Get message.
 	//
 
 	JsPropertyIdRef messageName;
-	IfFailRet(JsGetPropertyIdFromName(L"message", &messageName));
+	IfFailThrowNoRet(JsGetPropertyIdFromName(L"message", &messageName), L"can't get exception");
 
 	JsValueRef messageValue;
-	IfFailRet(JsGetProperty(exception, messageName, &messageValue));
+	IfFailThrowNoRet(JsGetProperty(exception, messageName, &messageValue), L"can't get exception");
 
 	const wchar_t *message;
 	size_t length;
-	IfFailRet(JsStringToPointer(messageValue, &message, &length));
+	IfFailThrowNoRet(JsStringToPointer(messageValue, &message, &length), L"can't get exception");
+	return ref new Platform::String(message);
+}
 
-	throw ref new Platform::Exception(E_FAIL, ref new Platform::String(message));
+void ThrowScriptException() 
+{
+	throw ref new Platform::Exception(E_FAIL, GetScriptException());
 }
 
 int JScriptEval(
@@ -232,8 +235,7 @@ int JScriptEval(
 
 	if (errorCode == JsErrorScriptException)
 	{
-		IfFailError(ThrowScriptException(), L"failed to print exception");
-		return EXIT_FAILURE;
+		ThrowScriptException();
 	}
 	else
 	{

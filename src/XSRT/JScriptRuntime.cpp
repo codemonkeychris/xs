@@ -108,6 +108,10 @@ JsValueRef CALLBACK JScriptRuntime::Echo(JsValueRef callee, bool isConstructCall
 
 	return JS_INVALID_REFERENCE;
 }
+Platform::String^ JScriptRuntime::GetScriptException()
+{
+	return ::GetScriptException();
+}
 void JScriptRuntime::AddHostObject(Platform::String^ name, Platform::Object^ value)
 {
 	JsErrorCode c;
