@@ -231,6 +231,7 @@ int JScriptEval(
 	JsValueRef parsed;
 		
 	parseError = JsParseScript(script.c_str(), currentSourceContext++, L"." /*source URL*/, &parsed);
+	IfFailThrowNoRet(parseError, L"failed to parse code")
 	errorCode = JsRunScript(script.c_str(), currentSourceContext++, L"." /*source URL*/, &result);
 
 	if (errorCode == JsErrorScriptException)
@@ -239,7 +240,7 @@ int JScriptEval(
 	}
 	else
 	{
-		IfFailError(errorCode, L"failed to run script.");
+		IfFailThrowNoRet(errorCode, L"failed to run script.");
 	}
 
 	//
@@ -248,8 +249,8 @@ int JScriptEval(
 
 	JsValueRef numberResult;
 	double doubleResult;
-	IfFailError(JsConvertValueToNumber(result, &numberResult), L"failed to convert return value.");
-	IfFailError(JsNumberToDouble(numberResult, &doubleResult), L"failed to convert return value.");
+	IfFailThrowNoRet(JsConvertValueToNumber(result, &numberResult), L"failed to convert return value.");
+	IfFailThrowNoRet(JsNumberToDouble(numberResult, &doubleResult), L"failed to convert return value.");
 	returnValue = (int)doubleResult;
 
 error:

@@ -70,9 +70,18 @@ namespace XSTest
             }
         }
         const string path = "xs-program.js";
-
+        const string defaultApp = @"
+var App;
+(function (App) {
+    App.render = function() {
+        return { type:'TextBlock', text:'Hello from JS!' };
+    }
+    
+})(App || (App = {}));
+";
         async Task<string> InitFile()
         {
+
             StorageFile file;
             try
             {
@@ -80,16 +89,7 @@ namespace XSTest
                 if (found == null)
                 {
                     file = await Windows.Storage.ApplicationData.Current.RoamingFolder.CreateFileAsync(path, Windows.Storage.CreationCollisionOption.FailIfExists);
-                    await FileIO.WriteTextAsync(file, @"
-var App;
-(function (App) {
-    
-    App.render = function() {
-        return { type:'TextBlock', text:'Hello from JS!' };
-    }
-    
-})(App || (App = {}));
-");
+                    await FileIO.WriteTextAsync(file, defaultApp);
                 }
                 else
                 {
@@ -100,17 +100,23 @@ var App;
             {
                 file = await Windows.Storage.ApplicationData.Current.RoamingFolder.CreateFileAsync(path, CreationCollisionOption.OpenIfExists);
             }
-            var str = await FileIO.ReadTextAsync(file);
-            var pp = file.Path;
-            return str;
+            return await ReadText(file);
+        }
 
+        // This is here purely as a debugging aid for hard coding content of the file in cases
+        // where there is a problem
+        // 
+        async Task<string> ReadText(StorageFile file)
+        {
+            var str = await FileIO.ReadTextAsync(file);
+            return str;
         }
 
         async Task<string> CheckFile()
         {
             var file = await Windows.Storage.ApplicationData.Current.RoamingFolder.CreateFileAsync(path, Windows.Storage.CreationCollisionOption.OpenIfExists);
             //var file = await Windows.Storage.KnownFolders.DocumentsLibrary.CreateFileAsync(path, Windows.Storage.CreationCollisionOption.OpenIfExists);
-            var contents = await FileIO.ReadTextAsync(file);
+            var contents = await ReadText(file);
             if (lastProgram != contents)
             {
                 Initialize(contents);
@@ -132,18 +138,15 @@ var App;
             jsrt.SetActive();
             jsrt.AddWinRTNamespace("XSRT2"); // must be first
             jsrt.AddHostObject("state", state);
-            try
-            {
-                jsrt.Eval(program);
-            }
-            catch (Exception e)
-            {
-                Display(new RenderEventArgs() { View = "{ type:'TextBlock', text:'Error:"+e.ToString().Replace("\'", "\"")+"' }" });
-                return;
-            }
-            jsrt.Eval(@"
+
+            const string coreRuntime = @"
 function render(ev) {
-    ev.view = (App && App.render) ? JSON.stringify(App.render()) : 'not found';
+    try {
+        ev.view = JSON.stringify((App && App.render) ? App.render() : { type:'TextBlock', text:'Error: App.render not found' });
+    }
+    catch (e) {
+        ev.view = JSON.stringify({ type:'TextBlock', text:'Error: ' + e });
+    }
 }
 function command(ev) {
     var handler = App && App.eventHandlers && App.eventHandlers[ev.commandHandlerToken];
@@ -152,7 +155,8 @@ function command(ev) {
 host.state.addEventListener('render', render); 
 host.state.addEventListener('command', command); 
 if (App && App.setInitialState) { App.setInitialState(); }
-");
+";
+            jsrt.Eval(program + "\r\n" + coreRuntime);
         }
 
         private void Display(RenderEventArgs renderEventArgs)
