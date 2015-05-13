@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,8 +19,18 @@ namespace XSRT2
     }
     public sealed class StateManager
     {
+        private EventRegistrationTokenTable<EventHandler<RenderEventArgs>> render = new EventRegistrationTokenTable<EventHandler<RenderEventArgs>>();
+        private EventRegistrationTokenTable<EventHandler<CommandEventArgs>> command = new EventRegistrationTokenTable<EventHandler<CommandEventArgs>>();
         bool isDirty = true;
         Dictionary<string, string> state = new Dictionary<string, string>();
+
+        public bool IsInitialized { get; set; }
+
+        public void ReleaseEventHandlers()
+        {
+            render = new EventRegistrationTokenTable<EventHandler<RenderEventArgs>>();
+            command = new EventRegistrationTokenTable<EventHandler<CommandEventArgs>>();
+        }
 
         public void NotifyChanged()
         {
@@ -38,18 +49,27 @@ namespace XSRT2
             return value;
         }
 
-        public event EventHandler<RenderEventArgs> Render;
-        public event EventHandler<CommandEventArgs> Command;
+        public event EventHandler<RenderEventArgs> Render
+        {
+            add { return render.AddEventHandler(value); }
+            remove { render.RemoveEventHandler(value); }
+        }
+        public event EventHandler<CommandEventArgs> Command
+        {
+            add { return command.AddEventHandler(value); }
+            remove { command.RemoveEventHandler(value); }
+        }
+
 
         public RenderEventArgs RenderIfNeeded()
         {
             RenderEventArgs e = null;
             if (isDirty)
             {
-                if (Render != null)
+                if (render.InvocationList != null)
                 {
                     e = new RenderEventArgs();
-                    Render(null, e);
+                    render.InvocationList(null, e);
                 }
                 isDirty = false;
             }
@@ -58,9 +78,9 @@ namespace XSRT2
 
         public void NotifyCommand(CommandEventArgs e)
         {
-            if (Command != null)
+            if (command.InvocationList != null)
             {
-                Command(this, e);
+                command.InvocationList(this, e);
             }
         }
     }

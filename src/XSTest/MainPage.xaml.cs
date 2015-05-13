@@ -1,4 +1,5 @@
-﻿using System;
+﻿#define STRESS_RELOAD
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -50,7 +51,11 @@ namespace XSTest
             await InitFile();
             await CheckFile();
             dt = new DispatcherTimer();
-            dt.Interval = TimeSpan.FromMilliseconds(1000);
+#if STRESS_RELOAD
+            dt.Interval = TimeSpan.FromMilliseconds(250);
+#else
+            dt.Interval = TimeSpan.FromMilliseconds(16);
+#endif
             dt.Tick += dt_Tick;
             dt.Start();
         }
@@ -117,7 +122,13 @@ var App;
             var file = await Windows.Storage.ApplicationData.Current.RoamingFolder.CreateFileAsync(path, Windows.Storage.CreationCollisionOption.OpenIfExists);
             //var file = await Windows.Storage.KnownFolders.DocumentsLibrary.CreateFileAsync(path, Windows.Storage.CreationCollisionOption.OpenIfExists);
             var contents = await ReadText(file);
-            if (lastProgram != contents)
+            bool changed = lastProgram != contents;
+#if STRESS_RELOAD
+            var b = new byte[1];
+            new Random().NextBytes(b);
+            changed = changed || (b[0] < 25); // 10% chance of random reload
+#endif
+            if (changed)
             {
                 lastProgram = contents;
                 var runtime = await RuntimeHelpers.GetRuntimeJavaScript();
@@ -130,6 +141,7 @@ var App;
         {
             if (jsrt != null)
             {
+                state.ReleaseEventHandlers();
                 jsrt.ClearActive();
                 jsrt = null;
             }

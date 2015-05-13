@@ -7,9 +7,19 @@
     }
 }
 function command(ev) {
-    var handler = App && App.eventHandlers && App.eventHandlers[ev.commandHandlerToken];
-    if (handler) { handler(ev.sender, ev.eventArgs); }
+    try {
+        var handler = App && App.eventHandlers && App.eventHandlers[ev.commandHandlerToken];
+        if (handler) { handler(ev.sender, ev.eventArgs); }
+    }
+    catch (e) {
+        // UNDONE: add exception pipe
+    }
 }
 host.state.addEventListener('render', render);
 host.state.addEventListener('command', command);
-if (App && App.setInitialState) { App.setInitialState(); }
+if (App && App.setInitialState) {
+    if (!host.state.isInitialized) {
+        host.state.isInitialized = true;
+        App.setInitialState();
+    }
+}
