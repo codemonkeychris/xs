@@ -1,4 +1,4 @@
-﻿#define STRESS_RELOAD
+﻿// #define STRESS_RELOAD
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -52,9 +52,9 @@ namespace XSTest
             await CheckFile();
             dt = new DispatcherTimer();
 #if STRESS_RELOAD
-            dt.Interval = TimeSpan.FromMilliseconds(250);
-#else
             dt.Interval = TimeSpan.FromMilliseconds(16);
+#else
+            dt.Interval = TimeSpan.FromMilliseconds(250);
 #endif
             dt.Tick += dt_Tick;
             dt.Start();
