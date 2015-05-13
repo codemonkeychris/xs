@@ -116,7 +116,6 @@ namespace XSRT2
         }
 
         delegate void Setter<T>(T target, JToken value, JToken lastValue);
-        delegate void EventSetter<T>(T target, JToken value, JToken lastValue);
         delegate FrameworkElement CreateCallback(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap);
 
         static class TextBlockDiff
