@@ -52,11 +52,6 @@ namespace XSRT2
             }
             return new Tuple<bool, T>(false, new T());
         }
-        static void SetTextBoxProperties(TextBox t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
-        {
-            ControlDiff.SetControlProperties(t, obj, lastObj, namedObjectMap);
-            TrySet(obj, lastObj, "text", t, (target, x, lastX) => target.Text = x.ToString());
-        }
         static void TrySet<T>(JObject obj, JObject last, string name, T target, Setter<T> setter)
         {
             JToken tok;
@@ -236,6 +231,11 @@ namespace XSRT2
                 var t = CreateOrGetLast<TextBox>(obj, namedObjectMap);
                 SetTextBoxProperties(t.Item2, obj, t.Item1 ? lastObj : null, namedObjectMap);
                 return t.Item2;
+            }
+            static void SetTextBoxProperties(TextBox t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            {
+                ControlDiff.SetControlProperties(t, obj, lastObj, namedObjectMap);
+                TrySet(obj, lastObj, "text", t, (target, x, lastX) => target.Text = x.ToString());
             }
         }
         static class ButtonDiff
