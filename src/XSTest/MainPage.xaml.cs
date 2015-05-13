@@ -149,7 +149,10 @@ var App;
 
             jsrt = new XSRT.JScriptRuntime();
             jsrt.SetActive();
-            jsrt.AddWinRTNamespace("XSRT2"); // must be first
+            // must call AddWinRTNamespace before AddHostObject
+            //
+            jsrt.AddWinRTNamespace("Windows"); 
+            jsrt.AddWinRTNamespace("XSRT2"); 
             jsrt.AddHostObject("state", state);
             jsrt.Eval(program + "\r\n" + runtime);
         }
