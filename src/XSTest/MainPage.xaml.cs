@@ -1,4 +1,4 @@
-﻿// #define STRESS_RELOAD
+﻿//#define STRESS_RELOAD
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -113,8 +113,21 @@ var App;
         // 
         async Task<string> ReadText(StorageFile file)
         {
-            var str = await FileIO.ReadTextAsync(file);
-            return str;
+            try {
+                var str = await FileIO.ReadTextAsync(file);
+                return str;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // need wait
+                return @"var App;
+                (function(App) {
+                    App.render = function() {
+                        return { type:'TextBlock', text:'Failed to load file (access denied)' };
+                    }
+
+                })(App || (App = { }));";
+            }
         }
 
         async Task<string> CheckFile()
@@ -126,7 +139,7 @@ var App;
 #if STRESS_RELOAD
             var b = new byte[1];
             new Random().NextBytes(b);
-            changed = changed || (b[0] < 25); // 10% chance of random reload
+            changed = changed || (b[0] < 50); // 20% chance of random reload
 #endif
             if (changed)
             {

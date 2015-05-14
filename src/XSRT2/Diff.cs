@@ -235,6 +235,28 @@ namespace XSRT2
             {
                 ControlDiff.SetControlProperties(t, obj, lastObj, namedObjectMap);
                 TrySet(obj, lastObj, "text", t, (target, x, lastX) => target.Text = x.ToString());
+                TrySetEvent(obj, lastObj, "textChanged", t, (target, x, lastX) => SetTextChangedEventHandler(x.ToString(), target));
+            }
+            static void TextChangedRouter(object sender, RoutedEventArgs e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["TextChanged"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetTextChangedEventHandler(string handlerName, TextBox element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["TextChanged"] = handlerName;
+                // remove to avoid duplicates   
+                //
+                element.TextChanged -= TextChangedRouter;
+                element.TextChanged += TextChangedRouter;
             }
         }
         static class ButtonDiff
@@ -259,7 +281,6 @@ namespace XSRT2
                     Command(null, new CommandEventArgs() { CommandHandlerToken = map["Click"], Sender = sender, EventArgs = e });
                 }
             }
-
             static void SetClickEventHandler(string handlerName, ButtonBase element)
             {
                 var map = (Dictionary<string, string>)element.GetValue(eventMap);
