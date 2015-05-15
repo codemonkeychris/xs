@@ -41,6 +41,7 @@ namespace XSTest
             Diff.Command += delegate (object sender, CommandEventArgs e)
             {
                 state.NotifyCommand(e);
+                RenderIfNeeded();
             };
             Startup();
             
@@ -60,10 +61,8 @@ namespace XSTest
             dt.Start();
         }
 
-        private void dt_Tick(object sender, object e)
+        void RenderIfNeeded()
         {
-            state.SetState("frame", (frame++).ToString());
-            CheckFile();
             try
             {
                 Display(state.RenderIfNeeded());
@@ -73,6 +72,13 @@ namespace XSTest
                 Display(new RenderEventArgs() { View = "{ type:'TextBlock', text:'Error:" + x.ToString().Replace("\'", "\"") + "' }" });
                 return;
             }
+        }
+
+        private void dt_Tick(object sender, object e)
+        {
+            state.SetState("frame", (frame++).ToString());
+            CheckFile();
+            RenderIfNeeded();
         }
         const string path = "xs-program.js";
         const string defaultApp = @"
