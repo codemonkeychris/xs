@@ -55,7 +55,7 @@ namespace XSTest
 #if STRESS_RELOAD
             dt.Interval = TimeSpan.FromMilliseconds(16);
 #else
-            dt.Interval = TimeSpan.FromMilliseconds(250);
+            dt.Interval = TimeSpan.FromMilliseconds(1000);
 #endif
             dt.Tick += dt_Tick;
             dt.Start();
