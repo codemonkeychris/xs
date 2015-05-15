@@ -101,6 +101,7 @@ namespace XSRT2
                 handlers["TextBlock"] = TextBlockDiff.CreateTextBlock ;
                 handlers["TextBox"] = TextBoxDiff.CreateTextBox;
                 handlers["Button"] = ButtonDiff.CreateButton;
+                handlers["Slider"] = SliderDiff.CreateSlider;
             }
             return handlers;
         }
@@ -293,6 +294,44 @@ namespace XSRT2
                 //
                 element.Click -= ClickRouter;
                 element.Click += ClickRouter;
+            }
+        }
+        static class SliderDiff
+        {
+            internal static Slider CreateSlider(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            {
+                var t = CreateOrGetLast<Slider>(obj, namedObjectMap);
+                SetSliderProperties(t.Item2, obj, t.Item1 ? lastObj : null, namedObjectMap);
+                return t.Item2;
+            }
+            static void SetSliderProperties(Slider t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            {
+                ControlDiff.SetControlProperties(t, obj, lastObj, namedObjectMap);
+                TrySet(obj, lastObj, "minimum", t, (target, x, lastX) => target.Minimum = Convert.ToDouble(((JValue)x).Value));
+                TrySet(obj, lastObj, "maximum", t, (target, x, lastX) => target.Maximum = Convert.ToDouble(((JValue)x).Value));
+                TrySet(obj, lastObj, "value", t, (target, x, lastX) => target.Value = Convert.ToDouble(((JValue)x).Value));
+                TrySetEvent(obj, lastObj, "valueChanged", t, (target, x, lastX) => SetValueChangedEventHandler(x.ToString(), target));
+            }
+            static void ValueChangedRouter(object sender, RangeBaseValueChangedEventArgs e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["ValueChanged"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetValueChangedEventHandler(string handlerName, Slider element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["ValueChanged"] = handlerName;
+                // remove to avoid duplicates   
+                //
+                element.ValueChanged -= ValueChangedRouter;
+                element.ValueChanged += ValueChangedRouter;
             }
         }
         static class ControlDiff
