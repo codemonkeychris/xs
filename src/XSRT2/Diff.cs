@@ -101,19 +101,27 @@ namespace XSRT2
                 handlers["TextBlock"] = TextBlockDiff.CreateTextBlock ;
                 handlers["TextBox"] = TextBoxDiff.CreateTextBox;
                 handlers["Button"] = ButtonDiff.CreateButton;
+                handlers["CheckBox"] = CheckBoxDiff.CreateCheckBox;
                 handlers["Slider"] = SliderDiff.CreateSlider;
             }
             return handlers;
         }
-        static FrameworkElement CreateFromState(JObject item, JObject lastItem, Dictionary<string, object> namedObjectMap)
+        static FrameworkElement CreateFromState(JToken item, JToken lastItem, Dictionary<string, object> namedObjectMap)
         {
-            var type = item["type"].ToString();
-            CreateCallback create;
-            if (GetHandlers().TryGetValue(type, out create))
+            if (item.Type == JTokenType.Object)
             {
-                return create(item, lastItem, namedObjectMap);
+                var type = item["type"].ToString();
+                CreateCallback create;
+                if (GetHandlers().TryGetValue(type, out create))
+                {
+                    return create((JObject)item, (JObject)lastItem, namedObjectMap);
+                }
+                return new TextBlock() { FontSize = 48, Text = "'" + type + "'Not found" };
             }
-            return new TextBlock() { FontSize = 48, Text = "'"+type+"'Not found" };
+            else
+            {
+                return new TextBlock() { Text = item.ToString() };
+            }
         }
 
         delegate void Setter<T>(T target, JToken value, JToken lastValue);
@@ -265,13 +273,51 @@ namespace XSRT2
             internal static Button CreateButton(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
             {
                 var t = CreateOrGetLast<Button>(obj, namedObjectMap);
-                SetButtonProperties(t.Item2, obj, t.Item1 ? lastObj : null, namedObjectMap);
+                ButtonBaseDiff.SetButtonBaseProperties(t.Item2, obj, t.Item1 ? lastObj : null, namedObjectMap);
                 return t.Item2;
             }
-            static void SetButtonProperties(Button t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+        }
+        static class CheckBoxDiff
+        {
+            internal static CheckBox CreateCheckBox(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            {
+                var t = CreateOrGetLast<CheckBox>(obj, namedObjectMap);
+                ButtonBaseDiff.SetButtonBaseProperties(t.Item2, obj, lastObj, namedObjectMap);
+                SetCheckBoxProperties(t.Item2, obj, t.Item1 ? lastObj : null, namedObjectMap);
+                return t.Item2;
+            }
+            static void SetCheckBoxProperties(CheckBox t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            {
+                TrySet(obj, lastObj, "isChecked", t, (target, x, lastX) => target.IsChecked = Convert.ToBoolean(((JValue)x).Value));
+            }
+            static void CheckedRouter(object sender, RoutedEventArgs e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["Checked"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetCheckedEventHandler(string handlerName, CheckBox element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["Checked"] = handlerName;
+                // remove to avoid duplicates   
+                //
+                element.Checked -= CheckedRouter;
+                element.Checked += CheckedRouter;
+            }
+        }
+        static class ButtonBaseDiff
+        {
+            internal static void SetButtonBaseProperties(ButtonBase t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
             {
                 ControlDiff.SetControlProperties(t, obj, lastObj, namedObjectMap);
-                TrySet(obj, lastObj, "content", t, (target, x, lastX) => target.Content = CreateFromState((JObject)x, (JObject)lastX, namedObjectMap));
+                TrySet(obj, lastObj, "content", t, (target, x, lastX) => target.Content = CreateFromState(x, lastX, namedObjectMap));
                 TrySetEvent(obj, lastObj, "click", t, (target, x, lastX) => SetClickEventHandler(x.ToString(), target));
             }
             static void ClickRouter(object sender, RoutedEventArgs e)
