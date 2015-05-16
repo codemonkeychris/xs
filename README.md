@@ -9,6 +9,11 @@ programming techniques (insipred by ReactNative)
 
 1. Install Windows 10 Insider Preview (10074 or later - //build/ version)
 2. Install Visual Studio 2015 RC - https://www.visualstudio.com/products/visual-studio-2015-downloads-vs
+3. Optionally install TypeScript (from http://typescriptlang.org or using Node.js) - only required 
+if you are going to change `xsrt.ts`
+```
+npm install -g typescript
+```
 
 ## Running
 

@@ -135,6 +135,9 @@
   <ItemGroup>
     <EmbeddedResource Include="xsrt.js" />
   </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="xsrt.ts" />
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

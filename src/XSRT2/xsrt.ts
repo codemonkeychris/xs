@@ -1,5 +1,7 @@
-var Xsrt;
-(function (Xsrt) {
+﻿declare var host: any;
+declare var App: any;
+
+module Xsrt {
     function render(ev) {
         try {
             ev.view = JSON.stringify((App && App.render) ? App.render() : { type: 'TextBlock', text: 'Error: App.render not found' });
@@ -11,11 +13,10 @@ var Xsrt;
     function command(ev) {
         try {
             var handler = App && App.eventHandlers && App.eventHandlers[ev.commandHandlerToken];
-            if (handler) {
-                handler(ev.sender, ev.eventArgs);
-            }
+            if (handler) { handler(ev.sender, ev.eventArgs); }
         }
         catch (e) {
+            // UNDONE: add exception pipe
         }
     }
     host.state.addEventListener('render', render);
@@ -26,4 +27,4 @@ var Xsrt;
             App.setInitialState();
         }
     }
-})(Xsrt || (Xsrt = {}));
+}
