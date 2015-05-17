@@ -46,8 +46,52 @@ namespace XSRT2 {
             }
         }
 
+		internal static class ButtonBaseHandler
+        {
+            internal static void SetProperties(ButtonBase t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            {
+                ControlHandler.SetProperties(t, obj, lastObj, namedObjectMap);
+                TrySet(obj, lastObj, "content", t, (target, x, lastX) => target.Content = CreateFromState(x, lastX, namedObjectMap));
+                TrySetEvent(obj, lastObj, "click", t, (target, x, lastX) => SetClickEventHandler(x.ToString(), target));
+            }
+            static void ClickRouter(object sender, RoutedEventArgs e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["Click"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetClickEventHandler(string handlerName, ButtonBase element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["Click"] = handlerName;
+                element.Click -= ClickRouter;
+                element.Click += ClickRouter;
+            }
+        }
+
+		internal static class ControlHandler
+        {
+            internal static void SetProperties(Control t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            {
+                FrameworkElementHandler.SetProperties(t, obj, lastObj, namedObjectMap);
+                TrySet(obj, lastObj, "background", t, (target, x, lastX) => target.Background = XamlStringParse<Brush>(x));
+                TrySet(obj, lastObj, "foreground", t, (target, x, lastX) => target.Foreground = XamlStringParse<Brush>(x));
+                TrySet(obj, lastObj, "fontFamily", t, (target, x, lastX) => target.FontFamily = new FontFamily(x.ToString()));
+                TrySet(obj, lastObj, "fontSize", t, (target, x, lastX) => target.FontSize = x.Value<double>());
+                TrySet(obj, lastObj, "fontWeight", t, (target, x, lastX) => target.FontWeight = ParseEnum<FontWeight>(x));
+            }
+        }
+
         static DependencyProperty eventMap = DependencyProperty.RegisterAttached("XSEventMap", typeof(Dictionary<string, string>), typeof(FrameworkElement), PropertyMetadata.Create((object)null));
         static Dictionary<string, CreateCallback> handlers;
+
+        public static event EventHandler<CommandEventArgs> Command;
 
         static Tuple<bool, T> CreateOrGetLast<T>(JObject obj, Dictionary<string, object> namedObjectMap) where T:new()
         {
@@ -110,8 +154,8 @@ namespace XSRT2 {
             if (handlers == null)
             {
                 handlers = new Dictionary<string, CreateCallback>();
-				                handlers["TextBlock"] = TextBlockHandler.Create;
-				            }
+                handlers["TextBlock"] = TextBlockHandler.Create;
+            }
             return handlers;
         }
         static FrameworkElement CreateFromState(JToken item, JToken lastItem, Dictionary<string, object> namedObjectMap)

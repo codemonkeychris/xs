@@ -33,7 +33,8 @@ namespace XSRT2 {
 				EnumProperty("VerticalAlignment"),
 				XamlProperty("Margin", "Thickness"),
 				new PropEntry() { Name="name", SetBody="{ target.Name = x.ToString(); namedObjectMap[target.Name] = target; }" }
-			}
+			},
+			null
 		); 
 		#>
 
@@ -47,12 +48,45 @@ namespace XSRT2 {
 				BasicProp("FontFamily", "new FontFamily(x.ToString())"),
 				DoubleProp("FontSize"),
 				EnumProperty("FontWeight")
+			},
+			null
+		);
+		#>
+
+		<#
+		ClassDef(
+			"ButtonBase",
+			false,
+			"Control",
+			new PropEntry[] {
+				BasicProp("Content", "CreateFromState(x, lastX, namedObjectMap)")
+			},
+			new EventEntry[] {
+				new EventEntry() { Name="click", WinRTName="Click", EventType="RoutedEventArgs" }
 			}
+		);
+		#>
+
+		<#
+		ClassDef(
+			"Control",
+			false,
+			"FrameworkElement",
+			new PropEntry[] {
+				XamlProperty("Background", "Brush"),
+				XamlProperty("Foreground", "Brush"),
+				BasicProp("FontFamily", "new FontFamily(x.ToString())"),
+				DoubleProp("FontSize"),
+				EnumProperty("FontWeight")
+			},
+			null
 		);
 		#>
 
         static DependencyProperty eventMap = DependencyProperty.RegisterAttached("XSEventMap", typeof(Dictionary<string, string>), typeof(FrameworkElement), PropertyMetadata.Create((object)null));
         static Dictionary<string, CreateCallback> handlers;
+
+        public static event EventHandler<CommandEventArgs> Command;
 
         static Tuple<bool, T> CreateOrGetLast<T>(JObject obj, Dictionary<string, object> namedObjectMap) where T:new()
         {
@@ -115,9 +149,9 @@ namespace XSRT2 {
             if (handlers == null)
             {
                 handlers = new Dictionary<string, CreateCallback>();
-				<# foreach (var name in publicHandlerNames) { #>
+<# foreach (var name in publicHandlerNames) { #>
                 handlers["<#= name #>"] = <#= name #>Handler.Create;
-				<# } #>
+<# } #>
             }
             return handlers;
         }
@@ -153,6 +187,11 @@ class PropEntry {
 	public string Name;
 	public string SetBody;
 }
+class EventEntry {
+	public string Name;
+	public string WinRTName;
+	public string EventType;
+}
 string CamelCase(string name) {
 	return Char.ToLowerInvariant(name[0]) + name.Substring(1);
 }
@@ -171,7 +210,7 @@ PropEntry BasicProp(string name, string setter) {
 PropEntry DoubleProp(string name) {
 	return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = x.Value<double>()" };
 }
-void ClassDef(string name, bool isPublic, string baseTypeName, PropEntry[] props) {
+void ClassDef(string name, bool isPublic, string baseTypeName, PropEntry[] props, EventEntry[] events) {
 	if (isPublic) { publicHandlerNames.Add(name); }
 	PushIndent("    ");
 	PushIndent("    ");
@@ -181,7 +220,12 @@ void ClassDef(string name, bool isPublic, string baseTypeName, PropEntry[] props
 	if (isPublic) {
 		Create(name);
 	}
-	PropSetter(name, baseTypeName, props);
+	PropSetter(name, baseTypeName, props, events);
+	if (events != null) {
+		foreach (var e in events) {
+			EventHandler(e.WinRTName, e.EventType, name);
+		}
+	}
 	PopIndent();
     WriteLine("}");
 	PopIndent();
@@ -197,7 +241,7 @@ void Create(string name) {
 	PopIndent();
 	WriteLine("}");
 }
-void PropSetter(string name, string baseTypeName, PropEntry[] props) {
+void PropSetter(string name, string baseTypeName, PropEntry[] props, EventEntry[] events) {
 	WriteLine("internal static void SetProperties(" + name + " t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)");
     WriteLine("{");
 	PushIndent("    ");
@@ -208,7 +252,46 @@ void PropSetter(string name, string baseTypeName, PropEntry[] props) {
 	foreach (var prop in props) {
 		WriteLine("TrySet(obj, lastObj, \"" + prop.Name + "\", t, (target, x, lastX) => " + prop.SetBody +");");
 	}
+	if (events != null) {
+		foreach (var e in events) {
+			WriteLine("TrySetEvent(obj, lastObj, \"" + e.Name + "\", t, (target, x, lastX) => Set"+e.WinRTName+"EventHandler(x.ToString(), target));");
+		}
+	}
+                
 	PopIndent();
     WriteLine("}");
+}
+
+void EventHandler(string eventName, string eventTypeName, string typeName) {
+	WriteLine("static void "+eventName+"Router(object sender, "+eventTypeName+" e)");
+	WriteLine("{");
+	PushIndent("    ");
+	WriteLine("if (Command != null)");
+	WriteLine("{");
+	PushIndent("    ");
+	WriteLine("var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);");
+	WriteLine("Command(null, new CommandEventArgs() { CommandHandlerToken = map[\""+eventName+"\"], Sender = sender, EventArgs = e });");
+	PopIndent();
+	WriteLine("}");
+	PopIndent();
+	WriteLine("}");
+
+	WriteLine("static void Set"+eventName+"EventHandler(string handlerName, "+typeName+" element)");
+	WriteLine("{");
+	PushIndent("    ");
+	WriteLine("var map = (Dictionary<string, string>)element.GetValue(eventMap);");
+	WriteLine("if (map == null)");
+	WriteLine("{");
+	PushIndent("    ");
+	WriteLine("element.SetValue(eventMap, map = new Dictionary<string, string>());");
+	PopIndent();
+	WriteLine("}");
+	WriteLine("map[\""+eventName+"\"] = handlerName;");
+	// remove to avoid duplicates   
+	//
+	WriteLine("element.Click -= "+eventName+"Router;");
+	WriteLine("element.Click += "+eventName+"Router;");
+	PopIndent();
+	WriteLine("}");
 }
 #>
