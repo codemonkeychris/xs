@@ -31,7 +31,7 @@ var App;
         public Host(ContentControl displayControl)
         {
             diff = new Diff(state, displayControl);
-            Diff.Command += delegate (object sender, CommandEventArgs e)
+            Handler.Command += delegate (object sender, CommandEventArgs e)
             {
                 state.NotifyCommand(e);
                 RenderIfNeeded();
