@@ -33,7 +33,22 @@ namespace XSRT2 {
 				EnumProperty("VerticalAlignment"),
 				XamlProperty("Margin", "Thickness"),
 				new PropEntry() { Name="name", SetBody="{ target.Name = x.ToString(); namedObjectMap[target.Name] = target; }" }
-			}); 
+			}
+		); 
+		#>
+
+		<#
+		ClassDef(
+			"TextBlock",
+			true,
+			"FrameworkElement",
+			new PropEntry[] {
+				StringProp("Text"),
+				BasicProp("FontFamily", "new FontFamily(x.ToString())"),
+				DoubleProp("FontSize"),
+				EnumProperty("FontWeight")
+			}
+		);
 		#>
 
         static DependencyProperty eventMap = DependencyProperty.RegisterAttached("XSEventMap", typeof(Dictionary<string, string>), typeof(FrameworkElement), PropertyMetadata.Create((object)null));
@@ -147,6 +162,15 @@ PropEntry EnumProperty(string name) {
 PropEntry XamlProperty(string name, string typeName) {
 	return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = XamlStringParse<" + typeName + ">(x)" };
 }
+PropEntry StringProp(string name) {
+	return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = x.ToString()" };
+}
+PropEntry BasicProp(string name, string setter) {
+	return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = " + setter };
+}
+PropEntry DoubleProp(string name) {
+	return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = x.Value<double>()" };
+}
 void ClassDef(string name, bool isPublic, string baseTypeName, PropEntry[] props) {
 	if (isPublic) { publicHandlerNames.Add(name); }
 	PushIndent("    ");
@@ -154,16 +178,33 @@ void ClassDef(string name, bool isPublic, string baseTypeName, PropEntry[] props
     WriteLine("internal static class " + name + "Handler");
     WriteLine("{");
 	PushIndent("    ");
-	PropSetter(name, props);
+	if (isPublic) {
+		Create(name);
+	}
+	PropSetter(name, baseTypeName, props);
 	PopIndent();
     WriteLine("}");
 	PopIndent();
 	PopIndent();
 }
-void PropSetter(string name, PropEntry[] props) {
+void Create(string name) {
+	WriteLine("internal static " + name + " Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)");
+	WriteLine("{");
+	PushIndent("    ");
+	WriteLine("var createResult = CreateOrGetLast<" + name + ">(obj, namedObjectMap);");
+	WriteLine("SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap);");
+	WriteLine("return createResult.Item2;");
+	PopIndent();
+	WriteLine("}");
+}
+void PropSetter(string name, string baseTypeName, PropEntry[] props) {
 	WriteLine("internal static void SetProperties(" + name + " t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)");
     WriteLine("{");
 	PushIndent("    ");
+	if (baseTypeName != null && baseTypeName.Length > 0)
+	{
+		WriteLine(baseTypeName + "Handler.SetProperties(t, obj, lastObj, namedObjectMap);");
+	}
 	foreach (var prop in props) {
 		WriteLine("TrySet(obj, lastObj, \"" + prop.Name + "\", t, (target, x, lastX) => " + prop.SetBody +");");
 	}

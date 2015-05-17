@@ -98,7 +98,7 @@ namespace XSRT2
             {
                 handlers = new Dictionary<string, CreateCallback>();
                 handlers["StackPanel"] = StackPanelDiff.CreateStackPanel;
-                handlers["TextBlock"] = TextBlockDiff.CreateTextBlock ;
+                handlers["TextBlock"] = Handler.TextBlockHandler.Create;
                 handlers["TextBox"] = TextBoxDiff.CreateTextBox;
                 handlers["Button"] = ButtonDiff.CreateButton;
                 handlers["CheckBox"] = CheckBoxDiff.CreateCheckBox;
@@ -127,23 +127,6 @@ namespace XSRT2
         delegate void Setter<T>(T target, JToken value, JToken lastValue);
         delegate FrameworkElement CreateCallback(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap);
 
-        static class TextBlockDiff
-        {
-            internal static TextBlock CreateTextBlock(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
-            {
-                var t = CreateOrGetLast<TextBlock>(obj, namedObjectMap);
-                SetTextBlockProperties(t.Item2, obj, t.Item1 ? lastObj : null, namedObjectMap);
-                return t.Item2;
-            }
-            static void SetTextBlockProperties(TextBlock t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
-            {
-                Handler.FrameworkElementHandler.SetProperties(t, obj, lastObj, namedObjectMap);
-                TrySet(obj, lastObj, "text", t, (target, x, lastX) => target.Text = x.ToString());
-                TrySet(obj, lastObj, "fontFamily", t, (target, x, lastX) => target.FontFamily = new FontFamily(x.ToString()));
-                TrySet(obj, lastObj, "fontSize", t, (target, x, lastX) => target.FontSize = x.Value<double>());
-                TrySet(obj, lastObj, "fontWeight", t, (target, x, lastX) => target.FontWeight = ParseEnum<FontWeight>(x));
-            }
-        }
         static class PanelDiff
         {
             static void SetPanelChildren(Panel t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)

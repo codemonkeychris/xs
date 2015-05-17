@@ -28,6 +28,24 @@ namespace XSRT2 {
             }
         }
 
+		internal static class TextBlockHandler
+        {
+            internal static TextBlock Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            {
+                var createResult = CreateOrGetLast<TextBlock>(obj, namedObjectMap);
+                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap);
+                return createResult.Item2;
+            }
+            internal static void SetProperties(TextBlock t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            {
+                FrameworkElementHandler.SetProperties(t, obj, lastObj, namedObjectMap);
+                TrySet(obj, lastObj, "text", t, (target, x, lastX) => target.Text = x.ToString());
+                TrySet(obj, lastObj, "fontFamily", t, (target, x, lastX) => target.FontFamily = new FontFamily(x.ToString()));
+                TrySet(obj, lastObj, "fontSize", t, (target, x, lastX) => target.FontSize = x.Value<double>());
+                TrySet(obj, lastObj, "fontWeight", t, (target, x, lastX) => target.FontWeight = ParseEnum<FontWeight>(x));
+            }
+        }
+
         static DependencyProperty eventMap = DependencyProperty.RegisterAttached("XSEventMap", typeof(Dictionary<string, string>), typeof(FrameworkElement), PropertyMetadata.Create((object)null));
         static Dictionary<string, CreateCallback> handlers;
 
@@ -92,6 +110,7 @@ namespace XSRT2 {
             if (handlers == null)
             {
                 handlers = new Dictionary<string, CreateCallback>();
+				                handlers["TextBlock"] = TextBlockHandler.Create;
 				            }
             return handlers;
         }
