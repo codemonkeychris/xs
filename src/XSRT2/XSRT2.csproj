@@ -111,6 +111,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Diff.cs" />
+    <Compile Include="Host.cs" />
     <Compile Include="RuntimeHelpers.cs" />
     <Compile Include="StateManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -137,6 +138,12 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="xsrt.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\XSRT\XSRT.vcxproj">
+      <Project>{41c3a8dc-b669-40c9-a4e3-d48f36016668}</Project>
+      <Name>XSRT</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
