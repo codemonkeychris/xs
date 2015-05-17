@@ -137,31 +137,18 @@ namespace XSRT2
             }
             static void SetTextBlockProperties(TextBlock t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
             {
-                FrameworkElementDiff.SetFrameworkElementProperties(t, obj, lastObj, namedObjectMap);
+                Handler.FrameworkElementHandler.SetProperties(t, obj, lastObj, namedObjectMap);
                 TrySet(obj, lastObj, "text", t, (target, x, lastX) => target.Text = x.ToString());
                 TrySet(obj, lastObj, "fontFamily", t, (target, x, lastX) => target.FontFamily = new FontFamily(x.ToString()));
                 TrySet(obj, lastObj, "fontSize", t, (target, x, lastX) => target.FontSize = x.Value<double>());
                 TrySet(obj, lastObj, "fontWeight", t, (target, x, lastX) => target.FontWeight = ParseEnum<FontWeight>(x));
             }
         }
-        static class FrameworkElementDiff
-        {
-            internal static void SetFrameworkElementProperties(FrameworkElement t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
-            {
-                TrySet(obj, lastObj, "horizontalAlignment", t, (target, x, lastX) => target.HorizontalAlignment = ParseEnum<HorizontalAlignment>(x));
-                TrySet(obj, lastObj, "verticalAlignment", t, (target, x, lastX) => target.VerticalAlignment = ParseEnum<VerticalAlignment>(x));
-                TrySet(obj, lastObj, "margin", t, (target, x, lastX) => target.Margin = XamlStringParse<Thickness>(x));
-                TrySet(obj, lastObj, "name", t, (target, x, lastX) => {
-                    target.Name = x.ToString();
-                    namedObjectMap[target.Name] = target;
-                });
-            }
-        }
         static class PanelDiff
         {
             static void SetPanelChildren(Panel t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
             {
-                FrameworkElementDiff.SetFrameworkElementProperties(t, obj, lastObj, namedObjectMap);
+                Handler.FrameworkElementHandler.SetProperties(t, obj, lastObj, namedObjectMap);
                 List<UIElement> children = new List<UIElement>();
                 IJEnumerable<JToken> lastChildren = null;
                 JToken last;
@@ -218,7 +205,7 @@ namespace XSRT2
             }
             internal static void SetPanelProperties(Panel t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
             {
-                FrameworkElementDiff.SetFrameworkElementProperties(t, obj, lastObj, namedObjectMap);
+                Handler.FrameworkElementHandler.SetProperties(t, obj, lastObj, namedObjectMap);
                 SetPanelChildren(t, obj, lastObj, namedObjectMap);
             }
 
@@ -384,7 +371,7 @@ namespace XSRT2
         {
             internal static void SetControlProperties(Control t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
             {
-                FrameworkElementDiff.SetFrameworkElementProperties(t, obj, lastObj, namedObjectMap);
+                Handler.FrameworkElementHandler.SetProperties(t, obj, lastObj, namedObjectMap);
                 TrySet(obj, lastObj, "background", t, (target, x, lastX) => target.Background = XamlStringParse<Brush>(x));
                 TrySet(obj, lastObj, "foreground", t, (target, x, lastX) => target.Foreground = XamlStringParse<Brush>(x));
                 TrySet(obj, lastObj, "fontFamily", t, (target, x, lastX) => target.FontFamily = new FontFamily(x.ToString()));

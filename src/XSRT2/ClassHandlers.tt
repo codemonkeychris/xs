@@ -1,0 +1,173 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Windows.UI.Xaml.Media;
+using Windows.UI;
+using Windows.UI.Text;
+using System.Reflection;
+using Windows.UI.Xaml.Controls.Primitives;
+
+namespace XSRT2 {
+	public static class Handler
+	{
+		<#
+		ClassDef(
+			"FrameworkElement", 
+			false,
+			null,
+			new PropEntry[] { 
+				EnumProperty("HorizontalAlignment"),
+				EnumProperty("VerticalAlignment"),
+				XamlProperty("Margin", "Thickness"),
+				new PropEntry() { Name="name", SetBody="{ target.Name = x.ToString(); namedObjectMap[target.Name] = target; }" }
+			}); 
+		#>
+
+        static DependencyProperty eventMap = DependencyProperty.RegisterAttached("XSEventMap", typeof(Dictionary<string, string>), typeof(FrameworkElement), PropertyMetadata.Create((object)null));
+        static Dictionary<string, CreateCallback> handlers;
+
+        static Tuple<bool, T> CreateOrGetLast<T>(JObject obj, Dictionary<string, object> namedObjectMap) where T:new()
+        {
+            JToken name;
+            if (obj.TryGetValue("name", out name))
+            {
+                object value;
+                if (namedObjectMap.TryGetValue(name.ToString(), out value))
+                {
+                    if (value != null && value is T)
+                    {
+                        return new Tuple<bool, T>(true, (T)value);
+                    }
+                }
+            }
+            return new Tuple<bool, T>(false, new T());
+        }
+        static void TrySet<T>(JObject obj, JObject last, string name, T target, Setter<T> setter)
+        {
+            JToken tok;
+            JToken tokLast = null;
+            if (obj.TryGetValue(name, out tok))
+            {
+                if (last != null && last.TryGetValue(name, out tokLast))
+                {
+                    if (tokLast.ToString() == tok.ToString())
+                    {
+                        return; // bail early if old & new are the same
+                    }
+                }
+                setter(target, tok, tokLast);
+            }
+        }
+        static void TrySetEvent<T>(JObject obj, JObject last, string name, T target, Setter<T> setter)
+        {
+            JToken tok;
+            JToken tokLast = null;
+            if (obj.TryGetValue("$" + name, out tok))
+            {
+                if (last != null && last.TryGetValue("$" + name, out tokLast))
+                {
+                    if (tokLast.ToString() == tok.ToString())
+                    {
+                        return; // bail early if old & new are the same
+                    }
+                }
+                setter(target, tok, tokLast);
+            }
+        }
+        static T ParseEnum<T>(JToken v) 
+        {
+            return (T)Enum.Parse(typeof(T), v.ToString());
+        }
+        static T XamlStringParse<T>(JToken v)
+        {
+            return (T)Windows.UI.Xaml.Markup.XamlBindingHelper.ConvertValue(typeof(T), v.ToString());
+        }
+        static Dictionary<string, CreateCallback> GetHandlers()
+        {
+            if (handlers == null)
+            {
+                handlers = new Dictionary<string, CreateCallback>();
+				<# foreach (var name in publicHandlerNames) { #>
+                handlers["<#= name #>"] = <#= name #>Handler.Create;
+				<# } #>
+            }
+            return handlers;
+        }
+        static FrameworkElement CreateFromState(JToken item, JToken lastItem, Dictionary<string, object> namedObjectMap)
+        {
+            if (item.Type == JTokenType.Object)
+            {
+                var type = item["type"].ToString();
+                CreateCallback create;
+                if (GetHandlers().TryGetValue(type, out create))
+                {
+                    return create((JObject)item, (JObject)lastItem, namedObjectMap);
+                }
+                return new TextBlock() { FontSize = 48, Text = "'" + type + "'Not found" };
+            }
+            else
+            {
+                return new TextBlock() { Text = item.ToString() };
+            }
+        }
+
+        delegate void Setter<T>(T target, JToken value, JToken lastValue);
+        delegate FrameworkElement CreateCallback(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap);
+
+	}
+	
+}
+
+<#+
+List<string> publicHandlerNames = new List<string>();
+
+class PropEntry {
+	public string Name;
+	public string SetBody;
+}
+string CamelCase(string name) {
+	return Char.ToLowerInvariant(name[0]) + name.Substring(1);
+}
+PropEntry EnumProperty(string name) {
+	return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = ParseEnum<" + name + ">(x)" };
+}
+PropEntry XamlProperty(string name, string typeName) {
+	return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = XamlStringParse<" + typeName + ">(x)" };
+}
+void ClassDef(string name, bool isPublic, string baseTypeName, PropEntry[] props) {
+	if (isPublic) { publicHandlerNames.Add(name); }
+	PushIndent("    ");
+	PushIndent("    ");
+    WriteLine("internal static class " + name + "Handler");
+    WriteLine("{");
+	PushIndent("    ");
+	PropSetter(name, props);
+	PopIndent();
+    WriteLine("}");
+	PopIndent();
+	PopIndent();
+}
+void PropSetter(string name, PropEntry[] props) {
+	WriteLine("internal static void SetProperties(" + name + " t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)");
+    WriteLine("{");
+	PushIndent("    ");
+	foreach (var prop in props) {
+		WriteLine("TrySet(obj, lastObj, \"" + prop.Name + "\", t, (target, x, lastX) => " + prop.SetBody +");");
+	}
+	PopIndent();
+    WriteLine("}");
+}
+#>

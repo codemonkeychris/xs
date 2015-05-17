@@ -110,6 +110,11 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ClassHandlers.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ClassHandlers.tt</DependentUpon>
+    </Compile>
     <Compile Include="Diff.cs" />
     <Compile Include="Host.cs" />
     <Compile Include="RuntimeHelpers.cs" />
@@ -144,6 +149,15 @@
       <Project>{41c3a8dc-b669-40c9-a4e3-d48f36016668}</Project>
       <Name>XSRT</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ClassHandlers.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ClassHandlers.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
