@@ -1,7 +1,11 @@
 ﻿declare var host: any;
-declare var App: any;
 
 module Xsrt {
+    // UNDONE: a bit of a hack... I want the "App" to see what we define here, but we 
+    // also call into random things defined on "App"... noodle on this more
+    //
+    declare var App: any;
+
     function render(ev) {
         try {
             ev.view = JSON.stringify((App && App.render) ? App.render() : { type: 'TextBlock', text: 'Error: App.render not found' });

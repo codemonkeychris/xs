@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 
 namespace XSRT2
 {
@@ -185,6 +186,7 @@ var App;
             jsrt.AddWinRTNamespace("Windows");
             jsrt.AddWinRTNamespace("XSRT2");
             jsrt.AddHostObject("state", state);
+            jsrt.AddHostObject("helpers", new Helpers());
             jsrt.Eval(program + "\r\n" + runtime);
         }
 
@@ -195,5 +197,10 @@ var App;
                 diff.Process(renderEventArgs.View.ToString());
             }
         }
+    }
+
+    public sealed class Helpers
+    {
+        public bool? GetIsChecked(object v) { return ((ToggleButton)v).IsChecked; }
     }
 }
