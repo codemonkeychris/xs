@@ -15,12 +15,14 @@ using System.Reflection;
 using Windows.UI.Xaml.Controls.Primitives;
 
 namespace XSRT2 {
-	public static class Handler
-	{
-		internal static class FrameworkElementHandler
+    public static class Handler
+    {
+        internal static class FrameworkElementHandler
         {
             internal static void SetProperties(FrameworkElement t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
             {
+                TrySet(obj, lastObj, "grid$row", t, (target, x, lastX) => { target.SetValue(Grid.RowProperty, Convert.ToInt32(x.Value<double>())); });
+                TrySet(obj, lastObj, "grid$column", t, (target, x, lastX) => { target.SetValue(Grid.ColumnProperty, Convert.ToInt32(x.Value<double>())); });
                 TrySet(obj, lastObj, "horizontalAlignment", t, (target, x, lastX) => target.HorizontalAlignment = ParseEnum<HorizontalAlignment>(x));
                 TrySet(obj, lastObj, "verticalAlignment", t, (target, x, lastX) => target.VerticalAlignment = ParseEnum<VerticalAlignment>(x));
                 TrySet(obj, lastObj, "margin", t, (target, x, lastX) => target.Margin = XamlStringParse<Thickness>(x));
@@ -28,7 +30,7 @@ namespace XSRT2 {
             }
         }
 
-		internal static class TextBlockHandler
+        internal static class TextBlockHandler
         {
             internal static TextBlock Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
             {
@@ -46,7 +48,7 @@ namespace XSRT2 {
             }
         }
 
-		internal static class TextBoxHandler
+        internal static class TextBoxHandler
         {
             internal static TextBox Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
             {
@@ -81,7 +83,7 @@ namespace XSRT2 {
             }
         }
 
-		internal static class SliderHandler
+        internal static class SliderHandler
         {
             internal static Slider Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
             {
@@ -118,7 +120,7 @@ namespace XSRT2 {
             }
         }
 
-		internal static class ButtonHandler
+        internal static class ButtonHandler
         {
             internal static Button Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
             {
@@ -132,7 +134,7 @@ namespace XSRT2 {
             }
         }
 
-		internal static class CheckBoxHandler
+        internal static class CheckBoxHandler
         {
             internal static CheckBox Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
             {
@@ -167,7 +169,7 @@ namespace XSRT2 {
             }
         }
 
-		internal static class ButtonBaseHandler
+        internal static class ButtonBaseHandler
         {
             internal static void SetProperties(ButtonBase t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
             {
@@ -196,7 +198,7 @@ namespace XSRT2 {
             }
         }
 
-		internal static class ControlHandler
+        internal static class ControlHandler
         {
             internal static void SetProperties(Control t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
             {
@@ -209,7 +211,7 @@ namespace XSRT2 {
             }
         }
 
-		internal static class StackPanelHandler
+        internal static class StackPanelHandler
         {
             internal static StackPanel Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
             {
@@ -222,9 +224,45 @@ namespace XSRT2 {
                 PanelHandler.SetProperties(t, obj, lastObj, namedObjectMap);
             }
         }
+        internal static class GridHandler
+        {
+            internal static Grid Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            {
+                var createResult = CreateOrGetLast<Grid>(obj, namedObjectMap);
+                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap);
+                return createResult.Item2;
+            }
+            internal static void SetProperties(Grid t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            {
+                PanelHandler.SetProperties(t, obj, lastObj, namedObjectMap);
+                TrySet(obj, lastObj, "rows", t, (target, x, lastX) => { PanelHandler.SetGridRowDefinitions(target, (JArray)x); });
+                TrySet(obj, lastObj, "columns", t, (target, x, lastX) => { PanelHandler.SetGridColumnDefinitions(target, (JArray)x); });
+            }
+        }
 
         internal static class PanelHandler
         {
+            internal static void SetGridRowDefinitions(Grid t, JArray obj) 
+            {
+                t.RowDefinitions.Clear();
+                foreach (var d in obj.AsJEnumerable())
+                {
+                    RowDefinition rd = new RowDefinition();
+                    rd.Height = XamlStringParse<GridLength>(d);
+                    t.RowDefinitions.Add(rd);
+                }
+            }
+            internal static void SetGridColumnDefinitions(Grid t, JArray obj) 
+            {
+                t.ColumnDefinitions.Clear();
+                foreach (var d in obj.AsJEnumerable())
+                {
+                    ColumnDefinition cd = new ColumnDefinition();
+                    cd.Width = XamlStringParse<GridLength>(d);
+                    t.ColumnDefinitions.Add(cd);
+                }
+            }
+
             static void SetPanelChildren(Panel t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
             {
                 Handler.FrameworkElementHandler.SetProperties(t, obj, lastObj, namedObjectMap);
@@ -255,7 +293,15 @@ namespace XSRT2 {
                 if (setChildrenNeeded)
                 {
                     t.Children.Clear();
-                    foreach (var child in children) { t.Children.Add(child); }
+                    foreach (var child in children)
+                    {
+                        var parent = VisualTreeHelper.GetParent(child) as Panel;
+                        if (parent != null)
+                        {
+                            parent.Children.Remove(child);
+                        }
+                        t.Children.Add(child);
+                    }
                 }
             }
             static void CollectPanelChildrenWorker(Panel t, IJEnumerable<JToken> items, IEnumerable<JToken> lastItems, List<UIElement> children, Dictionary<string, object> namedObjectMap)
@@ -363,6 +409,7 @@ namespace XSRT2 {
                 handlers["Button"] = ButtonHandler.Create;
                 handlers["CheckBox"] = CheckBoxHandler.Create;
                 handlers["StackPanel"] = StackPanelHandler.Create;
+                handlers["Grid"] = GridHandler.Create;
             }
             return handlers;
         }
@@ -387,7 +434,6 @@ namespace XSRT2 {
         delegate void Setter<T>(T target, JToken value, JToken lastValue);
         delegate FrameworkElement CreateCallback(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap);
 
-	}
-	
+    }
 }
 

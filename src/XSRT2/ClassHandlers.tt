@@ -21,118 +21,153 @@ using System.Reflection;
 using Windows.UI.Xaml.Controls.Primitives;
 
 namespace XSRT2 {
-	public static class Handler
-	{
-		<#
-		ClassDef(
-			"FrameworkElement", 
-			false,
-			null,
-			new PropEntry[] { 
-				EnumProperty("HorizontalAlignment"),
-				EnumProperty("VerticalAlignment"),
-				XamlProperty("Margin", "Thickness"),
-				new PropEntry() { Name="name", SetBody="{ target.Name = x.ToString(); namedObjectMap[target.Name] = target; }" }
-			},
-			null
-		); 
-		#>
+    public static class Handler
+    {
+        <#
+        ClassDef(
+            "FrameworkElement", 
+            false,
+            null,
+            new PropEntry[] { 
+                new PropEntry() { Name="grid$row", SetBody="{ target.SetValue(Grid.RowProperty, Convert.ToInt32(x.Value<double>())); }" },
+                new PropEntry() { Name="grid$column", SetBody="{ target.SetValue(Grid.ColumnProperty, Convert.ToInt32(x.Value<double>())); }" },
+                EnumProperty("HorizontalAlignment"),
+                EnumProperty("VerticalAlignment"),
+                XamlProperty("Margin", "Thickness"),
+                new PropEntry() { Name="name", SetBody="{ target.Name = x.ToString(); namedObjectMap[target.Name] = target; }" }
+            },
+            null
+        ); 
+        #>
 
-		<#
-		ClassDef(
-			"TextBlock",
-			true,
-			"FrameworkElement",
-			new PropEntry[] {
-				StringProp("Text"),
-				BasicProp("FontFamily", "new FontFamily(x.ToString())"),
-				DoubleProp("FontSize"),
-				EnumProperty("FontWeight")
-			},
-			null
-		);
-		#>
+        <#
+        ClassDef(
+            "TextBlock",
+            true,
+            "FrameworkElement",
+            new PropEntry[] {
+                StringProp("Text"),
+                BasicProp("FontFamily", "new FontFamily(x.ToString())"),
+                DoubleProp("FontSize"),
+                EnumProperty("FontWeight")
+            },
+            null
+        );
+        #>
 
-		<#
-		ClassDef(
-			"TextBox",
-			true,
-			"Control",
-			new PropEntry[] {
-				StringProp("Text")
-			},
-			new EventEntry[] {
-				new EventEntry() { Name="textChanged", WinRTName="TextChanged", EventType="RoutedEventArgs" }
-			}
-		);
-		#>
+        <#
+        ClassDef(
+            "TextBox",
+            true,
+            "Control",
+            new PropEntry[] {
+            StringProp("Text")
+            },
+            new EventEntry[] {
+            new EventEntry() { Name="textChanged", WinRTName="TextChanged", EventType="RoutedEventArgs" }
+            }
+        );
+        #>
 
-		<#
-		ClassDef(
-			"Slider",
-			true,
-			"Control",
-			new PropEntry[] {
-				DoubleProp("Minimum"),
-				DoubleProp("Maximum"),
-				DoubleProp("Value")
-			},
-			new EventEntry[] {
-				new EventEntry() { Name="valueChanged", WinRTName="ValueChanged", EventType="RangeBaseValueChangedEventArgs" }
-			}
-		);
-		#>
+        <#
+        ClassDef(
+            "Slider",
+            true,
+            "Control",
+            new PropEntry[] {
+            DoubleProp("Minimum"),
+            DoubleProp("Maximum"),
+            DoubleProp("Value")
+            },
+            new EventEntry[] {
+            new EventEntry() { Name="valueChanged", WinRTName="ValueChanged", EventType="RangeBaseValueChangedEventArgs" }
+            }
+        );
+        #>
 
-		<# ClassDef("Button", true, "ButtonBase", null, null); #>
+        <# ClassDef("Button", true, "ButtonBase", null, null); #>
 
-		<#
-		ClassDef(
-			"CheckBox",
-			true,
-			"ButtonBase",
-			new PropEntry[] {
-				BooleanProp("IsChecked")
-			},
-			new EventEntry[] {
-				new EventEntry() { Name="checked", WinRTName="Checked", EventType="RoutedEventArgs" }
-			}
-		);
-		#>
+        <#
+        ClassDef(
+            "CheckBox",
+            true,
+            "ButtonBase",
+            new PropEntry[] {
+            BooleanProp("IsChecked")
+            },
+            new EventEntry[] {
+            new EventEntry() { Name="checked", WinRTName="Checked", EventType="RoutedEventArgs" }
+            }
+        );
+        #>
 
-		<#
-		ClassDef(
-			"ButtonBase",
-			false,
-			"Control",
-			new PropEntry[] {
-				BasicProp("Content", "CreateFromState(x, lastX, namedObjectMap)")
-			},
-			new EventEntry[] {
-				new EventEntry() { Name="click", WinRTName="Click", EventType="RoutedEventArgs" }
-			}
-		);
-		#>
+        <#
+        ClassDef(
+            "ButtonBase",
+            false,
+            "Control",
+            new PropEntry[] {
+            BasicProp("Content", "CreateFromState(x, lastX, namedObjectMap)")
+            },
+            new EventEntry[] {
+            new EventEntry() { Name="click", WinRTName="Click", EventType="RoutedEventArgs" }
+            }
+        );
+        #>
 
-		<#
-		ClassDef(
-			"Control",
-			false,
-			"FrameworkElement",
-			new PropEntry[] {
-				XamlProperty("Background", "Brush"),
-				XamlProperty("Foreground", "Brush"),
-				BasicProp("FontFamily", "new FontFamily(x.ToString())"),
-				DoubleProp("FontSize"),
-				EnumProperty("FontWeight")
-			},
-			null
-		);
-		#>
+        <#
+        ClassDef(
+            "Control",
+            false,
+            "FrameworkElement",
+            new PropEntry[] {
+            XamlProperty("Background", "Brush"),
+            XamlProperty("Foreground", "Brush"),
+            BasicProp("FontFamily", "new FontFamily(x.ToString())"),
+            DoubleProp("FontSize"),
+            EnumProperty("FontWeight")
+            },
+            null
+        );
+        #>
 
-		<# ClassDef("StackPanel", true, "Panel", null, null); #>
+        <# ClassDef("StackPanel", true, "Panel", null, null); #>
+        <# 
+        ClassDef(
+            "Grid", 
+            true, 
+            "Panel", 
+            new PropEntry[] {
+                    new PropEntry() { Name="rows", SetBody="{ PanelHandler.SetGridRowDefinitions(target, (JArray)x); }" },
+                    new PropEntry() { Name="columns", SetBody="{ PanelHandler.SetGridColumnDefinitions(target, (JArray)x); }" }
+                },
+                null
+        ); 
+        #>
 
         internal static class PanelHandler
         {
+            internal static void SetGridRowDefinitions(Grid t, JArray obj) 
+            {
+                t.RowDefinitions.Clear();
+                foreach (var d in obj.AsJEnumerable())
+                {
+                    RowDefinition rd = new RowDefinition();
+                    rd.Height = XamlStringParse<GridLength>(d);
+                    t.RowDefinitions.Add(rd);
+                }
+            }
+            internal static void SetGridColumnDefinitions(Grid t, JArray obj) 
+            {
+                t.ColumnDefinitions.Clear();
+                foreach (var d in obj.AsJEnumerable())
+                {
+                    ColumnDefinition cd = new ColumnDefinition();
+                    cd.Width = XamlStringParse<GridLength>(d);
+                    t.ColumnDefinitions.Add(cd);
+                }
+            }
+
             static void SetPanelChildren(Panel t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
             {
                 Handler.FrameworkElementHandler.SetProperties(t, obj, lastObj, namedObjectMap);
@@ -163,7 +198,15 @@ namespace XSRT2 {
                 if (setChildrenNeeded)
                 {
                     t.Children.Clear();
-                    foreach (var child in children) { t.Children.Add(child); }
+                    foreach (var child in children)
+                    {
+                        var parent = VisualTreeHelper.GetParent(child) as Panel;
+                        if (parent != null)
+                        {
+                            parent.Children.Remove(child);
+                        }
+                        t.Children.Add(child);
+                    }
                 }
             }
             static void CollectPanelChildrenWorker(Panel t, IJEnumerable<JToken> items, IEnumerable<JToken> lastItems, List<UIElement> children, Dictionary<string, object> namedObjectMap)
@@ -292,127 +335,126 @@ namespace XSRT2 {
         delegate void Setter<T>(T target, JToken value, JToken lastValue);
         delegate FrameworkElement CreateCallback(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap);
 
-	}
-	
+    }
 }
 
 <#+
 List<string> publicHandlerNames = new List<string>();
 
 class PropEntry {
-	public string Name;
-	public string SetBody;
+    public string Name;
+    public string SetBody;
 }
 class EventEntry {
-	public string Name;
-	public string WinRTName;
-	public string EventType;
+    public string Name;
+    public string WinRTName;
+    public string EventType;
 }
 string CamelCase(string name) {
-	return Char.ToLowerInvariant(name[0]) + name.Substring(1);
+    return Char.ToLowerInvariant(name[0]) + name.Substring(1);
 }
 PropEntry EnumProperty(string name) {
-	return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = ParseEnum<" + name + ">(x)" };
+    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = ParseEnum<" + name + ">(x)" };
 }
 PropEntry XamlProperty(string name, string typeName) {
-	return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = XamlStringParse<" + typeName + ">(x)" };
+    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = XamlStringParse<" + typeName + ">(x)" };
 }
 PropEntry StringProp(string name) {
-	return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = x.ToString()" };
+    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = x.ToString()" };
 }
 PropEntry BasicProp(string name, string setter) {
-	return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = " + setter };
+    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = " + setter };
 }
 PropEntry DoubleProp(string name) {
-	return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = x.Value<double>()" };
+    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = x.Value<double>()" };
 }
 PropEntry BooleanProp(string name) {
-	return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = Convert.ToBoolean(((JValue)x).Value)" };
+    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = Convert.ToBoolean(((JValue)x).Value)" };
 }
 void ClassDef(string name, bool isPublic, string baseTypeName, PropEntry[] props, EventEntry[] events) {
-	if (isPublic) { publicHandlerNames.Add(name); }
-	PushIndent("    ");
-	PushIndent("    ");
+    if (isPublic) { publicHandlerNames.Add(name); }
+    PushIndent("    ");
+    PushIndent("    ");
     WriteLine("internal static class " + name + "Handler");
     WriteLine("{");
-	PushIndent("    ");
-	if (isPublic) {
-		Create(name);
-	}
-	PropSetter(name, baseTypeName, props, events);
-	if (events != null) {
-		foreach (var e in events) {
-			EventHandler(e.WinRTName, e.EventType, name);
-		}
-	}
-	PopIndent();
+    PushIndent("    ");
+    if (isPublic) {
+        Create(name);
+    }
+    PropSetter(name, baseTypeName, props, events);
+    if (events != null) {
+        foreach (var e in events) {
+            EventHandler(e.WinRTName, e.EventType, name);
+        }
+    }
+    PopIndent();
     WriteLine("}");
-	PopIndent();
-	PopIndent();
+    PopIndent();
+    PopIndent();
 }
 void Create(string name) {
-	WriteLine("internal static " + name + " Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)");
-	WriteLine("{");
-	PushIndent("    ");
-	WriteLine("var createResult = CreateOrGetLast<" + name + ">(obj, namedObjectMap);");
-	WriteLine("SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap);");
-	WriteLine("return createResult.Item2;");
-	PopIndent();
-	WriteLine("}");
+    WriteLine("internal static " + name + " Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)");
+    WriteLine("{");
+    PushIndent("    ");
+    WriteLine("var createResult = CreateOrGetLast<" + name + ">(obj, namedObjectMap);");
+    WriteLine("SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap);");
+    WriteLine("return createResult.Item2;");
+    PopIndent();
+    WriteLine("}");
 }
 void PropSetter(string name, string baseTypeName, PropEntry[] props, EventEntry[] events) {
-	WriteLine("internal static void SetProperties(" + name + " t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)");
+    WriteLine("internal static void SetProperties(" + name + " t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)");
     WriteLine("{");
-	PushIndent("    ");
-	if (baseTypeName != null && baseTypeName.Length > 0)
-	{
-		WriteLine(baseTypeName + "Handler.SetProperties(t, obj, lastObj, namedObjectMap);");
-	}
-	if (props != null) {
-		foreach (var prop in props) {
-			WriteLine("TrySet(obj, lastObj, \"" + prop.Name + "\", t, (target, x, lastX) => " + prop.SetBody +");");
-		}
-	}
-	if (events != null) {
-		foreach (var e in events) {
-			WriteLine("TrySetEvent(obj, lastObj, \"" + e.Name + "\", t, (target, x, lastX) => Set"+e.WinRTName+"EventHandler(x.ToString(), target));");
-		}
-	}
+    PushIndent("    ");
+    if (baseTypeName != null && baseTypeName.Length > 0)
+    {
+        WriteLine(baseTypeName + "Handler.SetProperties(t, obj, lastObj, namedObjectMap);");
+    }
+    if (props != null) {
+        foreach (var prop in props) {
+            WriteLine("TrySet(obj, lastObj, \"" + prop.Name + "\", t, (target, x, lastX) => " + prop.SetBody +");");
+        }
+    }
+    if (events != null) {
+        foreach (var e in events) {
+            WriteLine("TrySetEvent(obj, lastObj, \"" + e.Name + "\", t, (target, x, lastX) => Set"+e.WinRTName+"EventHandler(x.ToString(), target));");
+        }
+    }
                 
-	PopIndent();
+    PopIndent();
     WriteLine("}");
 }
 
 void EventHandler(string eventName, string eventTypeName, string typeName) {
-	WriteLine("static void "+eventName+"Router(object sender, "+eventTypeName+" e)");
-	WriteLine("{");
-	PushIndent("    ");
-	WriteLine("if (Command != null)");
-	WriteLine("{");
-	PushIndent("    ");
-	WriteLine("var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);");
-	WriteLine("Command(null, new CommandEventArgs() { CommandHandlerToken = map[\""+eventName+"\"], Sender = sender, EventArgs = e });");
-	PopIndent();
-	WriteLine("}");
-	PopIndent();
-	WriteLine("}");
+    WriteLine("static void "+eventName+"Router(object sender, "+eventTypeName+" e)");
+    WriteLine("{");
+    PushIndent("    ");
+    WriteLine("if (Command != null)");
+    WriteLine("{");
+    PushIndent("    ");
+    WriteLine("var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);");
+    WriteLine("Command(null, new CommandEventArgs() { CommandHandlerToken = map[\""+eventName+"\"], Sender = sender, EventArgs = e });");
+    PopIndent();
+    WriteLine("}");
+    PopIndent();
+    WriteLine("}");
 
-	WriteLine("static void Set"+eventName+"EventHandler(string handlerName, "+typeName+" element)");
-	WriteLine("{");
-	PushIndent("    ");
-	WriteLine("var map = (Dictionary<string, string>)element.GetValue(eventMap);");
-	WriteLine("if (map == null)");
-	WriteLine("{");
-	PushIndent("    ");
-	WriteLine("element.SetValue(eventMap, map = new Dictionary<string, string>());");
-	PopIndent();
-	WriteLine("}");
-	WriteLine("map[\""+eventName+"\"] = handlerName;");
-	// remove to avoid duplicates   
-	//
-	WriteLine("element."+eventName+" -= "+eventName+"Router;");
-	WriteLine("element."+eventName+" += "+eventName+"Router;");
-	PopIndent();
-	WriteLine("}");
+    WriteLine("static void Set"+eventName+"EventHandler(string handlerName, "+typeName+" element)");
+    WriteLine("{");
+    PushIndent("    ");
+    WriteLine("var map = (Dictionary<string, string>)element.GetValue(eventMap);");
+    WriteLine("if (map == null)");
+    WriteLine("{");
+    PushIndent("    ");
+    WriteLine("element.SetValue(eventMap, map = new Dictionary<string, string>());");
+    PopIndent();
+    WriteLine("}");
+    WriteLine("map[\""+eventName+"\"] = handlerName;");
+    // remove to avoid duplicates   
+    //
+    WriteLine("element."+eventName+" -= "+eventName+"Router;");
+    WriteLine("element."+eventName+" += "+eventName+"Router;");
+    PopIndent();
+    WriteLine("}");
 }
 #>
