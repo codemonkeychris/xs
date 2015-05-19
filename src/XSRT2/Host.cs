@@ -175,6 +175,7 @@ var App;
             {
                 state.ReleaseEventHandlers();
                 jsrt.ClearActive();
+                jsrt.ClearTimers();
                 jsrt = null;
             }
             state.NotifyChanged();

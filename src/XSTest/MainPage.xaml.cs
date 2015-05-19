@@ -28,26 +28,13 @@ namespace XSTest
     {
         Host host;
         DispatcherTimer dt;
-        int frame;
 
         public MainPage()
         {
             this.InitializeComponent();
             this.Content = new ContentControl();
             host = new Host((ContentControl)this.Content) { AutoCheckUpdates = true };
-            host.State.SetState("frame", (frame++).ToString());
             host.Startup();
-
-            dt = new DispatcherTimer();
-            dt.Interval = TimeSpan.FromMilliseconds(1000);
-            dt.Tick += dt_Tick;
-            dt.Start();
-        }
-
-        private void dt_Tick(object sender, object e)
-        {
-            host.State.SetState("frame", (frame++).ToString());
-            host.RenderIfNeeded();
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)

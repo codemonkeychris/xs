@@ -3,6 +3,7 @@
 
 using namespace XSRT;
 using namespace Platform;
+using namespace Windows::UI::Xaml;
 
 JScriptRuntime::JScriptRuntime()
 {
@@ -19,6 +20,10 @@ JsValueRef CALLBACK Shim(JsValueRef callee, bool isConstructCall, JsValueRef *ar
     {
     case 0:
         return holder->ref->Echo(callee, isConstructCall, arguments, argumentCount, nullptr);
+    case 1:
+        return holder->ref->SetInterval(callee, isConstructCall, arguments, argumentCount, nullptr);
+    case 2:
+        return holder->ref->ClearInterval(callee, isConstructCall, arguments, argumentCount, nullptr);
     }
 }
 
@@ -65,7 +70,6 @@ JsErrorCode JScriptRuntime::CreateHostContext(JsRuntimeHandle runtime, JsContext
     //
     // Set the property.
     //
-
     IfFailRet(JsSetProperty(globalObject, hostPropertyId, m_hostObject, true));
 
     std::shared_ptr<JScriptRuntimeNativeHolder> echo = std::make_shared<JScriptRuntimeNativeHolder>();
@@ -76,6 +80,19 @@ JsErrorCode JScriptRuntime::CreateHostContext(JsRuntimeHandle runtime, JsContext
 
     IfFailRet(DefineHostCallback(m_hostObject, L"runScript", RunScript, nullptr));
 
+    // Set/ClearInterval 
+    //
+    std::shared_ptr<JScriptRuntimeNativeHolder> setInterval = std::make_shared<JScriptRuntimeNativeHolder>();
+    setInterval->ref = this;
+    setInterval->method = 1;
+    m_holders.push_back(setInterval);
+    IfFailRet(DefineHostCallback(globalObject, L"setInterval", Shim, setInterval.get()));
+    std::shared_ptr<JScriptRuntimeNativeHolder> clearInterval = std::make_shared<JScriptRuntimeNativeHolder>();
+    clearInterval->ref = this;
+    clearInterval->method = 1;
+    m_holders.push_back(clearInterval);
+    IfFailRet(DefineHostCallback(globalObject, L"clearInterval", Shim, clearInterval.get()));
+
     //
     // Clean up the current execution context.
     //
@@ -83,6 +100,76 @@ JsErrorCode JScriptRuntime::CreateHostContext(JsRuntimeHandle runtime, JsContext
     IfFailRet(JsSetCurrentContext(JS_INVALID_REFERENCE));
 
     return JsNoError;
+}
+
+// UNDONE: this seems to be calling multiple times, the implementation seems kludgy, generally this feels wrong...
+//  ... but, it's good enough for the demo for now
+//
+JsValueRef CALLBACK JScriptRuntime::SetInterval(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState)
+{
+    auto func = arguments[1];
+    double interval;
+    JsNumberToDouble(arguments[2], &interval);
+
+    int timerId = (m_timerCounter++);
+
+    auto timer = m_timers[timerId] = ref new DispatcherTimer();
+    m_timerHandlers[timerId] = func;
+    Windows::Foundation::TimeSpan t;
+    t.Duration = (long long)(interval * 10000L);
+    timer->Interval = t;
+
+    WeakReference wr(this);
+
+    timer->Tick += ref new Windows::Foundation::EventHandler<Platform::Object ^>(
+        [wr, timerId](Platform::Object ^sender, Platform::Object ^args) {
+            JScriptRuntime^ c = wr.Resolve<JScriptRuntime>();
+            if (c != nullptr)
+            {
+                c->TriggerTimer(timerId);
+            }
+            else
+            {
+                // Inform the event that this handler should be removed
+                // from the subscriber list
+                throw ref new DisconnectedException();
+            }
+
+        });
+    timer->Start();
+
+    JsValueRef value;
+    JsIntToNumber(timerId, &value);
+    return value;
+}
+JsValueRef CALLBACK JScriptRuntime::ClearInterval(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState)
+{
+    int timerId;
+    JsNumberToInt(arguments[1], &timerId);
+
+    auto timerHandler = m_timerHandlers.find(timerId);
+    auto timer = m_timers.find(timerId);
+    if (timerHandler != m_timerHandlers.end()) {
+        m_timerHandlers.erase(timerHandler);
+    }
+    if (timer != m_timers.end()) {
+        timer->second->Stop();
+        m_timers.erase(timer);
+    }
+
+    JsValueRef value;
+    JsBoolToBoolean(true, &value);
+    return value;
+}
+void JScriptRuntime::TriggerTimer(int id)
+{
+    auto timerHandler = m_timerHandlers.find(id);
+    if (timerHandler != m_timerHandlers.end())
+    {
+        auto func = timerHandler->second;
+        JsValueRef ret;
+        JsCallFunction(func, nullptr, 0, &ret);
+    }
 }
 
 JsValueRef CALLBACK JScriptRuntime::Echo(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState)
@@ -134,6 +221,20 @@ void JScriptRuntime::ClearActive()
     JsErrorCode c;
     IfFailThrowNoRet(c = JsSetCurrentContext(JS_INVALID_REFERENCE), L"Failed to clear the current context");
 }
+void JScriptRuntime::ClearTimers()
+{
+    for (auto it = m_timerHandlers.begin(); it != m_timerHandlers.end(); it++)
+    {
+        // ?
+    }
+    m_timerHandlers.clear();
+
+    for (auto it = m_timers.begin(); it != m_timers.end(); it++)
+    {
+        it->second->Stop();
+    }
+    m_timers.clear();
+}
 
 int JScriptRuntime::Eval(String^ script)
 {
@@ -148,3 +249,4 @@ JScriptRuntime::~JScriptRuntime()
 error:
     ;
 }
+
