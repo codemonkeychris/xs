@@ -32,3 +32,42 @@ module Xsrt {
         }
     }
 }
+
+module React {
+    declare var App: any;
+
+    var funcCount = 1;
+    export function createElement(ctor, members) {
+        var result = ctor();
+        if (members) {
+            var keys = Object.keys(members)
+            for (var i = 0; i < keys.length; i++) {
+                var key = keys[i];
+                var value = members[key];
+                if (value instanceof Function) {
+                    var funName = "$" + (funcCount++);
+                    App.eventHandlers = App.eventHandlers || {};
+                    App.eventHandlers[funName] = value;
+                    result[key] = funName;
+                }
+                else {
+                    result[key] = members[key];
+                }
+            }
+        }
+        if (arguments.length > 2) {
+            result.children = Array.prototype.slice.call(arguments, 2);
+        }
+        return result;
+    }
+}
+
+module Xaml {
+    export function Grid() { return { type: 'Grid' } };
+    export function StackPanel() { return { type: 'StackPanel' } };
+    export function TextBlock() { return { type: 'TextBlock' } };
+    export function Button() { return { type: 'Button' } };
+    export function CheckBox() { return { type: 'CheckBox' } };
+    export function Slider() { return { type: 'Slider' } };
+    export function TextBox() { return { type: 'TextBox' } };
+}

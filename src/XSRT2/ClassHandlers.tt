@@ -64,7 +64,7 @@ namespace XSRT2 {
             StringProp("Text")
             },
             new EventEntry[] {
-            new EventEntry() { Name="textChanged", WinRTName="TextChanged", EventType="RoutedEventArgs" }
+                new EventEntry() { Name="TextChanged", WinRTName="TextChanged", EventType="RoutedEventArgs" }
             }
         );
         #>
@@ -80,7 +80,7 @@ namespace XSRT2 {
             DoubleProp("Value")
             },
             new EventEntry[] {
-            new EventEntry() { Name="valueChanged", WinRTName="ValueChanged", EventType="RangeBaseValueChangedEventArgs" }
+                new EventEntry() { Name="ValueChanged", WinRTName="ValueChanged", EventType="RangeBaseValueChangedEventArgs" }
             }
         );
         #>
@@ -96,7 +96,7 @@ namespace XSRT2 {
             BooleanProp("IsChecked")
             },
             new EventEntry[] {
-            new EventEntry() { Name="checked", WinRTName="Checked", EventType="RoutedEventArgs" }
+                new EventEntry() { Name="Checked", WinRTName="Checked", EventType="RoutedEventArgs" }
             }
         );
         #>
@@ -110,7 +110,7 @@ namespace XSRT2 {
             BasicProp("Content", "CreateFromState(x, lastX, namedObjectMap)")
             },
             new EventEntry[] {
-            new EventEntry() { Name="click", WinRTName="Click", EventType="RoutedEventArgs" }
+                new EventEntry() { Name="Click", WinRTName="Click", EventType="RoutedEventArgs" }
             }
         );
         #>
@@ -121,11 +121,11 @@ namespace XSRT2 {
             false,
             "FrameworkElement",
             new PropEntry[] {
-            XamlProperty("Background", "Brush"),
-            XamlProperty("Foreground", "Brush"),
-            BasicProp("FontFamily", "new FontFamily(x.ToString())"),
-            DoubleProp("FontSize"),
-            EnumProperty("FontWeight")
+                XamlProperty("Background", "Brush"),
+                XamlProperty("Foreground", "Brush"),
+                BasicProp("FontFamily", "new FontFamily(x.ToString())"),
+                DoubleProp("FontSize"),
+                EnumProperty("FontWeight")
             },
             null
         );
@@ -283,9 +283,9 @@ namespace XSRT2 {
         {
             JToken tok;
             JToken tokLast = null;
-            if (obj.TryGetValue("$" + name, out tok))
+            if (obj.TryGetValue("on" + name, out tok))
             {
-                if (last != null && last.TryGetValue("$" + name, out tokLast))
+                if (last != null && last.TryGetValue("on" + name, out tokLast))
                 {
                     if (tokLast.ToString() == tok.ToString())
                     {

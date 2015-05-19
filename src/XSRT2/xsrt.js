@@ -27,3 +27,55 @@ var Xsrt;
         }
     }
 })(Xsrt || (Xsrt = {}));
+var React;
+(function (React) {
+    var funcCount = 1;
+    function createElement(ctor, members) {
+        var result = ctor();
+        if (members) {
+            var keys = Object.keys(members);
+            for (var i = 0; i < keys.length; i++) {
+                var key = keys[i];
+                var value = members[key];
+                if (value instanceof Function) {
+                    var funName = "$" + (funcCount++);
+                    App.eventHandlers = App.eventHandlers || {};
+                    App.eventHandlers[funName] = value;
+                    result[key] = funName;
+                }
+                else {
+                    result[key] = members[key];
+                }
+            }
+        }
+        if (arguments.length > 2) {
+            result.children = Array.prototype.slice.call(arguments, 2);
+        }
+        return result;
+    }
+    React.createElement = createElement;
+})(React || (React = {}));
+var Xaml;
+(function (Xaml) {
+    function Grid() { return { type: 'Grid' }; }
+    Xaml.Grid = Grid;
+    ;
+    function StackPanel() { return { type: 'StackPanel' }; }
+    Xaml.StackPanel = StackPanel;
+    ;
+    function TextBlock() { return { type: 'TextBlock' }; }
+    Xaml.TextBlock = TextBlock;
+    ;
+    function Button() { return { type: 'Button' }; }
+    Xaml.Button = Button;
+    ;
+    function CheckBox() { return { type: 'CheckBox' }; }
+    Xaml.CheckBox = CheckBox;
+    ;
+    function Slider() { return { type: 'Slider' }; }
+    Xaml.Slider = Slider;
+    ;
+    function TextBox() { return { type: 'TextBox' }; }
+    Xaml.TextBox = TextBox;
+    ;
+})(Xaml || (Xaml = {}));

@@ -192,7 +192,7 @@ var App;
 
         void Display(RenderEventArgs renderEventArgs)
         {
-            if (renderEventArgs != null)
+            if (renderEventArgs != null && renderEventArgs.View != null)
             {
                 diff.Process(renderEventArgs.View.ToString());
             }

@@ -60,7 +60,7 @@ namespace XSRT2 {
             {
                 ControlHandler.SetProperties(t, obj, lastObj, namedObjectMap);
                 TrySet(obj, lastObj, "text", t, (target, x, lastX) => target.Text = x.ToString());
-                TrySetEvent(obj, lastObj, "textChanged", t, (target, x, lastX) => SetTextChangedEventHandler(x.ToString(), target));
+                TrySetEvent(obj, lastObj, "TextChanged", t, (target, x, lastX) => SetTextChangedEventHandler(x.ToString(), target));
             }
             static void TextChangedRouter(object sender, RoutedEventArgs e)
             {
@@ -97,7 +97,7 @@ namespace XSRT2 {
                 TrySet(obj, lastObj, "minimum", t, (target, x, lastX) => target.Minimum = x.Value<double>());
                 TrySet(obj, lastObj, "maximum", t, (target, x, lastX) => target.Maximum = x.Value<double>());
                 TrySet(obj, lastObj, "value", t, (target, x, lastX) => target.Value = x.Value<double>());
-                TrySetEvent(obj, lastObj, "valueChanged", t, (target, x, lastX) => SetValueChangedEventHandler(x.ToString(), target));
+                TrySetEvent(obj, lastObj, "ValueChanged", t, (target, x, lastX) => SetValueChangedEventHandler(x.ToString(), target));
             }
             static void ValueChangedRouter(object sender, RangeBaseValueChangedEventArgs e)
             {
@@ -146,7 +146,7 @@ namespace XSRT2 {
             {
                 ButtonBaseHandler.SetProperties(t, obj, lastObj, namedObjectMap);
                 TrySet(obj, lastObj, "isChecked", t, (target, x, lastX) => target.IsChecked = Convert.ToBoolean(((JValue)x).Value));
-                TrySetEvent(obj, lastObj, "checked", t, (target, x, lastX) => SetCheckedEventHandler(x.ToString(), target));
+                TrySetEvent(obj, lastObj, "Checked", t, (target, x, lastX) => SetCheckedEventHandler(x.ToString(), target));
             }
             static void CheckedRouter(object sender, RoutedEventArgs e)
             {
@@ -175,7 +175,7 @@ namespace XSRT2 {
             {
                 ControlHandler.SetProperties(t, obj, lastObj, namedObjectMap);
                 TrySet(obj, lastObj, "content", t, (target, x, lastX) => target.Content = CreateFromState(x, lastX, namedObjectMap));
-                TrySetEvent(obj, lastObj, "click", t, (target, x, lastX) => SetClickEventHandler(x.ToString(), target));
+                TrySetEvent(obj, lastObj, "Click", t, (target, x, lastX) => SetClickEventHandler(x.ToString(), target));
             }
             static void ClickRouter(object sender, RoutedEventArgs e)
             {
@@ -378,9 +378,9 @@ namespace XSRT2 {
         {
             JToken tok;
             JToken tokLast = null;
-            if (obj.TryGetValue("$" + name, out tok))
+            if (obj.TryGetValue("on" + name, out tok))
             {
-                if (last != null && last.TryGetValue("$" + name, out tokLast))
+                if (last != null && last.TryGetValue("on" + name, out tokLast))
                 {
                     if (tokLast.ToString() == tok.ToString())
                     {
