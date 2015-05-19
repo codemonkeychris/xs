@@ -17,9 +17,12 @@ namespace XSRT2
         Diff diff;
         string lastProgram = "";
         bool autoCheckUpdates = false;
+        bool overwriteIfExists = true;
         DispatcherTimer dt;
-        const string path = "xs-program.js";
-        const string defaultApp = @"
+        Type appType;
+        string programFileName;
+        const string defaultPath = "xs-program.js";
+        const string defaultProgram = @"
 var App;
 (function (App) {
     App.render = function() {
@@ -29,8 +32,10 @@ var App;
 })(App || (App = {}));
 ";
 
-        public Host(ContentControl displayControl)
+        public Host(ContentControl displayControl, Type appType, string programFileName)
         {
+            this.appType = appType;
+            this.programFileName = programFileName;
             diff = new Diff(state, displayControl);
             Handler.Command += delegate (object sender, CommandEventArgs e)
             {
@@ -47,6 +52,12 @@ var App;
         {
             get { return autoCheckUpdates; }
             set { autoCheckUpdates = value; UpdateAutoTimer(); }
+        }
+
+        public bool OverwriteIfExists
+        {
+            get { return overwriteIfExists; }
+            set { overwriteIfExists = value; }
         }
 
         void UpdateAutoTimer()
@@ -106,20 +117,26 @@ var App;
             StorageFile file;
             try
             {
-                var found = await Windows.Storage.ApplicationData.Current.RoamingFolder.TryGetItemAsync(path);
+                var found = await Windows.Storage.ApplicationData.Current.RoamingFolder.TryGetItemAsync(programFileName);
                 if (found == null)
                 {
-                    file = await Windows.Storage.ApplicationData.Current.RoamingFolder.CreateFileAsync(path, Windows.Storage.CreationCollisionOption.FailIfExists);
-                    await FileIO.WriteTextAsync(file, defaultApp);
+                    var program = await RuntimeHelpers.GetResource(appType, programFileName);
+                    file = await Windows.Storage.ApplicationData.Current.RoamingFolder.CreateFileAsync(programFileName, Windows.Storage.CreationCollisionOption.FailIfExists);
+                    await FileIO.WriteTextAsync(file, program);
                 }
                 else
                 {
                     file = (StorageFile)found;
+                    if (overwriteIfExists)
+                    {
+                        var program = await RuntimeHelpers.GetResource(appType, programFileName);
+                        await FileIO.WriteTextAsync(file, program);
+                    }
                 }
             }
             catch
             {
-                file = await Windows.Storage.ApplicationData.Current.RoamingFolder.CreateFileAsync(path, CreationCollisionOption.OpenIfExists);
+                file = await Windows.Storage.ApplicationData.Current.RoamingFolder.CreateFileAsync(programFileName, CreationCollisionOption.OpenIfExists);
             }
             return await ReadText(file);
         }
@@ -149,7 +166,7 @@ var App;
 
         async Task<string> CheckFile()
         {
-            var file = await Windows.Storage.ApplicationData.Current.RoamingFolder.CreateFileAsync(path, Windows.Storage.CreationCollisionOption.OpenIfExists);
+            var file = await Windows.Storage.ApplicationData.Current.RoamingFolder.CreateFileAsync(programFileName, Windows.Storage.CreationCollisionOption.OpenIfExists);
             //var file = await Windows.Storage.KnownFolders.DocumentsLibrary.CreateFileAsync(path, Windows.Storage.CreationCollisionOption.OpenIfExists);
             var contents = await ReadText(file);
             bool changed = lastProgram != contents;

@@ -32,7 +32,10 @@ namespace XSTest
         {
             this.InitializeComponent();
             this.Content = new ContentControl();
-            host = new Host((ContentControl)this.Content) { AutoCheckUpdates = true };
+            host = new Host((ContentControl)this.Content, typeof(MainPage), "app.js") {
+                AutoCheckUpdates = true, // will future changes to app.js in RoaminState directory will be shown?
+                OverwriteIfExists = true // will embedded app.js always be overwriten on program start?
+            };
             host.Startup();
         }
 
