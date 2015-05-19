@@ -27,7 +27,6 @@ namespace XSTest
     public sealed partial class MainPage : Page
     {
         Host host;
-        DispatcherTimer dt;
 
         public MainPage()
         {
