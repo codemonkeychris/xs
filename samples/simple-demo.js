@@ -33,30 +33,29 @@ var App;
                 <Xaml.Button name='b1' grid$row='1' 
                     onClick={buttonClicked}
                     content={<Xaml.TextBlock name='t1' text={'O:' + host.state.getState("x1", "unset")} />} />
-                <Xaml.TextBlock name='frameCount' grid$row='2' text={'frame: ' + host.state.getState("frame", "1")} />
-                <Xaml.CheckBox name='c1' grid$row='3' content='Filter' 
+                <Xaml.CheckBox name='c1' grid$row='2' content='Filter' 
                     onClick={checked}
                     isChecked={host.state.getState("filter", "true") == "true"} />
                 <Xaml.Slider name='slider1'
-                    grid$row='4'
+                    grid$row='3'
                     minimum='1' maximum='20' value='5' 
                     onValueChanged={sliderChanged} />
                 <Xaml.TextBox
                     name='text1'
-                    grid$row='5'
+                    grid$row='4'
                     fontFamily='Consolas'
                     fontSize='20'
                     onTextChanged={textChanged}
                     text={host.state.getState("prefix", "Item")}  />
                 <Xaml.TextBox
                     name='text2'
-                    grid$row='6'
+                    grid$row='5'
                     fontFamily='Consolas'
                     fontSize='20'
                     text={'' + host.state.getState("sliderPos", "n/a")} />
                 <Xaml.StackPanel
                     name='nest1'
-                    grid$row='7'>{
+                    grid$row='6'>{
 
                     [5,6,7,8,9,10,11,12,13,14].
                     filter(function (i) { return host.state.getState("filter", "true") != "true" || i % 2 == 1 }).
