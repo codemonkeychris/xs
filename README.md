@@ -42,7 +42,8 @@ var App;
 (function (App) {
     function render() {
         return (
-            <Xaml.TextBlock name='header' grid$row='0' text='Welcome to XS' fontSize='36' margin='10,10,10,10' />
+            <Xaml.TextBlock name='header' text='Welcome to XS' 
+                fontSize='36' margin='10,10,10,10' />
         );
     }
     App.render = render;
