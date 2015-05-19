@@ -29,7 +29,11 @@ var App;
             <Xaml.Grid name='root' 
                 rows={['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto']}
                 columns={['auto']} >
-                <Xaml.TextBlock name='header' grid$row='0' text='Welcome to XS' fontSize='36' margin='10,10,10,10' />
+                <Xaml.TextBlock 
+                    name='header' 
+                    grid$row='0' 
+                    text='Welcome to XamlScript' 
+                    fontSize='36' margin='10,10,10,10' />
                 <Xaml.Button name='b1' grid$row='1' 
                     onClick={buttonClicked}
                     content={<Xaml.TextBlock name='t1' text={'O:' + host.state.getState("x1", "unset")} />} />
