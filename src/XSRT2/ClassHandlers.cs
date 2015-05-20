@@ -83,6 +83,55 @@ namespace XSRT2 {
             }
         }
 
+        internal static class ListBoxHandler
+        {
+            internal static ListBox Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            {
+                var createResult = CreateOrGetLast<ListBox>(obj, namedObjectMap);
+                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap);
+                return createResult.Item2;
+            }
+            internal static void SetProperties(ListBox t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            {
+                ItemsControlHandler.SetProperties(t, obj, lastObj, namedObjectMap);
+                TrySetEvent(obj, lastObj, "SelectionChanged", t, (target, x, lastX) => SetSelectionChangedEventHandler(x.ToString(), target));
+            }
+            static void SelectionChangedRouter(object sender, SelectionChangedEventArgs e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["SelectionChanged"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetSelectionChangedEventHandler(string handlerName, ListBox element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["SelectionChanged"] = handlerName;
+                element.SelectionChanged -= SelectionChangedRouter;
+                element.SelectionChanged += SelectionChangedRouter;
+            }
+        }
+
+        internal static class ItemsControlHandler
+        {
+            internal static ItemsControl Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            {
+                var createResult = CreateOrGetLast<ItemsControl>(obj, namedObjectMap);
+                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap);
+                return createResult.Item2;
+            }
+            internal static void SetProperties(ItemsControl t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            {
+                ControlHandler.SetProperties(t, obj, lastObj, namedObjectMap);
+                TrySet(obj, lastObj, "itemsSource", t, (target, x, lastX) => { RuntimeHelpers.SetItemsSource(target, x); });
+            }
+        }
+
         internal static class SliderHandler
         {
             internal static Slider Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
@@ -405,6 +454,8 @@ namespace XSRT2 {
                 handlers = new Dictionary<string, CreateCallback>();
                 handlers["TextBlock"] = TextBlockHandler.Create;
                 handlers["TextBox"] = TextBoxHandler.Create;
+                handlers["ListBox"] = ListBoxHandler.Create;
+                handlers["ItemsControl"] = ItemsControlHandler.Create;
                 handlers["Slider"] = SliderHandler.Create;
                 handlers["Button"] = ButtonHandler.Create;
                 handlers["CheckBox"] = CheckBoxHandler.Create;

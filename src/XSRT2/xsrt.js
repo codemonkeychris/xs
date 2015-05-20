@@ -78,4 +78,7 @@ var Xaml;
     function TextBox() { return { type: 'TextBox' }; }
     Xaml.TextBox = TextBox;
     ;
+    function ListBox() { return { type: 'ListBox' }; }
+    Xaml.ListBox = ListBox;
+    ;
 })(Xaml || (Xaml = {}));

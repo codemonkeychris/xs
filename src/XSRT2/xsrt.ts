@@ -70,4 +70,5 @@ module Xaml {
     export function CheckBox() { return { type: 'CheckBox' } };
     export function Slider() { return { type: 'Slider' } };
     export function TextBox() { return { type: 'TextBox' } };
+    export function ListBox() { return { type: 'ListBox' } };
 }

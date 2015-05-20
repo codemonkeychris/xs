@@ -27,7 +27,7 @@ var App;
     function render() {
         return (
             React.createElement(Xaml.Grid, {name: "root", 
-                rows: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'], 
+                rows: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', '150', 'auto'], 
                 columns: ['auto']}, 
                 React.createElement(Xaml.TextBlock, {
                     name: "header", 
@@ -69,7 +69,11 @@ var App;
                             text: host.state.getState("prefix", "Item")  + ':' + i, 
                             fontSize: (+host.state.getState("sliderPos", "0")  + i)*2})
                     })
-                )
+                ), 
+                React.createElement(Xaml.ListBox, {
+                    name: "list1", 
+                    grid$row: "7", 
+                    itemsSource: [1,2,3,4]})
             )
         );
     }

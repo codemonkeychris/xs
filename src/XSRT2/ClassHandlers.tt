@@ -61,10 +61,36 @@ namespace XSRT2 {
             true,
             "Control",
             new PropEntry[] {
-            StringProp("Text")
+                StringProp("Text")
             },
             new EventEntry[] {
                 new EventEntry() { Name="TextChanged", WinRTName="TextChanged", EventType="RoutedEventArgs" }
+            }
+        );
+        #>
+
+        <#
+        ClassDef(
+            "ListBox",
+            true,
+            "ItemsControl",
+            new PropEntry[] {
+            },
+            new EventEntry[] {
+                new EventEntry() { Name="SelectionChanged", WinRTName="SelectionChanged", EventType="SelectionChangedEventArgs" }
+            }
+        );
+        #>
+
+        <#
+        ClassDef(
+            "ItemsControl",
+            true,
+            "Control",
+            new PropEntry[] {
+                new PropEntry() { Name="itemsSource", SetBody="{ RuntimeHelpers.SetItemsSource(target, x); }" }
+            },
+            new EventEntry[] {
             }
         );
         #>
