@@ -61,7 +61,7 @@ var App;
                     name='nest1'
                     grid$row='6'>{
 
-                    [5,6,7,8,9,10,11,12,13,14].
+                    [5,6,7,8,9,10,11,12,13,14,15,16,17].
                     filter(function (i) { return host.state.getState("filter", "true") != "true" || i % 2 == 1 }).
                     map(function (i) { 
                         return <Xaml.TextBlock
