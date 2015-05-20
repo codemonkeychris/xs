@@ -29,14 +29,15 @@ var App;
             React.createElement(Xaml.Grid, {name: "root", 
                 rows: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', '150', 'auto'], 
                 columns: ['auto']}, 
-                React.createElement(Xaml.TextBlock, {
-                    name: "header", 
-                    grid$row: "0", 
-                    text: "Welcome to XamlScript", 
-                    fontSize: "36", margin: "10,10,10,10"}), 
+    
+                React.createElement(Xaml.TextBlock, {name: "header", grid$row: "0", fontSize: "36", margin: "10,10,10,10"}, 
+                    "Welcome to XamlScript!"
+                ), 
+
                 React.createElement(Xaml.Button, {name: "b1", grid$row: "1", 
-                    onClick: buttonClicked, 
-                    content: React.createElement(Xaml.TextBlock, {name: "t1", text: 'O:' + host.state.getState("x1", "unset")})}), 
+                    onClick: buttonClicked}, 
+                    React.createElement(Xaml.TextBlock, {name: "t1", text: 'O:' + host.state.getState("x1", "unset")})
+                ), 
                 React.createElement(Xaml.CheckBox, {name: "c1", grid$row: "2", content: "Filter", 
                     onClick: checked, 
                     isChecked: host.state.getState("filter", "true") == "true"}), 

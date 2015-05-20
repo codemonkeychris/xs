@@ -41,7 +41,7 @@ namespace XSRT2 {
             internal static void SetProperties(TextBlock t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
             {
                 FrameworkElementHandler.SetProperties(t, obj, lastObj, namedObjectMap);
-                TrySet(obj, lastObj, "text", t, (target, x, lastX) => target.Text = x.ToString());
+                TrySet(obj, lastObj, "text", true, t, (target, x, lastX) => target.Text = x.ToString());
                 TrySet(obj, lastObj, "fontFamily", t, (target, x, lastX) => target.FontFamily = new FontFamily(x.ToString()));
                 TrySet(obj, lastObj, "fontSize", t, (target, x, lastX) => target.FontSize = x.Value<double>());
                 TrySet(obj, lastObj, "fontWeight", t, (target, x, lastX) => target.FontWeight = ParseEnum<FontWeight>(x));
@@ -59,7 +59,7 @@ namespace XSRT2 {
             internal static void SetProperties(TextBox t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
             {
                 ControlHandler.SetProperties(t, obj, lastObj, namedObjectMap);
-                TrySet(obj, lastObj, "text", t, (target, x, lastX) => target.Text = x.ToString());
+                TrySet(obj, lastObj, "text", true, t, (target, x, lastX) => target.Text = x.ToString());
                 TrySetEvent(obj, lastObj, "TextChanged", t, (target, x, lastX) => SetTextChangedEventHandler(x.ToString(), target));
             }
             static void TextChangedRouter(object sender, RoutedEventArgs e)
@@ -223,7 +223,7 @@ namespace XSRT2 {
             internal static void SetProperties(ButtonBase t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
             {
                 ControlHandler.SetProperties(t, obj, lastObj, namedObjectMap);
-                TrySet(obj, lastObj, "content", t, (target, x, lastX) => target.Content = CreateFromState(x, lastX, namedObjectMap));
+                TrySet(obj, lastObj, "content", true, t, (target, x, lastX) => target.Content = CreateFromState(x, lastX, namedObjectMap));
                 TrySetEvent(obj, lastObj, "Click", t, (target, x, lastX) => SetClickEventHandler(x.ToString(), target));
             }
             static void ClickRouter(object sender, RoutedEventArgs e)
@@ -409,9 +409,26 @@ namespace XSRT2 {
         }
         static void TrySet<T>(JObject obj, JObject last, string name, T target, Setter<T> setter)
         {
+            TrySet<T>(obj, last, name, false, target, setter);
+        }
+        static void TrySet<T>(JObject obj, JObject last, string name, bool aliasFirstChild, T target, Setter<T> setter)
+        {
             JToken tok;
             JToken tokLast = null;
-            if (obj.TryGetValue(name, out tok))
+            bool found = false;
+            if (!obj.TryGetValue(name, out tok))
+            {
+                if (aliasFirstChild && obj.TryGetValue("children", out tok))
+                {
+                    found = true;
+                    tok = ((JArray)tok).First;
+                }
+            }
+            else
+            {
+                found = true;
+            }
+            if (found)
             {
                 if (last != null && last.TryGetValue(name, out tokLast))
                 {

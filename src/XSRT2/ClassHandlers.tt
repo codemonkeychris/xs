@@ -46,7 +46,7 @@ namespace XSRT2 {
             true,
             "FrameworkElement",
             new PropEntry[] {
-                StringProp("Text"),
+                DefaultStringProp("Text"),
                 BasicProp("FontFamily", "new FontFamily(x.ToString())"),
                 DoubleProp("FontSize"),
                 EnumProperty("FontWeight")
@@ -61,7 +61,7 @@ namespace XSRT2 {
             true,
             "Control",
             new PropEntry[] {
-                StringProp("Text")
+                DefaultStringProp("Text")
             },
             new EventEntry[] {
                 new EventEntry() { Name="TextChanged", WinRTName="TextChanged", EventType="RoutedEventArgs" }
@@ -133,7 +133,7 @@ namespace XSRT2 {
             false,
             "Control",
             new PropEntry[] {
-            BasicProp("Content", "CreateFromState(x, lastX, namedObjectMap)")
+                DefaultBasicProp("Content", "CreateFromState(x, lastX, namedObjectMap)")
             },
             new EventEntry[] {
                 new EventEntry() { Name="Click", WinRTName="Click", EventType="RoutedEventArgs" }
@@ -291,9 +291,26 @@ namespace XSRT2 {
         }
         static void TrySet<T>(JObject obj, JObject last, string name, T target, Setter<T> setter)
         {
+            TrySet<T>(obj, last, name, false, target, setter);
+        }
+        static void TrySet<T>(JObject obj, JObject last, string name, bool aliasFirstChild, T target, Setter<T> setter)
+        {
             JToken tok;
             JToken tokLast = null;
-            if (obj.TryGetValue(name, out tok))
+            bool found = false;
+            if (!obj.TryGetValue(name, out tok))
+            {
+                if (aliasFirstChild && obj.TryGetValue("children", out tok))
+                {
+                    found = true;
+                    tok = ((JArray)tok).First;
+                }
+            }
+            else
+            {
+                found = true;
+            }
+            if (found)
             {
                 if (last != null && last.TryGetValue(name, out tokLast))
                 {
@@ -369,6 +386,7 @@ List<string> publicHandlerNames = new List<string>();
 
 class PropEntry {
     public string Name;
+    public bool AliasFirstChild = false;
     public string SetBody;
 }
 class EventEntry {
@@ -388,8 +406,14 @@ PropEntry XamlProperty(string name, string typeName) {
 PropEntry StringProp(string name) {
     return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = x.ToString()" };
 }
+PropEntry DefaultStringProp(string name) {
+    return new PropEntry() { Name=CamelCase(name), AliasFirstChild=true, SetBody="target." + name + " = x.ToString()" };
+}
 PropEntry BasicProp(string name, string setter) {
     return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = " + setter };
+}
+PropEntry DefaultBasicProp(string name, string setter) {
+    return new PropEntry() { Name=CamelCase(name), AliasFirstChild=true, SetBody="target." + name + " = " + setter };
 }
 PropEntry DoubleProp(string name) {
     return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = x.Value<double>()" };
@@ -438,7 +462,12 @@ void PropSetter(string name, string baseTypeName, PropEntry[] props, EventEntry[
     }
     if (props != null) {
         foreach (var prop in props) {
-            WriteLine("TrySet(obj, lastObj, \"" + prop.Name + "\", t, (target, x, lastX) => " + prop.SetBody +");");
+            if (prop.AliasFirstChild) {
+                WriteLine("TrySet(obj, lastObj, \"" + prop.Name + "\", true, t, (target, x, lastX) => " + prop.SetBody +");");
+            }
+            else {
+                WriteLine("TrySet(obj, lastObj, \"" + prop.Name + "\", t, (target, x, lastX) => " + prop.SetBody +");");
+            }
         }
     }
     if (events != null) {
