@@ -19,46 +19,61 @@ namespace XSRT2 {
     {
         internal static class FrameworkElementHandler
         {
-            internal static void SetProperties(FrameworkElement t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            internal static void SetProperties(FrameworkElement t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
-                TrySet(obj, lastObj, "grid$row", t, (target, x, lastX) => { target.SetValue(Grid.RowProperty, Convert.ToInt32(x.Value<double>())); });
-                TrySet(obj, lastObj, "grid$column", t, (target, x, lastX) => { target.SetValue(Grid.ColumnProperty, Convert.ToInt32(x.Value<double>())); });
-                TrySet(obj, lastObj, "horizontalAlignment", t, (target, x, lastX) => target.HorizontalAlignment = ParseEnum<HorizontalAlignment>(x));
-                TrySet(obj, lastObj, "verticalAlignment", t, (target, x, lastX) => target.VerticalAlignment = ParseEnum<VerticalAlignment>(x));
-                TrySet(obj, lastObj, "margin", t, (target, x, lastX) => target.Margin = XamlStringParse<Thickness>(x));
-                TrySet(obj, lastObj, "name", t, (target, x, lastX) => { target.Name = x.ToString(); namedObjectMap[target.Name] = target; });
+                TrySet(obj, lastObj, "grid$row", false, t, (target, x, lastX) => { target.SetValue(Grid.RowProperty, Convert.ToInt32(x.Value<double>())); });
+                TrySet(obj, lastObj, "grid$column", false, t, (target, x, lastX) => { target.SetValue(Grid.ColumnProperty, Convert.ToInt32(x.Value<double>())); });
+                TrySet(obj, lastObj, "relative$above", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AboveProperty, namedObjectMap[x.ToString()]), defer);
+                TrySet(obj, lastObj, "relative$alignBottomWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignBottomWithProperty, namedObjectMap[x.ToString()]), defer);
+                TrySet(obj, lastObj, "relative$alignBottomWithPanel", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignBottomWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value))));
+                TrySet(obj, lastObj, "relative$alignHorizontalCenterWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignHorizontalCenterWithProperty, namedObjectMap[x.ToString()]), defer);
+                TrySet(obj, lastObj, "relative$alignLeftWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignLeftWithProperty, namedObjectMap[x.ToString()]), defer);
+                TrySet(obj, lastObj, "relative$alignLeftWithPanel", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignLeftWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value))));
+                TrySet(obj, lastObj, "relative$alignRightWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignRightWithProperty, namedObjectMap[x.ToString()]), defer);
+                TrySet(obj, lastObj, "relative$alignRightWithPanel", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignRightWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value))));
+                TrySet(obj, lastObj, "relative$alignTopWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignTopWithProperty, namedObjectMap[x.ToString()]), defer);
+                TrySet(obj, lastObj, "relative$alignTopWithPanel", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignTopWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value))));
+                TrySet(obj, lastObj, "relative$alignVerticalCenterWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignVerticalCenterWithProperty, namedObjectMap[x.ToString()]), defer);
+                TrySet(obj, lastObj, "relative$alignVerticalCenterWithPanel", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignVerticalCenterWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value))));
+                TrySet(obj, lastObj, "relative$below", false, t, (target, x, lastX) => target.SetValue(RelativePanel.BelowProperty, namedObjectMap[x.ToString()]), defer);
+                TrySet(obj, lastObj, "relative$leftOf", false, t, (target, x, lastX) => target.SetValue(RelativePanel.LeftOfProperty, namedObjectMap[x.ToString()]), defer);
+                TrySet(obj, lastObj, "relative$rightOf", false, t, (target, x, lastX) => target.SetValue(RelativePanel.RightOfProperty, namedObjectMap[x.ToString()]), defer);
+                TrySet(obj, lastObj, "horizontalAlignment", false, t, (target, x, lastX) => target.HorizontalAlignment = ParseEnum<HorizontalAlignment>(x));
+                TrySet(obj, lastObj, "verticalAlignment", false, t, (target, x, lastX) => target.VerticalAlignment = ParseEnum<VerticalAlignment>(x));
+                TrySet(obj, lastObj, "margin", false, t, (target, x, lastX) => target.Margin = XamlStringParse<Thickness>(x));
+                TrySet(obj, lastObj, "name", false, t, (target, x, lastX) => { target.Name = x.ToString(); namedObjectMap[target.Name] = target; });
             }
         }
 
         internal static class TextBlockHandler
         {
-            internal static TextBlock Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            internal static TextBlock Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
                 var createResult = CreateOrGetLast<TextBlock>(obj, namedObjectMap);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap);
+                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap, defer);
                 return createResult.Item2;
             }
-            internal static void SetProperties(TextBlock t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            internal static void SetProperties(TextBlock t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
-                FrameworkElementHandler.SetProperties(t, obj, lastObj, namedObjectMap);
+                FrameworkElementHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
                 TrySet(obj, lastObj, "text", true, t, (target, x, lastX) => target.Text = x.ToString());
-                TrySet(obj, lastObj, "fontFamily", t, (target, x, lastX) => target.FontFamily = new FontFamily(x.ToString()));
-                TrySet(obj, lastObj, "fontSize", t, (target, x, lastX) => target.FontSize = x.Value<double>());
-                TrySet(obj, lastObj, "fontWeight", t, (target, x, lastX) => target.FontWeight = ParseEnum<FontWeight>(x));
+                TrySet(obj, lastObj, "fontFamily", false, t, (target, x, lastX) => target.FontFamily = new FontFamily(x.ToString()));
+                TrySet(obj, lastObj, "fontSize", false, t, (target, x, lastX) => target.FontSize = x.Value<double>());
+                TrySet(obj, lastObj, "fontWeight", false, t, (target, x, lastX) => target.FontWeight = ParseEnum<FontWeight>(x));
             }
         }
 
         internal static class TextBoxHandler
         {
-            internal static TextBox Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            internal static TextBox Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
                 var createResult = CreateOrGetLast<TextBox>(obj, namedObjectMap);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap);
+                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap, defer);
                 return createResult.Item2;
             }
-            internal static void SetProperties(TextBox t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            internal static void SetProperties(TextBox t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
-                ControlHandler.SetProperties(t, obj, lastObj, namedObjectMap);
+                ControlHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
                 TrySet(obj, lastObj, "text", true, t, (target, x, lastX) => target.Text = x.ToString());
                 TrySetEvent(obj, lastObj, "TextChanged", t, (target, x, lastX) => SetTextChangedEventHandler(x.ToString(), target));
             }
@@ -85,15 +100,15 @@ namespace XSRT2 {
 
         internal static class ListBoxHandler
         {
-            internal static ListBox Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            internal static ListBox Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
                 var createResult = CreateOrGetLast<ListBox>(obj, namedObjectMap);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap);
+                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap, defer);
                 return createResult.Item2;
             }
-            internal static void SetProperties(ListBox t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            internal static void SetProperties(ListBox t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
-                ItemsControlHandler.SetProperties(t, obj, lastObj, namedObjectMap);
+                ItemsControlHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
                 TrySetEvent(obj, lastObj, "SelectionChanged", t, (target, x, lastX) => SetSelectionChangedEventHandler(x.ToString(), target));
             }
             static void SelectionChangedRouter(object sender, SelectionChangedEventArgs e)
@@ -119,33 +134,33 @@ namespace XSRT2 {
 
         internal static class ItemsControlHandler
         {
-            internal static ItemsControl Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            internal static ItemsControl Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
                 var createResult = CreateOrGetLast<ItemsControl>(obj, namedObjectMap);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap);
+                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap, defer);
                 return createResult.Item2;
             }
-            internal static void SetProperties(ItemsControl t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            internal static void SetProperties(ItemsControl t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
-                ControlHandler.SetProperties(t, obj, lastObj, namedObjectMap);
-                TrySet(obj, lastObj, "itemsSource", t, (target, x, lastX) => { RuntimeHelpers.SetItemsSource(target, x); });
+                ControlHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
+                TrySet(obj, lastObj, "itemsSource", false, t, (target, x, lastX) => { RuntimeHelpers.SetItemsSource(target, x); });
             }
         }
 
         internal static class SliderHandler
         {
-            internal static Slider Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            internal static Slider Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
                 var createResult = CreateOrGetLast<Slider>(obj, namedObjectMap);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap);
+                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap, defer);
                 return createResult.Item2;
             }
-            internal static void SetProperties(Slider t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            internal static void SetProperties(Slider t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
-                ControlHandler.SetProperties(t, obj, lastObj, namedObjectMap);
-                TrySet(obj, lastObj, "minimum", t, (target, x, lastX) => target.Minimum = x.Value<double>());
-                TrySet(obj, lastObj, "maximum", t, (target, x, lastX) => target.Maximum = x.Value<double>());
-                TrySet(obj, lastObj, "value", t, (target, x, lastX) => target.Value = x.Value<double>());
+                ControlHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
+                TrySet(obj, lastObj, "minimum", false, t, (target, x, lastX) => target.Minimum = x.Value<double>());
+                TrySet(obj, lastObj, "maximum", false, t, (target, x, lastX) => target.Maximum = x.Value<double>());
+                TrySet(obj, lastObj, "value", false, t, (target, x, lastX) => target.Value = x.Value<double>());
                 TrySetEvent(obj, lastObj, "ValueChanged", t, (target, x, lastX) => SetValueChangedEventHandler(x.ToString(), target));
             }
             static void ValueChangedRouter(object sender, RangeBaseValueChangedEventArgs e)
@@ -171,30 +186,69 @@ namespace XSRT2 {
 
         internal static class ButtonHandler
         {
-            internal static Button Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            internal static Button Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
                 var createResult = CreateOrGetLast<Button>(obj, namedObjectMap);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap);
+                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap, defer);
                 return createResult.Item2;
             }
-            internal static void SetProperties(Button t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            internal static void SetProperties(Button t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
-                ButtonBaseHandler.SetProperties(t, obj, lastObj, namedObjectMap);
+                ButtonBaseHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
+            }
+        }
+        internal static class CalendarDatePickerHandler
+        {
+            internal static CalendarDatePicker Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
+            {
+                var createResult = CreateOrGetLast<CalendarDatePicker>(obj, namedObjectMap);
+                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap, defer);
+                return createResult.Item2;
+            }
+            internal static void SetProperties(CalendarDatePicker t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
+            {
+                ControlHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
+            }
+        }
+        internal static class CalendarViewHandler
+        {
+            internal static CalendarView Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
+            {
+                var createResult = CreateOrGetLast<CalendarView>(obj, namedObjectMap);
+                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap, defer);
+                return createResult.Item2;
+            }
+            internal static void SetProperties(CalendarView t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
+            {
+                ControlHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
+            }
+        }
+        internal static class RelativePanelHandler
+        {
+            internal static RelativePanel Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
+            {
+                var createResult = CreateOrGetLast<RelativePanel>(obj, namedObjectMap);
+                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap, defer);
+                return createResult.Item2;
+            }
+            internal static void SetProperties(RelativePanel t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
+            {
+                PanelHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
             }
         }
 
         internal static class CheckBoxHandler
         {
-            internal static CheckBox Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            internal static CheckBox Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
                 var createResult = CreateOrGetLast<CheckBox>(obj, namedObjectMap);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap);
+                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap, defer);
                 return createResult.Item2;
             }
-            internal static void SetProperties(CheckBox t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            internal static void SetProperties(CheckBox t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
-                ButtonBaseHandler.SetProperties(t, obj, lastObj, namedObjectMap);
-                TrySet(obj, lastObj, "isChecked", t, (target, x, lastX) => target.IsChecked = Convert.ToBoolean(((JValue)x).Value));
+                ButtonBaseHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
+                TrySet(obj, lastObj, "isChecked", false, t, (target, x, lastX) => target.IsChecked = Convert.ToBoolean(((JValue)x).Value));
                 TrySetEvent(obj, lastObj, "Checked", t, (target, x, lastX) => SetCheckedEventHandler(x.ToString(), target));
             }
             static void CheckedRouter(object sender, RoutedEventArgs e)
@@ -220,10 +274,10 @@ namespace XSRT2 {
 
         internal static class ButtonBaseHandler
         {
-            internal static void SetProperties(ButtonBase t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            internal static void SetProperties(ButtonBase t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
-                ControlHandler.SetProperties(t, obj, lastObj, namedObjectMap);
-                TrySet(obj, lastObj, "content", true, t, (target, x, lastX) => target.Content = CreateFromState(x, lastX, namedObjectMap));
+                ControlHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
+                TrySet(obj, lastObj, "content", true, t, (target, x, lastX) => target.Content = CreateFromState(x, lastX, namedObjectMap, defer));
                 TrySetEvent(obj, lastObj, "Click", t, (target, x, lastX) => SetClickEventHandler(x.ToString(), target));
             }
             static void ClickRouter(object sender, RoutedEventArgs e)
@@ -249,43 +303,43 @@ namespace XSRT2 {
 
         internal static class ControlHandler
         {
-            internal static void SetProperties(Control t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            internal static void SetProperties(Control t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
-                FrameworkElementHandler.SetProperties(t, obj, lastObj, namedObjectMap);
-                TrySet(obj, lastObj, "background", t, (target, x, lastX) => target.Background = XamlStringParse<Brush>(x));
-                TrySet(obj, lastObj, "foreground", t, (target, x, lastX) => target.Foreground = XamlStringParse<Brush>(x));
-                TrySet(obj, lastObj, "fontFamily", t, (target, x, lastX) => target.FontFamily = new FontFamily(x.ToString()));
-                TrySet(obj, lastObj, "fontSize", t, (target, x, lastX) => target.FontSize = x.Value<double>());
-                TrySet(obj, lastObj, "fontWeight", t, (target, x, lastX) => target.FontWeight = ParseEnum<FontWeight>(x));
+                FrameworkElementHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
+                TrySet(obj, lastObj, "background", false, t, (target, x, lastX) => target.Background = XamlStringParse<Brush>(x));
+                TrySet(obj, lastObj, "foreground", false, t, (target, x, lastX) => target.Foreground = XamlStringParse<Brush>(x));
+                TrySet(obj, lastObj, "fontFamily", false, t, (target, x, lastX) => target.FontFamily = new FontFamily(x.ToString()));
+                TrySet(obj, lastObj, "fontSize", false, t, (target, x, lastX) => target.FontSize = x.Value<double>());
+                TrySet(obj, lastObj, "fontWeight", false, t, (target, x, lastX) => target.FontWeight = ParseEnum<FontWeight>(x));
             }
         }
 
         internal static class StackPanelHandler
         {
-            internal static StackPanel Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            internal static StackPanel Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
                 var createResult = CreateOrGetLast<StackPanel>(obj, namedObjectMap);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap);
+                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap, defer);
                 return createResult.Item2;
             }
-            internal static void SetProperties(StackPanel t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            internal static void SetProperties(StackPanel t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
-                PanelHandler.SetProperties(t, obj, lastObj, namedObjectMap);
+                PanelHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
             }
         }
         internal static class GridHandler
         {
-            internal static Grid Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            internal static Grid Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
                 var createResult = CreateOrGetLast<Grid>(obj, namedObjectMap);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap);
+                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap, defer);
                 return createResult.Item2;
             }
-            internal static void SetProperties(Grid t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            internal static void SetProperties(Grid t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
-                PanelHandler.SetProperties(t, obj, lastObj, namedObjectMap);
-                TrySet(obj, lastObj, "rows", t, (target, x, lastX) => { PanelHandler.SetGridRowDefinitions(target, (JArray)x); });
-                TrySet(obj, lastObj, "columns", t, (target, x, lastX) => { PanelHandler.SetGridColumnDefinitions(target, (JArray)x); });
+                PanelHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
+                TrySet(obj, lastObj, "rows", false, t, (target, x, lastX) => { PanelHandler.SetGridRowDefinitions(target, (JArray)x); });
+                TrySet(obj, lastObj, "columns", false, t, (target, x, lastX) => { PanelHandler.SetGridColumnDefinitions(target, (JArray)x); });
             }
         }
 
@@ -312,9 +366,9 @@ namespace XSRT2 {
                 }
             }
 
-            static void SetPanelChildren(Panel t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            static void SetPanelChildren(Panel t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
-                Handler.FrameworkElementHandler.SetProperties(t, obj, lastObj, namedObjectMap);
+                Handler.FrameworkElementHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
                 List<UIElement> children = new List<UIElement>();
                 IJEnumerable<JToken> lastChildren = null;
                 JToken last;
@@ -322,7 +376,7 @@ namespace XSRT2 {
                 {
                     lastChildren = last.AsJEnumerable();
                 }
-                CollectPanelChildrenWorker(t, obj["children"].AsJEnumerable(), lastChildren, children, namedObjectMap);
+                CollectPanelChildrenWorker(t, obj["children"].AsJEnumerable(), lastChildren, children, namedObjectMap, defer);
                 var setChildrenNeeded = false;
                 if (t.Children.Count == children.Count)
                 {
@@ -353,7 +407,7 @@ namespace XSRT2 {
                     }
                 }
             }
-            static void CollectPanelChildrenWorker(Panel t, IJEnumerable<JToken> items, IEnumerable<JToken> lastItems, List<UIElement> children, Dictionary<string, object> namedObjectMap)
+            static void CollectPanelChildrenWorker(Panel t, IJEnumerable<JToken> items, IEnumerable<JToken> lastItems, List<UIElement> children, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
                 IEnumerator<JToken> enumerator = null;
                 if (lastItems != null)
@@ -368,19 +422,19 @@ namespace XSRT2 {
 
                     if (child.Type == JTokenType.Array)
                     {
-                        CollectPanelChildrenWorker(t, child.AsJEnumerable(), lastChild != null ? lastChild.AsJEnumerable() : null, children, namedObjectMap);
+                        CollectPanelChildrenWorker(t, child.AsJEnumerable(), lastChild != null ? lastChild.AsJEnumerable() : null, children, namedObjectMap, defer);
                     }
                     else
                     {
-                        var instance = CreateFromState((JObject)child, lastChild as JObject, namedObjectMap);
+                        var instance = CreateFromState((JObject)child, lastChild as JObject, namedObjectMap, defer);
                         children.Add(instance);
                     }
                 }
             }
-            internal static void SetProperties(Panel t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap)
+            internal static void SetProperties(Panel t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
-                FrameworkElementHandler.SetProperties(t, obj, lastObj, namedObjectMap);
-                SetPanelChildren(t, obj, lastObj, namedObjectMap);
+                FrameworkElementHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
+                SetPanelChildren(t, obj, lastObj, namedObjectMap, defer);
             }
 
         }
@@ -413,6 +467,10 @@ namespace XSRT2 {
         }
         static void TrySet<T>(JObject obj, JObject last, string name, bool aliasFirstChild, T target, Setter<T> setter)
         {
+            TrySet<T>(obj, last, name, aliasFirstChild, target, setter, null);
+        }
+        static void TrySet<T>(JObject obj, JObject last, string name, bool aliasFirstChild, T target, Setter<T> setter, List<DeferSetter> defer)
+        {
             JToken tok;
             JToken tokLast = null;
             bool found = false;
@@ -437,7 +495,14 @@ namespace XSRT2 {
                         return; // bail early if old & new are the same
                     }
                 }
-                setter(target, tok, tokLast);
+                if (defer != null) 
+                {
+                    defer.Add(new DeferSetter<T>() { setter = setter, target = target, tok = tok, tokLast = tokLast });
+                }
+                else 
+                {
+                    setter(target, tok, tokLast);
+                }
             }
         }
         static void TrySetEvent<T>(JObject obj, JObject last, string name, T target, Setter<T> setter)
@@ -475,13 +540,16 @@ namespace XSRT2 {
                 handlers["ItemsControl"] = ItemsControlHandler.Create;
                 handlers["Slider"] = SliderHandler.Create;
                 handlers["Button"] = ButtonHandler.Create;
+                handlers["CalendarDatePicker"] = CalendarDatePickerHandler.Create;
+                handlers["CalendarView"] = CalendarViewHandler.Create;
+                handlers["RelativePanel"] = RelativePanelHandler.Create;
                 handlers["CheckBox"] = CheckBoxHandler.Create;
                 handlers["StackPanel"] = StackPanelHandler.Create;
                 handlers["Grid"] = GridHandler.Create;
             }
             return handlers;
         }
-        internal static FrameworkElement CreateFromState(JToken item, JToken lastItem, Dictionary<string, object> namedObjectMap)
+        internal static FrameworkElement CreateFromState(JToken item, JToken lastItem, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
         {
             if (item.Type == JTokenType.Object)
             {
@@ -489,7 +557,7 @@ namespace XSRT2 {
                 CreateCallback create;
                 if (GetHandlers().TryGetValue(type, out create))
                 {
-                    return create((JObject)item, (JObject)lastItem, namedObjectMap);
+                    return create((JObject)item, (JObject)lastItem, namedObjectMap, defer);
                 }
                 return new TextBlock() { FontSize = 48, Text = "'" + type + "'Not found" };
             }
@@ -499,8 +567,25 @@ namespace XSRT2 {
             }
         }
 
-        delegate void Setter<T>(T target, JToken value, JToken lastValue);
-        delegate FrameworkElement CreateCallback(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap);
+        internal delegate void Setter<T>(T target, JToken value, JToken lastValue);
+        delegate FrameworkElement CreateCallback(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer);
+
+        internal abstract class DeferSetter
+        {
+            public abstract void Do();
+        }
+        internal class DeferSetter<T> : DeferSetter
+        {
+            internal T target;
+            internal JToken tok;
+            internal JToken tokLast;
+            internal Setter<T> setter;
+
+            public override void Do()
+            {
+                setter(target, tok, tokLast);
+            }
+        }
 
     }
 }

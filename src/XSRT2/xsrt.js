@@ -81,4 +81,13 @@ var Xaml;
     function ListBox() { return { type: 'ListBox' }; }
     Xaml.ListBox = ListBox;
     ;
+    function CalendarDatePicker() { return { type: 'CalendarDatePicker' }; }
+    Xaml.CalendarDatePicker = CalendarDatePicker;
+    ;
+    function CalendarView() { return { type: 'CalendarView' }; }
+    Xaml.CalendarView = CalendarView;
+    ;
+    function RelativePanel() { return { type: 'RelativePanel' }; }
+    Xaml.RelativePanel = RelativePanel;
+    ;
 })(Xaml || (Xaml = {}));

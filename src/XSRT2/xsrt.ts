@@ -71,4 +71,7 @@ module Xaml {
     export function Slider() { return { type: 'Slider' } };
     export function TextBox() { return { type: 'TextBox' } };
     export function ListBox() { return { type: 'ListBox' } };
+    export function CalendarDatePicker() { return { type: 'CalendarDatePicker' } };
+    export function CalendarView() { return { type: 'CalendarView' } };
+    export function RelativePanel() { return { type: 'RelativePanel' } };
 }
