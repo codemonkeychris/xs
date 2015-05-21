@@ -34,6 +34,7 @@ namespace XSRT
     public:
         JScriptRuntime();
         void SetActive();
+        void StartDebugging();
         void ClearActive();
         void ClearTimers();
         Platform::String^ GetScriptException();

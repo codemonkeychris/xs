@@ -199,6 +199,7 @@ var App;
 
             jsrt = new XSRT.JScriptRuntime();
             jsrt.SetActive();
+            jsrt.StartDebugging();
             // must call AddWinRTNamespace before AddHostObject
             //
             jsrt.AddWinRTNamespace("Windows");

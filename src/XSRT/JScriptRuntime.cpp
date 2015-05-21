@@ -210,7 +210,11 @@ void JScriptRuntime::AddWinRTNamespace(Platform::String^ name)
     IfFailThrowNoRet(c = JsProjectWinRTNamespace(name->Data()), L"failed to add namespace");
     // IfFailThrowNoRet(c = JsSetProjectionEnqueueCallback(EnqueueCallback, nullptr), L"failed to register callback");
 }
-
+void JScriptRuntime::StartDebugging()
+{
+    JsErrorCode c;
+    IfFailThrowNoRet(c = JsStartDebugging(), L"Failed to start debugging");
+}
 void JScriptRuntime::SetActive()
 {
     JsErrorCode c;
