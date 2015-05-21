@@ -1,10 +1,14 @@
 ﻿/// <reference path='c:\repos\xs\src\xsrt2\xsrt.ts' />
 var App;
 (function (App) {
+    function MyButton() {
+        return React.createElement(Xaml.Button, {margin: "5,5,5,5"});
+    }
+
     function render() {
         return (
             React.createElement(Xaml.RelativePanel, {name: "rel1", childrenTransitions: [React.createElement(Xaml.RepositionThemeTransition, null)]}, 
-                React.createElement(Xaml.Button, {margin: "5,5,5,5", name: "b1"}, 
+                React.createElement(MyButton, {name: "b1"}, 
                     "One"
                 ), 
                 React.createElement(Xaml.Button, {margin: "5,5,5,5", name: "b2", relative$below: "b1"}, 

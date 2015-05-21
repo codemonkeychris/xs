@@ -1,18 +1,25 @@
 ﻿/// <reference path='c:\repos\xs\src\xsrt2\xsrt.ts' />
 var App;
 (function (App) {
+    function MyButton() {
+        return <Xaml.Button margin='5,5,5,5' />;
+    }
+
     function render() {
         return (
             <Xaml.RelativePanel name='rel1' childrenTransitions={[<Xaml.RepositionThemeTransition />]}>
-                <Xaml.Button margin='5,5,5,5' name='b1'>
+                <MyButton name='b1'>
                     One
-                </Xaml.Button>
-                <Xaml.Button margin='5,5,5,5' name='b2' relative$below='b1'>
+                </MyButton>
+                <MyButton name='b2' relative$below='b1'>
                     Two
-                </Xaml.Button>
-                <Xaml.Button margin='5,5,5,5' name='b3' relative$below='b1' relative$rightOf='b2'>
+                </MyButton>
+                <MyButton name='b3' relative$below='b1' relative$rightOf='b2'>
                     Three
-                </Xaml.Button>
+                </MyButton>
+                <MyButton name='b4' relative$below='b3' relative$rightOf='b3'>
+                    Four
+                </MyButton>
             </Xaml.RelativePanel>
         );
     }
