@@ -3,7 +3,7 @@ var App;
 (function (App) {
     function render() {
         return (
-            React.createElement(Xaml.RelativePanel, {name: "rel1"}, 
+            React.createElement(Xaml.RelativePanel, {name: "rel1", childrenTransitions: [React.createElement(Xaml.RepositionThemeTransition, null)]}, 
                 React.createElement(Xaml.Button, {margin: "5,5,5,5", name: "b1"}, 
                     "One"
                 ), 

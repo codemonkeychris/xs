@@ -13,6 +13,7 @@ using Windows.UI;
 using Windows.UI.Text;
 using System.Reflection;
 using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Media.Animation;
 
 namespace XSRT2 {
     public static class Handler
@@ -144,6 +145,7 @@ namespace XSRT2 {
             {
                 ControlHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
                 TrySet(obj, lastObj, "itemsSource", false, t, (target, x, lastX) => { RuntimeHelpers.SetItemsSource(target, x); });
+                TrySet(obj, lastObj, "itemContainerTransitions", false, t, (target, x, lastX) => { RuntimeHelpers.SetItemContainerTransitions(target, x, lastX, namedObjectMap, defer); });
             }
         }
 
@@ -234,6 +236,18 @@ namespace XSRT2 {
             internal static void SetProperties(RelativePanel t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
                 PanelHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
+            }
+        }
+        internal static class RepositionThemeTransitionHandler
+        {
+            internal static RepositionThemeTransition Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
+            {
+                var createResult = CreateOrGetLast<RepositionThemeTransition>(obj, namedObjectMap);
+                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap, defer);
+                return createResult.Item2;
+            }
+            internal static void SetProperties(RepositionThemeTransition t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
+            {
             }
         }
 
@@ -427,7 +441,7 @@ namespace XSRT2 {
                     else
                     {
                         var instance = CreateFromState((JObject)child, lastChild as JObject, namedObjectMap, defer);
-                        children.Add(instance);
+                        children.Add((FrameworkElement)instance);
                     }
                 }
             }
@@ -435,6 +449,7 @@ namespace XSRT2 {
             {
                 FrameworkElementHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
                 SetPanelChildren(t, obj, lastObj, namedObjectMap, defer);
+                TrySet(obj, lastObj, "childrenTransitions", false, t, (target, x, lastX) => { RuntimeHelpers.SetChildrenTransitions(target, x, lastX, namedObjectMap, defer); });
             }
 
         }
@@ -543,13 +558,14 @@ namespace XSRT2 {
                 handlers["CalendarDatePicker"] = CalendarDatePickerHandler.Create;
                 handlers["CalendarView"] = CalendarViewHandler.Create;
                 handlers["RelativePanel"] = RelativePanelHandler.Create;
+                handlers["RepositionThemeTransition"] = RepositionThemeTransitionHandler.Create;
                 handlers["CheckBox"] = CheckBoxHandler.Create;
                 handlers["StackPanel"] = StackPanelHandler.Create;
                 handlers["Grid"] = GridHandler.Create;
             }
             return handlers;
         }
-        internal static FrameworkElement CreateFromState(JToken item, JToken lastItem, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
+        internal static DependencyObject CreateFromState(JToken item, JToken lastItem, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
         {
             if (item.Type == JTokenType.Object)
             {
@@ -568,7 +584,7 @@ namespace XSRT2 {
         }
 
         internal delegate void Setter<T>(T target, JToken value, JToken lastValue);
-        delegate FrameworkElement CreateCallback(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer);
+        delegate DependencyObject CreateCallback(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer);
 
         internal abstract class DeferSetter
         {

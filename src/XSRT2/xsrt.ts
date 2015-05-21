@@ -74,4 +74,5 @@ module Xaml {
     export function CalendarDatePicker() { return { type: 'CalendarDatePicker' } };
     export function CalendarView() { return { type: 'CalendarView' } };
     export function RelativePanel() { return { type: 'RelativePanel' } };
+    export function RepositionThemeTransition() { return { type: 'RepositionThemeTransition' } };
 }

@@ -8,11 +8,118 @@ using System.Reflection;
 using System.IO;
 using Windows.UI.Xaml.Controls;
 using Newtonsoft.Json.Linq;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Media.Animation;
 
 namespace XSRT2
 {
     public static class RuntimeHelpers
     {
+        delegate void SetCollectionPropertyCallback<TObject, TValue>(TObject target, List<TValue> items);
+        internal static void SetItemContainerTransitions(ItemsControl control, JToken obj, JToken last, Dictionary<string, object> namedObjectMap, List<Handler.DeferSetter> defer)
+        {
+            SetCollectionProperty<ItemsControl, Transition>(
+                control,
+                "itemContainerTransitions",
+                obj,
+                last,
+                namedObjectMap,
+                defer,
+                (target, list) =>
+                {
+                    target.ItemContainerTransitions.Clear();
+                    foreach (var child in list)
+                    {
+                        target.ItemContainerTransitions.Add(child);
+                    }
+                });
+
+        }
+        internal static void SetChildrenTransitions(Panel control, JToken obj, JToken last, Dictionary<string, object> namedObjectMap, List<Handler.DeferSetter> defer)
+        {
+            SetCollectionProperty<Panel, Transition>(
+                control,
+                "itemContainerTransitions",
+                obj,
+                last,
+                namedObjectMap,
+                defer,
+                (target, list) =>
+                {
+                    TransitionCollection col = target.ChildrenTransitions;
+                    if (col == null)
+                    {
+                        target.ChildrenTransitions = col = new TransitionCollection();
+                    }
+                    else
+                    {
+                        col.Clear();
+                    }
+                    foreach (var child in list)
+                    {
+                        col.Add(child);
+                    }
+                });
+
+        }
+
+        static void SetCollectionProperty<TObject, TValue>(
+            TObject t, 
+            string propertyName,
+            JToken obj,
+            JToken lastObj, 
+            Dictionary<string, object> namedObjectMap, 
+            List<Handler.DeferSetter> defer,
+            SetCollectionPropertyCallback<TObject, TValue> setter) where TValue : DependencyObject
+        {
+            List<TValue> children = new List<TValue>();
+            IJEnumerable<JToken> lastChildren = null;
+            if (lastObj != null)
+            {
+                lastChildren = lastObj.AsJEnumerable();
+            }
+            CollectItemsWorker(t, obj.AsJEnumerable(), lastChildren, children, namedObjectMap, defer);
+            // UNDONE: better diff
+            //
+            var setChildrenNeeded = true;
+
+            if (setChildrenNeeded)
+            {
+                setter(t, children);
+            }
+        }
+        static void CollectItemsWorker<TObject, TValue>(
+            TObject t, 
+            IJEnumerable<JToken> items, 
+            IEnumerable<JToken> lastItems, 
+            List<TValue> children, 
+            Dictionary<string, object> namedObjectMap, 
+            List<Handler.DeferSetter> defer) where TValue : DependencyObject
+        {
+            IEnumerator<JToken> enumerator = null;
+            if (lastItems != null)
+            {
+                enumerator = lastItems.GetEnumerator();
+                enumerator.Reset();
+            }
+            foreach (var child in items)
+            {
+                JToken lastChild = null;
+                if (enumerator != null && enumerator.MoveNext()) { lastChild = enumerator.Current; }
+
+                if (child.Type == JTokenType.Array)
+                {
+                    CollectItemsWorker(t, child.AsJEnumerable(), lastChild != null ? lastChild.AsJEnumerable() : null, children, namedObjectMap, defer);
+                }
+                else
+                {
+                    var instance = Handler.CreateFromState((JObject)child, lastChild as JObject, namedObjectMap, defer);
+                    children.Add((TValue)instance);
+                }
+            }
+        }
+
+
         // UNDONE: temporary location, should move to ClassHandlers once implementation
         // is baked.
         //

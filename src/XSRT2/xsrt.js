@@ -90,4 +90,7 @@ var Xaml;
     function RelativePanel() { return { type: 'RelativePanel' }; }
     Xaml.RelativePanel = RelativePanel;
     ;
+    function RepositionThemeTransition() { return { type: 'RepositionThemeTransition' }; }
+    Xaml.RepositionThemeTransition = RepositionThemeTransition;
+    ;
 })(Xaml || (Xaml = {}));

@@ -19,6 +19,7 @@ using Windows.UI;
 using Windows.UI.Text;
 using System.Reflection;
 using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Media.Animation;
 
 namespace XSRT2 {
     public static class Handler
@@ -105,7 +106,8 @@ namespace XSRT2 {
             true,
             "Control",
             new PropEntry[] {
-                new PropEntry() { Name="itemsSource", SetBody="{ RuntimeHelpers.SetItemsSource(target, x); }" }
+                new PropEntry() { Name="itemsSource", SetBody="{ RuntimeHelpers.SetItemsSource(target, x); }" },
+                new PropEntry() { Name="itemContainerTransitions", SetBody="{ RuntimeHelpers.SetItemContainerTransitions(target, x, lastX, namedObjectMap, defer); }" }
             },
             new EventEntry[] {
             }
@@ -132,6 +134,7 @@ namespace XSRT2 {
         <# ClassDef("CalendarDatePicker", true, "Control", null, null); #>
         <# ClassDef("CalendarView", true, "Control", null, null); #>
         <# ClassDef("RelativePanel", true, "Panel", null, null); #>
+        <# ClassDef("RepositionThemeTransition", true, null, null, null); #>
 
         <#
         ClassDef(
@@ -275,7 +278,7 @@ namespace XSRT2 {
                     else
                     {
                         var instance = CreateFromState((JObject)child, lastChild as JObject, namedObjectMap, defer);
-                        children.Add(instance);
+                        children.Add((FrameworkElement)instance);
                     }
                 }
             }
@@ -283,6 +286,7 @@ namespace XSRT2 {
             {
                 FrameworkElementHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
                 SetPanelChildren(t, obj, lastObj, namedObjectMap, defer);
+                TrySet(obj, lastObj, "childrenTransitions", false, t, (target, x, lastX) => { RuntimeHelpers.SetChildrenTransitions(target, x, lastX, namedObjectMap, defer); });
             }
 
         }
@@ -388,7 +392,7 @@ namespace XSRT2 {
             }
             return handlers;
         }
-        internal static FrameworkElement CreateFromState(JToken item, JToken lastItem, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
+        internal static DependencyObject CreateFromState(JToken item, JToken lastItem, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
         {
             if (item.Type == JTokenType.Object)
             {
@@ -407,7 +411,7 @@ namespace XSRT2 {
         }
 
         internal delegate void Setter<T>(T target, JToken value, JToken lastValue);
-        delegate FrameworkElement CreateCallback(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer);
+        delegate DependencyObject CreateCallback(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer);
 
         internal abstract class DeferSetter
         {

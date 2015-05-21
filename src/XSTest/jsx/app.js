@@ -3,7 +3,7 @@ var App;
 (function (App) {
     function render() {
         return (
-            <Xaml.RelativePanel name='rel1'>
+            <Xaml.RelativePanel name='rel1' childrenTransitions={[<Xaml.RepositionThemeTransition />]}>
                 <Xaml.Button margin='5,5,5,5' name='b1'>
                     One
                 </Xaml.Button>
