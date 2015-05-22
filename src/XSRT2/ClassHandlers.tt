@@ -20,6 +20,8 @@ using Windows.UI.Text;
 using System.Reflection;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media.Animation;
+using Windows.UI.Xaml.Automation;
+using Windows.UI.Xaml.Automation.Peers;
 
 namespace XSRT2 {
     public static class Handler
@@ -29,10 +31,26 @@ namespace XSRT2 {
             "FrameworkElement", 
             false,
             null,
+            // UNDONE: what is the scalable story for attached properties?
+            //
             new PropEntry[] { 
+                // UNDONE: rest of grid
+                //
                 new PropEntry() { Name="grid$row", SetBody="{ target.SetValue(Grid.RowProperty, Convert.ToInt32(x.Value<double>())); }" },
+                new PropEntry() { Name="grid$rowSpan", SetBody="{ target.SetValue(Grid.RowSpanProperty, Convert.ToInt32(x.Value<double>())); }" },
                 new PropEntry() { Name="grid$column", SetBody="{ target.SetValue(Grid.ColumnProperty, Convert.ToInt32(x.Value<double>())); }" },
+                new PropEntry() { Name="grid$columnSpan", SetBody="{ target.SetValue(Grid.ColumnSpanProperty, Convert.ToInt32(x.Value<double>())); }" },
 
+                // UNDONE: rest of accessibility
+                //
+                new PropEntry() { Name="automationId", SetBody="{ AutomationProperties.SetAutomationId(target, x.ToString()); }" },
+                new PropEntry() { Name="acc$helpText", SetBody="{ AutomationProperties.SetHelpText(target, x.ToString()); }" },
+                RefAttachedProp("LabeledBy", "acc", "AutomationProperties"),
+                EnumAttachedProperty("LiveSetting", "acc", "AutomationProperties", "AutomationLiveSetting"),
+                new PropEntry() { Name="acc$name", SetBody="{ AutomationProperties.SetName(target, x.ToString()); }" },
+
+                // This is all of relativePanel
+                //
                 RefAttachedProp("Above", "relative", "RelativePanel"),
                 RefAttachedProp("AlignBottomWith", "relative", "RelativePanel"),
                 BooleanAttachedProp("AlignBottomWithPanel", "relative", "RelativePanel" ),
@@ -49,6 +67,8 @@ namespace XSRT2 {
                 RefAttachedProp("LeftOf", "relative", "RelativePanel"),
                 RefAttachedProp("RightOf", "relative", "RelativePanel"),
                 
+                // UNDONE: rest of framework element
+                //
                 EnumProperty("HorizontalAlignment"),
                 EnumProperty("VerticalAlignment"),
                 XamlProperty("Margin", "Thickness"),
@@ -473,6 +493,9 @@ PropEntry DoubleProp(string name) {
 }
 PropEntry BooleanProp(string name) {
     return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = Convert.ToBoolean(((JValue)x).Value)" };
+}
+PropEntry EnumAttachedProperty(string winRTPropName, string shortProvider, string winRTProvider, string winRTEnumType) {
+    return new PropEntry() { Name=shortProvider + "$" + CamelCase(winRTPropName), SetBody="target.SetValue("+winRTProvider+"."+winRTPropName+"Property, ParseEnum<" + winRTEnumType + ">(x))" };
 }
 PropEntry BooleanAttachedProp(string winRTPropName, string shortProvider, string winRTProvider) {
     return new PropEntry() { Name=shortProvider + "$" + CamelCase(winRTPropName), SetBody="target.SetValue("+winRTProvider+"."+winRTPropName+"Property, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value)))" };

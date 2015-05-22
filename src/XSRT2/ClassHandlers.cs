@@ -14,6 +14,8 @@ using Windows.UI.Text;
 using System.Reflection;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media.Animation;
+using Windows.UI.Xaml.Automation;
+using Windows.UI.Xaml.Automation.Peers;
 
 namespace XSRT2 {
     public static class Handler
@@ -23,7 +25,14 @@ namespace XSRT2 {
             internal static void SetProperties(FrameworkElement t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
                 TrySet(obj, lastObj, "grid$row", false, t, (target, x, lastX) => { target.SetValue(Grid.RowProperty, Convert.ToInt32(x.Value<double>())); });
+                TrySet(obj, lastObj, "grid$rowSpan", false, t, (target, x, lastX) => { target.SetValue(Grid.RowSpanProperty, Convert.ToInt32(x.Value<double>())); });
                 TrySet(obj, lastObj, "grid$column", false, t, (target, x, lastX) => { target.SetValue(Grid.ColumnProperty, Convert.ToInt32(x.Value<double>())); });
+                TrySet(obj, lastObj, "grid$columnSpan", false, t, (target, x, lastX) => { target.SetValue(Grid.ColumnSpanProperty, Convert.ToInt32(x.Value<double>())); });
+                TrySet(obj, lastObj, "automationId", false, t, (target, x, lastX) => { AutomationProperties.SetAutomationId(target, x.ToString()); });
+                TrySet(obj, lastObj, "acc$helpText", false, t, (target, x, lastX) => { AutomationProperties.SetHelpText(target, x.ToString()); });
+                TrySet(obj, lastObj, "acc$labeledBy", false, t, (target, x, lastX) => target.SetValue(AutomationProperties.LabeledByProperty, namedObjectMap[x.ToString()]), defer);
+                TrySet(obj, lastObj, "acc$liveSetting", false, t, (target, x, lastX) => target.SetValue(AutomationProperties.LiveSettingProperty, ParseEnum<AutomationLiveSetting>(x)));
+                TrySet(obj, lastObj, "acc$name", false, t, (target, x, lastX) => { AutomationProperties.SetName(target, x.ToString()); });
                 TrySet(obj, lastObj, "relative$above", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AboveProperty, namedObjectMap[x.ToString()]), defer);
                 TrySet(obj, lastObj, "relative$alignBottomWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignBottomWithProperty, namedObjectMap[x.ToString()]), defer);
                 TrySet(obj, lastObj, "relative$alignBottomWithPanel", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignBottomWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value))));
