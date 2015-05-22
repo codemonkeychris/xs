@@ -22,7 +22,7 @@ namespace XSRT2
         private EventRegistrationTokenTable<EventHandler<RenderEventArgs>> render = new EventRegistrationTokenTable<EventHandler<RenderEventArgs>>();
         private EventRegistrationTokenTable<EventHandler<CommandEventArgs>> command = new EventRegistrationTokenTable<EventHandler<CommandEventArgs>>();
         bool isDirty = true;
-        Dictionary<string, string> state = new Dictionary<string, string>();
+        Dictionary<string, object> state = new Dictionary<string, object>();
 
         public bool IsInitialized { get; set; }
 
@@ -37,14 +37,14 @@ namespace XSRT2
             isDirty = true;
         }
 
-        public void SetState(string key, string value)
+        public void SetState(string key, object value)
         {
             state[key] = value;
             NotifyChanged();
         }
-        public string GetState(string key, string defaultValue)
+        public object GetState(string key, object defaultValue)
         {
-            string value = defaultValue;
+            object value = defaultValue;
             state.TryGetValue(key, out value);
             return value;
         }
