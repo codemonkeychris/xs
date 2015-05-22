@@ -9,13 +9,9 @@ programming techniques (insipred by ReactNative)
 
 1. Install Windows 10 Insider Preview (10074 or later - //build/ version)
 2. Install Visual Studio 2015 RC - https://www.visualstudio.com/products/visual-studio-2015-downloads-vs
-3. Install JSX (react-tools) - required to `F5` in VS, as there is a custom build step that invokes JSX
+3. Install JSX (react-tools) and TypeScript - required to `F5` in VS, as there is a custom build step that invokes JSX and TSC
 ```
 npm install -g react-tools
-```
-3. Optionally install TypeScript (from http://typescriptlang.org or using Node.js) - only required 
-if you are going to change `xsrt.ts`
-```
 npm install -g typescript
 ```
 

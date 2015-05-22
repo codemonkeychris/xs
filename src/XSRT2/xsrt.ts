@@ -8,7 +8,7 @@ module Xsrt {
 
     function render(ev) {
         try {
-            ev.view = JSON.stringify((App && App.render) ? App.render() : { type: 'TextBlock', text: 'Error: App.render not found' });
+            ev.view = JSON.stringify((App && App.render) ? App.render() : { type: 'TextBlock', text: 'Error: App.render not found!' });
         }
         catch (e) {
             ev.view = JSON.stringify({ type: 'TextBlock', text: 'Error: ' + e });
