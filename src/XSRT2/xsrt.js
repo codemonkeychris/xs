@@ -75,6 +75,9 @@ var Xaml;
     function Slider() { return { type: 'Slider' }; }
     Xaml.Slider = Slider;
     ;
+    function ProgressBar() { return { type: 'ProgressBar' }; }
+    Xaml.ProgressBar = ProgressBar;
+    ;
     function TextBox() { return { type: 'TextBox' }; }
     Xaml.TextBox = TextBox;
     ;

@@ -158,15 +158,9 @@ namespace XSRT2 {
             }
         }
 
-        internal static class SliderHandler
+        internal static class RangeBaseHandler
         {
-            internal static Slider Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
-            {
-                var createResult = CreateOrGetLast<Slider>(obj, namedObjectMap);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap, defer);
-                return createResult.Item2;
-            }
-            internal static void SetProperties(Slider t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
+            internal static void SetProperties(RangeBase t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
             {
                 ControlHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
                 TrySet(obj, lastObj, "minimum", false, t, (target, x, lastX) => target.Minimum = x.Value<double>());
@@ -182,7 +176,7 @@ namespace XSRT2 {
                     Command(null, new CommandEventArgs() { CommandHandlerToken = map["ValueChanged"], Sender = sender, EventArgs = e });
                 }
             }
-            static void SetValueChangedEventHandler(string handlerName, Slider element)
+            static void SetValueChangedEventHandler(string handlerName, RangeBase element)
             {
                 var map = (Dictionary<string, string>)element.GetValue(eventMap);
                 if (map == null)
@@ -259,6 +253,33 @@ namespace XSRT2 {
             {
             }
         }
+        internal static class ProgressBarHandler
+        {
+            internal static ProgressBar Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
+            {
+                var createResult = CreateOrGetLast<ProgressBar>(obj, namedObjectMap);
+                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap, defer);
+                return createResult.Item2;
+            }
+            internal static void SetProperties(ProgressBar t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
+            {
+                RangeBaseHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
+            }
+        }
+        internal static class SliderHandler
+        {
+            internal static Slider Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
+            {
+                var createResult = CreateOrGetLast<Slider>(obj, namedObjectMap);
+                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap, defer);
+                return createResult.Item2;
+            }
+            internal static void SetProperties(Slider t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
+            {
+                RangeBaseHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
+            }
+        }
+        
 
         internal static class CheckBoxHandler
         {
@@ -562,12 +583,13 @@ namespace XSRT2 {
                 handlers["TextBox"] = TextBoxHandler.Create;
                 handlers["ListBox"] = ListBoxHandler.Create;
                 handlers["ItemsControl"] = ItemsControlHandler.Create;
-                handlers["Slider"] = SliderHandler.Create;
                 handlers["Button"] = ButtonHandler.Create;
                 handlers["CalendarDatePicker"] = CalendarDatePickerHandler.Create;
                 handlers["CalendarView"] = CalendarViewHandler.Create;
                 handlers["RelativePanel"] = RelativePanelHandler.Create;
                 handlers["RepositionThemeTransition"] = RepositionThemeTransitionHandler.Create;
+                handlers["ProgressBar"] = ProgressBarHandler.Create;
+                handlers["Slider"] = SliderHandler.Create;
                 handlers["CheckBox"] = CheckBoxHandler.Create;
                 handlers["StackPanel"] = StackPanelHandler.Create;
                 handlers["Grid"] = GridHandler.Create;

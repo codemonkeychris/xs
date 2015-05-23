@@ -136,8 +136,8 @@ namespace XSRT2 {
 
         <#
         ClassDef(
-            "Slider",
-            true,
+            "RangeBase",
+            false,
             "Control",
             new PropEntry[] {
             DoubleProp("Minimum"),
@@ -155,6 +155,9 @@ namespace XSRT2 {
         <# ClassDef("CalendarView", true, "Control", null, null); #>
         <# ClassDef("RelativePanel", true, "Panel", null, null); #>
         <# ClassDef("RepositionThemeTransition", true, null, null, null); #>
+        <# ClassDef("ProgressBar", true, "RangeBase", null, null); #>
+        <# ClassDef("Slider", true, "RangeBase", null, null); #>
+        
 
         <#
         ClassDef(

@@ -69,6 +69,7 @@ module Xaml {
     export function Button() { return { type: 'Button' } };
     export function CheckBox() { return { type: 'CheckBox' } };
     export function Slider() { return { type: 'Slider' } };
+    export function ProgressBar() { return { type: 'ProgressBar' } };
     export function TextBox() { return { type: 'TextBox' } };
     export function ListBox() { return { type: 'ListBox' } };
     export function CalendarDatePicker() { return { type: 'CalendarDatePicker' } };

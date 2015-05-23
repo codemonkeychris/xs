@@ -47,11 +47,15 @@ var App;
                     acc$labeledBy: "label1", 
                     minimum: "1", maximum: "20", value: "5", 
                     onValueChanged: sliderChanged}), 
+                React.createElement(Xaml.ProgressBar, {name: "progress1", 
+                    grid$row: "4", 
+                    grid$column: "1", 
+                    minimum: "1", maximum: "20", value: host.state.getState("sliderPos", 0)}), 
 
-                React.createElement(Xaml.TextBlock, {name: "label2", grid$row: "4"}, "Prefix"), 
+                React.createElement(Xaml.TextBlock, {name: "label2", grid$row: "5"}, "Prefix"), 
                 React.createElement(Xaml.TextBox, {
                     name: "text1", 
-                    grid$row: "4", 
+                    grid$row: "5", 
                     grid$column: "1", 
                     acc$labeledBy: "label2", 
                     fontFamily: "Consolas", 
@@ -59,10 +63,10 @@ var App;
                     onTextChanged: textChanged, 
                     text: host.state.getState("prefix", "Item")}), 
 
-                React.createElement(Xaml.TextBlock, {name: "label3", grid$row: "5"}, "Scale (output)"), 
+                React.createElement(Xaml.TextBlock, {name: "label3", grid$row: "6"}, "Scale (output)"), 
                 React.createElement(Xaml.TextBox, {
                     name: "text2", 
-                    grid$row: "5", 
+                    grid$row: "6", 
                     grid$column: "1", 
                     acc$labeledBy: "label3", 
                     fontFamily: "Consolas", 
@@ -71,7 +75,7 @@ var App;
                 React.createElement(Xaml.StackPanel, {
                     name: "nest1", 
                     grid$columnSpan: "3", 
-                    grid$row: "6"}, 
+                    grid$row: "7"}, 
 
                     [5,6,7,8,9,10,11,12,13,14].
                     filter(function (i) { return !host.state.getState("filter", true) || i % 2 == 1 }).
