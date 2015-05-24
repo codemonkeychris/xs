@@ -119,7 +119,7 @@ namespace XSRT2
         // UNDONE: temporary location, should move to ClassHandlers once implementation
         // is baked.
         //
-        internal static void SetItemsSource(ItemsControl control, JToken source)
+        internal static void SetItemsSource(ItemsControl control, JToken source, JToken lastSource, Handler.DiffContext context)
         {
             // UNDONE: need to do delta on previous version of the list
             //
@@ -138,6 +138,10 @@ namespace XSRT2
                             break;
                         case JTokenType.String:
                             collection.Add(child.Value<string>());
+                            break;
+                        case JTokenType.Object:
+                            var instance = Handler.CreateFromState((JObject)child, lastSource as JObject, context);
+                            collection.Add(instance);
                             break;
                         default:
                             collection.Add("Unhandled:" + Enum.GetName(typeof(JTokenType), child.Type));

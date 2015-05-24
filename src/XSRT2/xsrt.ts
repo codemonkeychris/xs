@@ -63,6 +63,8 @@ module React {
 }
 
 module Xaml {
+    export function GridView() { return { type: 'GridView' } };
+    export function ListView() { return { type: 'ListView' } };
     export function Grid() { return { type: 'Grid' } };
     export function StackPanel() { return { type: 'StackPanel' } };
     export function TextBlock() { return { type: 'TextBlock' } };

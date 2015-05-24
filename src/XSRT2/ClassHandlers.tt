@@ -87,7 +87,7 @@ namespace XSRT2 {
                 DefaultStringProp("Text"),
                 BasicProp("FontFamily", "new FontFamily(x.ToString())"),
                 DoubleProp("FontSize"),
-                EnumProperty("FontWeight")
+                XamlProperty("FontWeight", "FontWeight")
             },
             null
         );
@@ -109,8 +109,56 @@ namespace XSRT2 {
 
         <#
         ClassDef(
+            "GridView",
+            true,
+            "ListViewBase",
+            new PropEntry[] {
+            },
+            new EventEntry[] {
+            }
+        );
+        #>
+
+        <#
+        ClassDef(
+            "ListView",
+            true,
+            "ListViewBase",
+            new PropEntry[] {
+            },
+            new EventEntry[] {
+            }
+        );
+        #>
+
+        <#
+        ClassDef(
+            "ListViewBase",
+            false,
+            "Selector",
+            new PropEntry[] {
+            },
+            new EventEntry[] {
+            }
+        );
+        #>
+        
+        <#
+        ClassDef(
             "ListBox",
             true,
+            "Selector",
+            new PropEntry[] {
+            },
+            new EventEntry[] {
+            }
+        );
+        #>
+
+        <#
+        ClassDef(
+            "Selector",
+            false,
             "ItemsControl",
             new PropEntry[] {
             },
@@ -123,10 +171,10 @@ namespace XSRT2 {
         <#
         ClassDef(
             "ItemsControl",
-            true,
+            false,
             "Control",
             new PropEntry[] {
-                new PropEntry() { Name="itemsSource", SetBody="{ RuntimeHelpers.SetItemsSource(target, x); }" },
+                new PropEntry() { Name="itemsSource", SetBody="{ RuntimeHelpers.SetItemsSource(target, x, lastX, context); }" },
                 new PropEntry() { Name="itemContainerTransitions", SetBody="{ RuntimeHelpers.SetItemContainerTransitions(target, x, lastX, context); }" }
             },
             new EventEntry[] {
@@ -544,6 +592,9 @@ string CamelCase(string name) {
 }
 PropEntry EnumProperty(string name) {
     return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = ParseEnum<" + name + ">(x)" };
+}
+PropEntry EnumProperty(string name, string winRTTypeName) {
+    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = ParseEnum<" + winRTTypeName + ">(x)" };
 }
 PropEntry XamlProperty(string name, string typeName) {
     return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = XamlStringParse<" + typeName + ">(x)" };

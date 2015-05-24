@@ -57,6 +57,12 @@ var React;
 })(React || (React = {}));
 var Xaml;
 (function (Xaml) {
+    function GridView() { return { type: 'GridView' }; }
+    Xaml.GridView = GridView;
+    ;
+    function ListView() { return { type: 'ListView' }; }
+    Xaml.ListView = ListView;
+    ;
     function Grid() { return { type: 'Grid' }; }
     Xaml.Grid = Grid;
     ;

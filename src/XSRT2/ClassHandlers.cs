@@ -69,7 +69,7 @@ namespace XSRT2 {
                 TrySet(obj, lastObj, "text", true, t, (target, x, lastX) => target.Text = x.ToString());
                 TrySet(obj, lastObj, "fontFamily", false, t, (target, x, lastX) => target.FontFamily = new FontFamily(x.ToString()));
                 TrySet(obj, lastObj, "fontSize", false, t, (target, x, lastX) => target.FontSize = x.Value<double>());
-                TrySet(obj, lastObj, "fontWeight", false, t, (target, x, lastX) => target.FontWeight = ParseEnum<FontWeight>(x));
+                TrySet(obj, lastObj, "fontWeight", false, t, (target, x, lastX) => target.FontWeight = XamlStringParse<FontWeight>(x));
             }
         }
 
@@ -108,6 +108,42 @@ namespace XSRT2 {
             }
         }
 
+        internal static class GridViewHandler
+        {
+            internal static GridView Create(JObject obj, JObject lastObj, DiffContext context)
+            {
+                var createResult = CreateOrGetLast<GridView>(obj, context);
+                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, context);
+                return createResult.Item2;
+            }
+            internal static void SetProperties(GridView t, JObject obj, JObject lastObj, DiffContext context)
+            {
+                ListViewBaseHandler.SetProperties(t, obj, lastObj, context);
+            }
+        }
+
+        internal static class ListViewHandler
+        {
+            internal static ListView Create(JObject obj, JObject lastObj, DiffContext context)
+            {
+                var createResult = CreateOrGetLast<ListView>(obj, context);
+                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, context);
+                return createResult.Item2;
+            }
+            internal static void SetProperties(ListView t, JObject obj, JObject lastObj, DiffContext context)
+            {
+                ListViewBaseHandler.SetProperties(t, obj, lastObj, context);
+            }
+        }
+
+        internal static class ListViewBaseHandler
+        {
+            internal static void SetProperties(ListViewBase t, JObject obj, JObject lastObj, DiffContext context)
+            {
+                SelectorHandler.SetProperties(t, obj, lastObj, context);
+            }
+        }
+        
         internal static class ListBoxHandler
         {
             internal static ListBox Create(JObject obj, JObject lastObj, DiffContext context)
@@ -117,6 +153,14 @@ namespace XSRT2 {
                 return createResult.Item2;
             }
             internal static void SetProperties(ListBox t, JObject obj, JObject lastObj, DiffContext context)
+            {
+                SelectorHandler.SetProperties(t, obj, lastObj, context);
+            }
+        }
+
+        internal static class SelectorHandler
+        {
+            internal static void SetProperties(Selector t, JObject obj, JObject lastObj, DiffContext context)
             {
                 ItemsControlHandler.SetProperties(t, obj, lastObj, context);
                 TrySetEvent(obj, lastObj, "SelectionChanged", t, (target, x, lastX) => SetSelectionChangedEventHandler(x.ToString(), target));
@@ -129,7 +173,7 @@ namespace XSRT2 {
                     Command(null, new CommandEventArgs() { CommandHandlerToken = map["SelectionChanged"], Sender = sender, EventArgs = e });
                 }
             }
-            static void SetSelectionChangedEventHandler(string handlerName, ListBox element)
+            static void SetSelectionChangedEventHandler(string handlerName, Selector element)
             {
                 var map = (Dictionary<string, string>)element.GetValue(eventMap);
                 if (map == null)
@@ -144,16 +188,10 @@ namespace XSRT2 {
 
         internal static class ItemsControlHandler
         {
-            internal static ItemsControl Create(JObject obj, JObject lastObj, DiffContext context)
-            {
-                var createResult = CreateOrGetLast<ItemsControl>(obj, context);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, context);
-                return createResult.Item2;
-            }
             internal static void SetProperties(ItemsControl t, JObject obj, JObject lastObj, DiffContext context)
             {
                 ControlHandler.SetProperties(t, obj, lastObj, context);
-                TrySet(obj, lastObj, "itemsSource", false, t, (target, x, lastX) => { RuntimeHelpers.SetItemsSource(target, x); });
+                TrySet(obj, lastObj, "itemsSource", false, t, (target, x, lastX) => { RuntimeHelpers.SetItemsSource(target, x, lastX, context); });
                 TrySet(obj, lastObj, "itemContainerTransitions", false, t, (target, x, lastX) => { RuntimeHelpers.SetItemContainerTransitions(target, x, lastX, context); });
             }
         }
@@ -597,8 +635,9 @@ namespace XSRT2 {
                 handlers = new Dictionary<string, CreateCallback>();
                 handlers["TextBlock"] = TextBlockHandler.Create;
                 handlers["TextBox"] = TextBoxHandler.Create;
+                handlers["GridView"] = GridViewHandler.Create;
+                handlers["ListView"] = ListViewHandler.Create;
                 handlers["ListBox"] = ListBoxHandler.Create;
-                handlers["ItemsControl"] = ItemsControlHandler.Create;
                 handlers["Button"] = ButtonHandler.Create;
                 handlers["CalendarDatePicker"] = CalendarDatePickerHandler.Create;
                 handlers["CalendarView"] = CalendarViewHandler.Create;
