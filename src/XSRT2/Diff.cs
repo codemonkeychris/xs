@@ -30,12 +30,15 @@ namespace XSRT2
         public void Process(string ui)
         {
             var newUI = JObject.Parse(ui);
-            var defer = new List<Handler.DeferSetter>();
-            control.Content = Handler.CreateFromState(newUI, lastUI, namedObjectMap, defer);
-            foreach (var d in defer)
+            var context = new Handler.DiffContext(namedObjectMap) {
+                defer = new List<Handler.DeferSetter>()
+            };
+            control.Content = Handler.CreateFromState(newUI, lastUI, context);
+            foreach (var d in context.defer)
             {
                 d.Do();
             }
+            namedObjectMap = context.GetNamedObjectMap();
             lastUI = newUI;
         }
    }

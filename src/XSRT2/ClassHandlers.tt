@@ -72,7 +72,7 @@ namespace XSRT2 {
                 EnumProperty("HorizontalAlignment"),
                 EnumProperty("VerticalAlignment"),
                 XamlProperty("Margin", "Thickness"),
-                new PropEntry() { Name="name", SetBody="{ target.Name = x.ToString(); namedObjectMap[target.Name] = target; }" }
+                new PropEntry() { Name="name", SetBody="{ target.Name = x.ToString(); }" }
             },
             null
         ); 
@@ -127,7 +127,7 @@ namespace XSRT2 {
             "Control",
             new PropEntry[] {
                 new PropEntry() { Name="itemsSource", SetBody="{ RuntimeHelpers.SetItemsSource(target, x); }" },
-                new PropEntry() { Name="itemContainerTransitions", SetBody="{ RuntimeHelpers.SetItemContainerTransitions(target, x, lastX, namedObjectMap, defer); }" }
+                new PropEntry() { Name="itemContainerTransitions", SetBody="{ RuntimeHelpers.SetItemContainerTransitions(target, x, lastX, context); }" }
             },
             new EventEntry[] {
             }
@@ -150,6 +150,9 @@ namespace XSRT2 {
         );
         #>
 
+        // UNDONE: Content property (and others) now will recreate when child props change instead of incremental
+        // update now that we drop "lastNamedObjectMap" on the floor and track references... 
+        // 
         <# ClassDef("Button", true, "ButtonBase", null, null); #>
         <# ClassDef("CalendarDatePicker", true, "Control", null, null); #>
         <# ClassDef("CalendarView", true, "Control", null, null); #>
@@ -179,7 +182,7 @@ namespace XSRT2 {
             false,
             "Control",
             new PropEntry[] {
-                DefaultBasicProp("Content", "CreateFromState(x, lastX, namedObjectMap, defer)")
+                DefaultBasicProp("Content", "CreateFromState(x, lastX, context)")
             },
             new EventEntry[] {
                 new EventEntry() { Name="Click", WinRTName="Click", EventType="RoutedEventArgs" }
@@ -240,9 +243,9 @@ namespace XSRT2 {
                 }
             }
 
-            static void SetPanelChildren(Panel t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
+            static void SetPanelChildren(Panel t, JObject obj, JObject lastObj, DiffContext context)
             {
-                Handler.FrameworkElementHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
+                Handler.FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
                 List<UIElement> children = new List<UIElement>();
                 IJEnumerable<JToken> lastChildren = null;
                 JToken last;
@@ -250,7 +253,7 @@ namespace XSRT2 {
                 {
                     lastChildren = last.AsJEnumerable();
                 }
-                CollectPanelChildrenWorker(t, obj["children"].AsJEnumerable(), lastChildren, children, namedObjectMap, defer);
+                CollectPanelChildrenWorker(t, obj["children"].AsJEnumerable(), lastChildren, children, context);
                 var setChildrenNeeded = false;
                 if (t.Children.Count == children.Count)
                 {
@@ -281,7 +284,7 @@ namespace XSRT2 {
                     }
                 }
             }
-            static void CollectPanelChildrenWorker(Panel t, IJEnumerable<JToken> items, IEnumerable<JToken> lastItems, List<UIElement> children, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
+            static void CollectPanelChildrenWorker(Panel t, IJEnumerable<JToken> items, IEnumerable<JToken> lastItems, List<UIElement> children, DiffContext context)
             {
                 IEnumerator<JToken> enumerator = null;
                 if (lastItems != null)
@@ -296,20 +299,20 @@ namespace XSRT2 {
 
                     if (child.Type == JTokenType.Array)
                     {
-                        CollectPanelChildrenWorker(t, child.AsJEnumerable(), lastChild != null ? lastChild.AsJEnumerable() : null, children, namedObjectMap, defer);
+                        CollectPanelChildrenWorker(t, child.AsJEnumerable(), lastChild != null ? lastChild.AsJEnumerable() : null, children, context);
                     }
                     else
                     {
-                        var instance = CreateFromState((JObject)child, lastChild as JObject, namedObjectMap, defer);
+                        var instance = CreateFromState((JObject)child, lastChild as JObject, context);
                         children.Add((FrameworkElement)instance);
                     }
                 }
             }
-            internal static void SetProperties(Panel t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
+            internal static void SetProperties(Panel t, JObject obj, JObject lastObj, DiffContext context)
             {
-                FrameworkElementHandler.SetProperties(t, obj, lastObj, namedObjectMap, defer);
-                SetPanelChildren(t, obj, lastObj, namedObjectMap, defer);
-                TrySet(obj, lastObj, "childrenTransitions", false, t, (target, x, lastX) => { RuntimeHelpers.SetChildrenTransitions(target, x, lastX, namedObjectMap, defer); });
+                FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
+                SetPanelChildren(t, obj, lastObj, context);
+                TrySet(obj, lastObj, "childrenTransitions", false, t, (target, x, lastX) => { RuntimeHelpers.SetChildrenTransitions(target, x, lastX, context); });
             }
 
         }
@@ -320,13 +323,23 @@ namespace XSRT2 {
 
         public static event EventHandler<CommandEventArgs> Command;
 
-        static Tuple<bool, T> CreateOrGetLast<T>(JObject obj, Dictionary<string, object> namedObjectMap) where T:new()
+        static Tuple<bool, T> CreateOrGetLast<T>(JObject obj, DiffContext context) where T:new()
         {
             JToken name;
+            string resolvedName = null;
             if (obj.TryGetValue("name", out name))
             {
+                resolvedName = name.ToString();
+            }
+            else
+            {
+                resolvedName = context.CreateSurrogateName(obj);
+            }
+
+            if (resolvedName != null)
+            { 
                 object value;
-                if (namedObjectMap.TryGetValue(name.ToString(), out value))
+                if (context.TryGetObject(resolvedName, out value))
                 {
                     if (value != null && value is T)
                     {
@@ -334,8 +347,11 @@ namespace XSRT2 {
                     }
                 }
             }
-            return new Tuple<bool, T>(false, new T());
+            var instance = new T();
+            context.AddObject(resolvedName, instance);
+            return new Tuple<bool, T>(false, instance);
         }
+
         static void TrySet<T>(JObject obj, JObject last, string name, T target, Setter<T> setter)
         {
             TrySet<T>(obj, last, name, false, target, setter);
@@ -415,7 +431,7 @@ namespace XSRT2 {
             }
             return handlers;
         }
-        internal static DependencyObject CreateFromState(JToken item, JToken lastItem, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)
+        internal static DependencyObject CreateFromState(JToken item, JToken lastItem, DiffContext context)
         {
             if (item.Type == JTokenType.Object)
             {
@@ -423,7 +439,7 @@ namespace XSRT2 {
                 CreateCallback create;
                 if (GetHandlers().TryGetValue(type, out create))
                 {
-                    return create((JObject)item, (JObject)lastItem, namedObjectMap, defer);
+                    return create((JObject)item, (JObject)lastItem, context);
                 }
                 return new TextBlock() { FontSize = 48, Text = "'" + type + "'Not found" };
             }
@@ -434,7 +450,7 @@ namespace XSRT2 {
         }
 
         internal delegate void Setter<T>(T target, JToken value, JToken lastValue);
-        delegate DependencyObject CreateCallback(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer);
+        delegate DependencyObject CreateCallback(JObject obj, JObject lastObj, DiffContext context);
 
         internal abstract class DeferSetter
         {
@@ -452,7 +468,60 @@ namespace XSRT2 {
                 setter(target, tok, tokLast);
             }
         }
+        internal class DiffContext 
+        {
+            Dictionary<string, object> lastNamedObjectMap;
+            Dictionary<string, object> currentNamedObjectMap = new Dictionary<string, object>();
+            // UNDONE: get smarter about surrogate key generation
+            Dictionary<string, int> surrogateKeys = new Dictionary<string, int>();
 
+            internal DiffContext(Dictionary<string, object> lastNamedObjectMap)
+            {
+                this.lastNamedObjectMap = lastNamedObjectMap;
+            }
+
+            public List<DeferSetter> defer;
+            
+            public Dictionary<String, object> GetNamedObjectMap() { return currentNamedObjectMap; }
+
+            public object ReferenceObject(string name) 
+            {
+                object value;
+                if (lastNamedObjectMap.TryGetValue(name, out value))
+                {
+                    currentNamedObjectMap[name] = value;
+                    return value;
+                }
+                return null;
+            }
+            public bool TryGetObject(string name, out object value)
+            {
+                var ret = lastNamedObjectMap.TryGetValue(name, out value);
+                if (ret) { currentNamedObjectMap[name] = value; }
+                return ret;
+            }
+            public void AddObject(string name, object value)
+            {
+                lastNamedObjectMap[name] = currentNamedObjectMap[name] = value;
+            }
+            public string CreateSurrogateName(JObject obj) 
+            { 
+                string baseName = "xsrt";
+                JToken t;
+                if (obj.TryGetValue("type", out t))
+                {
+                    baseName = t.ToString();
+                }
+                int n = 0;
+                if (surrogateKeys.TryGetValue(baseName, out n)) 
+                {
+                    n++;
+                }
+                surrogateKeys[baseName] = n;
+                string key = baseName + n; 
+                return key;
+            }
+        }
     }
 }
 
@@ -506,7 +575,7 @@ PropEntry BooleanAttachedProp(string winRTPropName, string shortProvider, string
 PropEntry RefAttachedProp(string winRTPropName, string shortProvider, string winRTProvider) {
     return new PropEntry() { 
         Name=shortProvider + "$" + CamelCase(winRTPropName), 
-        SetBody="target.SetValue("+winRTProvider+"."+winRTPropName+"Property, namedObjectMap[x.ToString()])",
+        SetBody="target.SetValue("+winRTProvider+"."+winRTPropName+"Property, context.ReferenceObject(x.ToString()))",
         Defer = true
     };
 }
@@ -532,28 +601,28 @@ void ClassDef(string name, bool isPublic, string baseTypeName, PropEntry[] props
     PopIndent();
 }
 void Create(string name) {
-    WriteLine("internal static " + name + " Create(JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)");
+    WriteLine("internal static " + name + " Create(JObject obj, JObject lastObj, DiffContext context)");
     WriteLine("{");
     PushIndent("    ");
-    WriteLine("var createResult = CreateOrGetLast<" + name + ">(obj, namedObjectMap);");
-    WriteLine("SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, namedObjectMap, defer);");
+    WriteLine("var createResult = CreateOrGetLast<" + name + ">(obj, context);");
+    WriteLine("SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, context);");
     WriteLine("return createResult.Item2;");
     PopIndent();
     WriteLine("}");
 }
 void PropSetter(string name, string baseTypeName, PropEntry[] props, EventEntry[] events) {
-    WriteLine("internal static void SetProperties(" + name + " t, JObject obj, JObject lastObj, Dictionary<string, object> namedObjectMap, List<DeferSetter> defer)");
+    WriteLine("internal static void SetProperties(" + name + " t, JObject obj, JObject lastObj, DiffContext context)");
     WriteLine("{");
     PushIndent("    ");
     if (baseTypeName != null && baseTypeName.Length > 0)
     {
-        WriteLine(baseTypeName + "Handler.SetProperties(t, obj, lastObj, namedObjectMap, defer);");
+        WriteLine(baseTypeName + "Handler.SetProperties(t, obj, lastObj, context);");
     }
     if (props != null) {
         foreach (var prop in props) {
             string deferArg = "";
             if (prop.Defer) {
-                deferArg = ", defer";
+                deferArg = ", context.defer";
             }
             if (prop.AliasFirstChild) {
                 WriteLine("TrySet(obj, lastObj, \"" + prop.Name + "\", true, t, (target, x, lastX) => " + prop.SetBody + deferArg + ");");

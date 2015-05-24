@@ -26,35 +26,34 @@ var App;
 
     function render() {
         return (
-            <Xaml.Grid name='root' 
+            <Xaml.Grid 
                 rows={['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto']}
                 columns={['auto', 'auto', '*']} >
                 
-                <Xaml.TextBlock name='header' grid$row='0' grid$columnSpan='3' text='Welcome to XS' fontSize='36' margin='10,10,10,10' />
+                <Xaml.TextBlock grid$row='0' grid$columnSpan='3' text='Welcome to XS' fontSize='36' margin='10,10,10,10' />
 
-                <Xaml.Button name='b1' grid$row='1' 
+                <Xaml.Button grid$row='1' 
                     onClick={buttonClicked}
                     content={<Xaml.TextBlock name='t1' text={'O:' + host.state.getState("x1", "unset")} />} />
 
-                <Xaml.CheckBox name='c1' grid$row='2' content='Filter' 
+                <Xaml.CheckBox grid$row='2' content='Filter' 
                     onClick={checked}
                     isChecked={host.state.getState("filter", true)} />
 
                 <Xaml.TextBlock name='label1' grid$row='3'>Scale factor</Xaml.TextBlock>
-                <Xaml.Slider name='slider1'
+                <Xaml.Slider 
                     grid$row='3'
                     grid$column='1'
                     acc$labeledBy='label1'
                     minimum='1' maximum='20' value='5' 
                     onValueChanged={sliderChanged} />
-                <Xaml.ProgressBar name='progress1'
+                <Xaml.ProgressBar 
                     grid$row='4'
                     grid$column='1'
                     minimum='1' maximum='20' value={host.state.getState("sliderPos", 0)} />
 
                 <Xaml.TextBlock name='label2' grid$row='5'>Prefix</Xaml.TextBlock>
                 <Xaml.TextBox
-                    name='text1'
                     grid$row='5'
                     grid$column='1'
                     acc$labeledBy='label2'
@@ -65,7 +64,6 @@ var App;
 
                 <Xaml.TextBlock name='label3' grid$row='6'>Scale (output)</Xaml.TextBlock>
                 <Xaml.TextBox
-                    name='text2'
                     grid$row='6'
                     grid$column='1'
                     acc$labeledBy='label3'
@@ -73,7 +71,6 @@ var App;
                     fontSize='20'
                     text={'' + host.state.getState("sliderPos", 0)} />
                 <Xaml.StackPanel
-                    name='nest1'
                     grid$columnSpan='3'
                     grid$row='7'>{
 
@@ -81,7 +78,6 @@ var App;
                     filter(function (i) { return !host.state.getState("filter", true) || i % 2 == 1 }).
                     map(function (i) { 
                         return <Xaml.TextBlock
-                            name={'item' + i}
                             text={host.state.getState("prefix", "Item")  + ':' + i} 
                             fontSize={(host.state.getState("sliderPos", 0)  + i)*2} />
                     })

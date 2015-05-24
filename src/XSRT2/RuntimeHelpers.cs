@@ -16,15 +16,14 @@ namespace XSRT2
     public static class RuntimeHelpers
     {
         delegate void SetCollectionPropertyCallback<TObject, TValue>(TObject target, List<TValue> items);
-        internal static void SetItemContainerTransitions(ItemsControl control, JToken obj, JToken last, Dictionary<string, object> namedObjectMap, List<Handler.DeferSetter> defer)
+        internal static void SetItemContainerTransitions(ItemsControl control, JToken obj, JToken last, Handler.DiffContext context)
         {
             SetCollectionProperty<ItemsControl, Transition>(
                 control,
                 "itemContainerTransitions",
                 obj,
                 last,
-                namedObjectMap,
-                defer,
+                context,
                 (target, list) =>
                 {
                     target.ItemContainerTransitions.Clear();
@@ -35,15 +34,14 @@ namespace XSRT2
                 });
 
         }
-        internal static void SetChildrenTransitions(Panel control, JToken obj, JToken last, Dictionary<string, object> namedObjectMap, List<Handler.DeferSetter> defer)
+        internal static void SetChildrenTransitions(Panel control, JToken obj, JToken last, Handler.DiffContext context)
         {
             SetCollectionProperty<Panel, Transition>(
                 control,
                 "itemContainerTransitions",
                 obj,
                 last,
-                namedObjectMap,
-                defer,
+                context,
                 (target, list) =>
                 {
                     TransitionCollection col = target.ChildrenTransitions;
@@ -67,9 +65,8 @@ namespace XSRT2
             TObject t, 
             string propertyName,
             JToken obj,
-            JToken lastObj, 
-            Dictionary<string, object> namedObjectMap, 
-            List<Handler.DeferSetter> defer,
+            JToken lastObj,
+            Handler.DiffContext context, 
             SetCollectionPropertyCallback<TObject, TValue> setter) where TValue : DependencyObject
         {
             List<TValue> children = new List<TValue>();
@@ -78,7 +75,7 @@ namespace XSRT2
             {
                 lastChildren = lastObj.AsJEnumerable();
             }
-            CollectItemsWorker(t, obj.AsJEnumerable(), lastChildren, children, namedObjectMap, defer);
+            CollectItemsWorker(t, obj.AsJEnumerable(), lastChildren, children, context);
             // UNDONE: better diff
             //
             var setChildrenNeeded = true;
@@ -92,9 +89,8 @@ namespace XSRT2
             TObject t, 
             IJEnumerable<JToken> items, 
             IEnumerable<JToken> lastItems, 
-            List<TValue> children, 
-            Dictionary<string, object> namedObjectMap, 
-            List<Handler.DeferSetter> defer) where TValue : DependencyObject
+            List<TValue> children,
+            Handler.DiffContext context) where TValue : DependencyObject
         {
             IEnumerator<JToken> enumerator = null;
             if (lastItems != null)
@@ -109,11 +105,11 @@ namespace XSRT2
 
                 if (child.Type == JTokenType.Array)
                 {
-                    CollectItemsWorker(t, child.AsJEnumerable(), lastChild != null ? lastChild.AsJEnumerable() : null, children, namedObjectMap, defer);
+                    CollectItemsWorker(t, child.AsJEnumerable(), lastChild != null ? lastChild.AsJEnumerable() : null, children, context);
                 }
                 else
                 {
-                    var instance = Handler.CreateFromState((JObject)child, lastChild as JObject, namedObjectMap, defer);
+                    var instance = Handler.CreateFromState((JObject)child, lastChild as JObject, context);
                     children.Add((TValue)instance);
                 }
             }
