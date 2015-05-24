@@ -89,7 +89,7 @@ JsErrorCode JScriptRuntime::CreateHostContext(JsRuntimeHandle runtime, JsContext
     IfFailRet(DefineHostCallback(globalObject, L"setInterval", Shim, setInterval.get()));
     std::shared_ptr<JScriptRuntimeNativeHolder> clearInterval = std::make_shared<JScriptRuntimeNativeHolder>();
     clearInterval->ref = this;
-    clearInterval->method = 1;
+    clearInterval->method = 2;
     m_holders.push_back(clearInterval);
     IfFailRet(DefineHostCallback(globalObject, L"clearInterval", Shim, clearInterval.get()));
 
