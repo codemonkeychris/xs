@@ -24,34 +24,34 @@ namespace XSRT2 {
         {
             internal static void SetProperties(FrameworkElement t, JObject obj, JObject lastObj, DiffContext context)
             {
-                TrySet(obj, lastObj, "grid$row", false, t, (target, x, lastX) => { target.SetValue(Grid.RowProperty, Convert.ToInt32(x.Value<double>())); });
-                TrySet(obj, lastObj, "grid$rowSpan", false, t, (target, x, lastX) => { target.SetValue(Grid.RowSpanProperty, Convert.ToInt32(x.Value<double>())); });
-                TrySet(obj, lastObj, "grid$column", false, t, (target, x, lastX) => { target.SetValue(Grid.ColumnProperty, Convert.ToInt32(x.Value<double>())); });
-                TrySet(obj, lastObj, "grid$columnSpan", false, t, (target, x, lastX) => { target.SetValue(Grid.ColumnSpanProperty, Convert.ToInt32(x.Value<double>())); });
-                TrySet(obj, lastObj, "automationId", false, t, (target, x, lastX) => { AutomationProperties.SetAutomationId(target, x.ToString()); });
-                TrySet(obj, lastObj, "acc$helpText", false, t, (target, x, lastX) => { AutomationProperties.SetHelpText(target, x.ToString()); });
-                TrySet(obj, lastObj, "acc$labeledBy", false, t, (target, x, lastX) => target.SetValue(AutomationProperties.LabeledByProperty, context.ReferenceObject(x.ToString())), context.defer);
-                TrySet(obj, lastObj, "acc$liveSetting", false, t, (target, x, lastX) => target.SetValue(AutomationProperties.LiveSettingProperty, ParseEnum<AutomationLiveSetting>(x)));
-                TrySet(obj, lastObj, "acc$name", false, t, (target, x, lastX) => { AutomationProperties.SetName(target, x.ToString()); });
-                TrySet(obj, lastObj, "relative$above", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AboveProperty, context.ReferenceObject(x.ToString())), context.defer);
-                TrySet(obj, lastObj, "relative$alignBottomWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignBottomWithProperty, context.ReferenceObject(x.ToString())), context.defer);
-                TrySet(obj, lastObj, "relative$alignBottomWithPanel", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignBottomWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value))));
-                TrySet(obj, lastObj, "relative$alignHorizontalCenterWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignHorizontalCenterWithProperty, context.ReferenceObject(x.ToString())), context.defer);
-                TrySet(obj, lastObj, "relative$alignLeftWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignLeftWithProperty, context.ReferenceObject(x.ToString())), context.defer);
-                TrySet(obj, lastObj, "relative$alignLeftWithPanel", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignLeftWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value))));
-                TrySet(obj, lastObj, "relative$alignRightWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignRightWithProperty, context.ReferenceObject(x.ToString())), context.defer);
-                TrySet(obj, lastObj, "relative$alignRightWithPanel", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignRightWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value))));
-                TrySet(obj, lastObj, "relative$alignTopWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignTopWithProperty, context.ReferenceObject(x.ToString())), context.defer);
-                TrySet(obj, lastObj, "relative$alignTopWithPanel", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignTopWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value))));
-                TrySet(obj, lastObj, "relative$alignVerticalCenterWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignVerticalCenterWithProperty, context.ReferenceObject(x.ToString())), context.defer);
-                TrySet(obj, lastObj, "relative$alignVerticalCenterWithPanel", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignVerticalCenterWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value))));
-                TrySet(obj, lastObj, "relative$below", false, t, (target, x, lastX) => target.SetValue(RelativePanel.BelowProperty, context.ReferenceObject(x.ToString())), context.defer);
-                TrySet(obj, lastObj, "relative$leftOf", false, t, (target, x, lastX) => target.SetValue(RelativePanel.LeftOfProperty, context.ReferenceObject(x.ToString())), context.defer);
-                TrySet(obj, lastObj, "relative$rightOf", false, t, (target, x, lastX) => target.SetValue(RelativePanel.RightOfProperty, context.ReferenceObject(x.ToString())), context.defer);
-                TrySet(obj, lastObj, "horizontalAlignment", false, t, (target, x, lastX) => target.HorizontalAlignment = ParseEnum<HorizontalAlignment>(x));
-                TrySet(obj, lastObj, "verticalAlignment", false, t, (target, x, lastX) => target.VerticalAlignment = ParseEnum<VerticalAlignment>(x));
-                TrySet(obj, lastObj, "margin", false, t, (target, x, lastX) => target.Margin = XamlStringParse<Thickness>(x));
-                TrySet(obj, lastObj, "name", false, t, (target, x, lastX) => { target.Name = x.ToString(); });
+                TrySet(context, obj, lastObj, "grid$row", false, t, (target, x, lastX) => { target.SetValue(Grid.RowProperty, Convert.ToInt32(x.Value<double>())); });
+                TrySet(context, obj, lastObj, "grid$rowSpan", false, t, (target, x, lastX) => { target.SetValue(Grid.RowSpanProperty, Convert.ToInt32(x.Value<double>())); });
+                TrySet(context, obj, lastObj, "grid$column", false, t, (target, x, lastX) => { target.SetValue(Grid.ColumnProperty, Convert.ToInt32(x.Value<double>())); });
+                TrySet(context, obj, lastObj, "grid$columnSpan", false, t, (target, x, lastX) => { target.SetValue(Grid.ColumnSpanProperty, Convert.ToInt32(x.Value<double>())); });
+                TrySet(context, obj, lastObj, "automationId", false, t, (target, x, lastX) => { AutomationProperties.SetAutomationId(target, x.ToString()); });
+                TrySet(context, obj, lastObj, "acc$helpText", false, t, (target, x, lastX) => { AutomationProperties.SetHelpText(target, x.ToString()); });
+                TrySet(context, obj, lastObj, "acc$labeledBy", false, t, (target, x, lastX) => target.SetValue(AutomationProperties.LabeledByProperty, context.ReferenceObject(x.ToString())), context.Defer);
+                TrySet(context, obj, lastObj, "acc$liveSetting", false, t, (target, x, lastX) => target.SetValue(AutomationProperties.LiveSettingProperty, ParseEnum<AutomationLiveSetting>(x)));
+                TrySet(context, obj, lastObj, "acc$name", false, t, (target, x, lastX) => { AutomationProperties.SetName(target, x.ToString()); });
+                TrySet(context, obj, lastObj, "relative$above", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AboveProperty, context.ReferenceObject(x.ToString())), context.Defer);
+                TrySet(context, obj, lastObj, "relative$alignBottomWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignBottomWithProperty, context.ReferenceObject(x.ToString())), context.Defer);
+                TrySet(context, obj, lastObj, "relative$alignBottomWithPanel", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignBottomWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value))));
+                TrySet(context, obj, lastObj, "relative$alignHorizontalCenterWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignHorizontalCenterWithProperty, context.ReferenceObject(x.ToString())), context.Defer);
+                TrySet(context, obj, lastObj, "relative$alignLeftWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignLeftWithProperty, context.ReferenceObject(x.ToString())), context.Defer);
+                TrySet(context, obj, lastObj, "relative$alignLeftWithPanel", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignLeftWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value))));
+                TrySet(context, obj, lastObj, "relative$alignRightWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignRightWithProperty, context.ReferenceObject(x.ToString())), context.Defer);
+                TrySet(context, obj, lastObj, "relative$alignRightWithPanel", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignRightWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value))));
+                TrySet(context, obj, lastObj, "relative$alignTopWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignTopWithProperty, context.ReferenceObject(x.ToString())), context.Defer);
+                TrySet(context, obj, lastObj, "relative$alignTopWithPanel", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignTopWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value))));
+                TrySet(context, obj, lastObj, "relative$alignVerticalCenterWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignVerticalCenterWithProperty, context.ReferenceObject(x.ToString())), context.Defer);
+                TrySet(context, obj, lastObj, "relative$alignVerticalCenterWithPanel", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignVerticalCenterWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value))));
+                TrySet(context, obj, lastObj, "relative$below", false, t, (target, x, lastX) => target.SetValue(RelativePanel.BelowProperty, context.ReferenceObject(x.ToString())), context.Defer);
+                TrySet(context, obj, lastObj, "relative$leftOf", false, t, (target, x, lastX) => target.SetValue(RelativePanel.LeftOfProperty, context.ReferenceObject(x.ToString())), context.Defer);
+                TrySet(context, obj, lastObj, "relative$rightOf", false, t, (target, x, lastX) => target.SetValue(RelativePanel.RightOfProperty, context.ReferenceObject(x.ToString())), context.Defer);
+                TrySet(context, obj, lastObj, "horizontalAlignment", false, t, (target, x, lastX) => target.HorizontalAlignment = ParseEnum<HorizontalAlignment>(x));
+                TrySet(context, obj, lastObj, "verticalAlignment", false, t, (target, x, lastX) => target.VerticalAlignment = ParseEnum<VerticalAlignment>(x));
+                TrySet(context, obj, lastObj, "margin", false, t, (target, x, lastX) => target.Margin = XamlStringParse<Thickness>(x));
+                TrySet(context, obj, lastObj, "name", false, t, (target, x, lastX) => { target.Name = x.ToString(); });
             }
         }
 
@@ -66,10 +66,10 @@ namespace XSRT2 {
             internal static void SetProperties(TextBlock t, JObject obj, JObject lastObj, DiffContext context)
             {
                 FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
-                TrySet(obj, lastObj, "text", true, t, (target, x, lastX) => target.Text = x.ToString());
-                TrySet(obj, lastObj, "fontFamily", false, t, (target, x, lastX) => target.FontFamily = new FontFamily(x.ToString()));
-                TrySet(obj, lastObj, "fontSize", false, t, (target, x, lastX) => target.FontSize = x.Value<double>());
-                TrySet(obj, lastObj, "fontWeight", false, t, (target, x, lastX) => target.FontWeight = XamlStringParse<FontWeight>(x));
+                TrySet(context, obj, lastObj, "text", true, t, (target, x, lastX) => target.Text = x.ToString());
+                TrySet(context, obj, lastObj, "fontFamily", false, t, (target, x, lastX) => target.FontFamily = new FontFamily(x.ToString()));
+                TrySet(context, obj, lastObj, "fontSize", false, t, (target, x, lastX) => target.FontSize = x.Value<double>());
+                TrySet(context, obj, lastObj, "fontWeight", false, t, (target, x, lastX) => target.FontWeight = XamlStringParse<FontWeight>(x));
             }
         }
 
@@ -84,8 +84,8 @@ namespace XSRT2 {
             internal static void SetProperties(TextBox t, JObject obj, JObject lastObj, DiffContext context)
             {
                 ControlHandler.SetProperties(t, obj, lastObj, context);
-                TrySet(obj, lastObj, "text", true, t, (target, x, lastX) => target.Text = x.ToString());
-                TrySetEvent(obj, lastObj, "TextChanged", t, (target, x, lastX) => SetTextChangedEventHandler(x.ToString(), target));
+                TrySet(context, obj, lastObj, "text", true, t, (target, x, lastX) => target.Text = x.ToString());
+                TrySetEvent(context, obj, lastObj, "TextChanged", t, (target, x, lastX) => SetTextChangedEventHandler(x.ToString(), target));
             }
             static void TextChangedRouter(object sender, RoutedEventArgs e)
             {
@@ -163,7 +163,7 @@ namespace XSRT2 {
             internal static void SetProperties(Selector t, JObject obj, JObject lastObj, DiffContext context)
             {
                 ItemsControlHandler.SetProperties(t, obj, lastObj, context);
-                TrySetEvent(obj, lastObj, "SelectionChanged", t, (target, x, lastX) => SetSelectionChangedEventHandler(x.ToString(), target));
+                TrySetEvent(context, obj, lastObj, "SelectionChanged", t, (target, x, lastX) => SetSelectionChangedEventHandler(x.ToString(), target));
             }
             static void SelectionChangedRouter(object sender, SelectionChangedEventArgs e)
             {
@@ -191,8 +191,8 @@ namespace XSRT2 {
             internal static void SetProperties(ItemsControl t, JObject obj, JObject lastObj, DiffContext context)
             {
                 ControlHandler.SetProperties(t, obj, lastObj, context);
-                TrySet(obj, lastObj, "itemsSource", false, t, (target, x, lastX) => { RuntimeHelpers.SetItemsSource(target, x, lastX, context); });
-                TrySet(obj, lastObj, "itemContainerTransitions", false, t, (target, x, lastX) => { RuntimeHelpers.SetItemContainerTransitions(target, x, lastX, context); });
+                TrySet(context, obj, lastObj, "itemsSource", false, t, (target, x, lastX) => { RuntimeHelpers.SetItemsSource(target, x, lastX, context); });
+                TrySet(context, obj, lastObj, "itemContainerTransitions", false, t, (target, x, lastX) => { RuntimeHelpers.SetItemContainerTransitions(target, x, lastX, context); });
             }
         }
 
@@ -201,10 +201,10 @@ namespace XSRT2 {
             internal static void SetProperties(RangeBase t, JObject obj, JObject lastObj, DiffContext context)
             {
                 ControlHandler.SetProperties(t, obj, lastObj, context);
-                TrySet(obj, lastObj, "minimum", false, t, (target, x, lastX) => target.Minimum = x.Value<double>());
-                TrySet(obj, lastObj, "maximum", false, t, (target, x, lastX) => target.Maximum = x.Value<double>());
-                TrySet(obj, lastObj, "value", false, t, (target, x, lastX) => target.Value = x.Value<double>());
-                TrySetEvent(obj, lastObj, "ValueChanged", t, (target, x, lastX) => SetValueChangedEventHandler(x.ToString(), target));
+                TrySet(context, obj, lastObj, "minimum", false, t, (target, x, lastX) => target.Minimum = x.Value<double>());
+                TrySet(context, obj, lastObj, "maximum", false, t, (target, x, lastX) => target.Maximum = x.Value<double>());
+                TrySet(context, obj, lastObj, "value", false, t, (target, x, lastX) => target.Value = x.Value<double>());
+                TrySetEvent(context, obj, lastObj, "ValueChanged", t, (target, x, lastX) => SetValueChangedEventHandler(x.ToString(), target));
             }
             static void ValueChangedRouter(object sender, RangeBaseValueChangedEventArgs e)
             {
@@ -333,8 +333,8 @@ namespace XSRT2 {
             internal static void SetProperties(CheckBox t, JObject obj, JObject lastObj, DiffContext context)
             {
                 ButtonBaseHandler.SetProperties(t, obj, lastObj, context);
-                TrySet(obj, lastObj, "isChecked", false, t, (target, x, lastX) => target.IsChecked = Convert.ToBoolean(((JValue)x).Value));
-                TrySetEvent(obj, lastObj, "Checked", t, (target, x, lastX) => SetCheckedEventHandler(x.ToString(), target));
+                TrySet(context, obj, lastObj, "isChecked", false, t, (target, x, lastX) => target.IsChecked = Convert.ToBoolean(((JValue)x).Value));
+                TrySetEvent(context, obj, lastObj, "Checked", t, (target, x, lastX) => SetCheckedEventHandler(x.ToString(), target));
             }
             static void CheckedRouter(object sender, RoutedEventArgs e)
             {
@@ -362,8 +362,8 @@ namespace XSRT2 {
             internal static void SetProperties(ButtonBase t, JObject obj, JObject lastObj, DiffContext context)
             {
                 ControlHandler.SetProperties(t, obj, lastObj, context);
-                TrySet(obj, lastObj, "content", true, t, (target, x, lastX) => target.Content = CreateFromState(x, lastX, context));
-                TrySetEvent(obj, lastObj, "Click", t, (target, x, lastX) => SetClickEventHandler(x.ToString(), target));
+                TrySet(context, obj, lastObj, "content", true, t, (target, x, lastX) => target.Content = CreateFromState(x, lastX, context));
+                TrySetEvent(context, obj, lastObj, "Click", t, (target, x, lastX) => SetClickEventHandler(x.ToString(), target));
             }
             static void ClickRouter(object sender, RoutedEventArgs e)
             {
@@ -391,11 +391,11 @@ namespace XSRT2 {
             internal static void SetProperties(Control t, JObject obj, JObject lastObj, DiffContext context)
             {
                 FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
-                TrySet(obj, lastObj, "background", false, t, (target, x, lastX) => target.Background = XamlStringParse<Brush>(x));
-                TrySet(obj, lastObj, "foreground", false, t, (target, x, lastX) => target.Foreground = XamlStringParse<Brush>(x));
-                TrySet(obj, lastObj, "fontFamily", false, t, (target, x, lastX) => target.FontFamily = new FontFamily(x.ToString()));
-                TrySet(obj, lastObj, "fontSize", false, t, (target, x, lastX) => target.FontSize = x.Value<double>());
-                TrySet(obj, lastObj, "fontWeight", false, t, (target, x, lastX) => target.FontWeight = ParseEnum<FontWeight>(x));
+                TrySet(context, obj, lastObj, "background", false, t, (target, x, lastX) => target.Background = XamlStringParse<Brush>(x));
+                TrySet(context, obj, lastObj, "foreground", false, t, (target, x, lastX) => target.Foreground = XamlStringParse<Brush>(x));
+                TrySet(context, obj, lastObj, "fontFamily", false, t, (target, x, lastX) => target.FontFamily = new FontFamily(x.ToString()));
+                TrySet(context, obj, lastObj, "fontSize", false, t, (target, x, lastX) => target.FontSize = x.Value<double>());
+                TrySet(context, obj, lastObj, "fontWeight", false, t, (target, x, lastX) => target.FontWeight = ParseEnum<FontWeight>(x));
             }
         }
 
@@ -423,8 +423,8 @@ namespace XSRT2 {
             internal static void SetProperties(Grid t, JObject obj, JObject lastObj, DiffContext context)
             {
                 PanelHandler.SetProperties(t, obj, lastObj, context);
-                TrySet(obj, lastObj, "rows", false, t, (target, x, lastX) => { PanelHandler.SetGridRowDefinitions(target, (JArray)x); });
-                TrySet(obj, lastObj, "columns", false, t, (target, x, lastX) => { PanelHandler.SetGridColumnDefinitions(target, (JArray)x); });
+                TrySet(context, obj, lastObj, "rows", false, t, (target, x, lastX) => { PanelHandler.SetGridRowDefinitions(target, (JArray)x); });
+                TrySet(context, obj, lastObj, "columns", false, t, (target, x, lastX) => { PanelHandler.SetGridColumnDefinitions(target, (JArray)x); });
             }
         }
 
@@ -520,7 +520,7 @@ namespace XSRT2 {
             {
                 FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
                 SetPanelChildren(t, obj, lastObj, context);
-                TrySet(obj, lastObj, "childrenTransitions", false, t, (target, x, lastX) => { RuntimeHelpers.SetChildrenTransitions(target, x, lastX, context); });
+                TrySet(context, obj, lastObj, "childrenTransitions", false, t, (target, x, lastX) => { RuntimeHelpers.SetChildrenTransitions(target, x, lastX, context); });
             }
 
         }
@@ -555,20 +555,21 @@ namespace XSRT2 {
                     }
                 }
             }
+            context.ObjectCreateCount++;
             var instance = new T();
             context.AddObject(resolvedName, instance);
             return new Tuple<bool, T>(false, instance);
         }
 
-        static void TrySet<T>(JObject obj, JObject last, string name, T target, Setter<T> setter)
+        static void TrySet<T>(DiffContext context, JObject obj, JObject last, string name, T target, Setter<T> setter)
         {
-            TrySet<T>(obj, last, name, false, target, setter);
+            TrySet<T>(context, obj, last, name, false, target, setter);
         }
-        static void TrySet<T>(JObject obj, JObject last, string name, bool aliasFirstChild, T target, Setter<T> setter)
+        static void TrySet<T>(DiffContext context, JObject obj, JObject last, string name, bool aliasFirstChild, T target, Setter<T> setter)
         {
-            TrySet<T>(obj, last, name, aliasFirstChild, target, setter, null);
+            TrySet<T>(context, obj, last, name, aliasFirstChild, target, setter, null);
         }
-        static void TrySet<T>(JObject obj, JObject last, string name, bool aliasFirstChild, T target, Setter<T> setter, List<DeferSetter> defer)
+        static void TrySet<T>(DiffContext context, JObject obj, JObject last, string name, bool aliasFirstChild, T target, Setter<T> setter, List<DeferSetter> defer)
         {
             JToken tok;
             JToken tokLast = null;
@@ -594,6 +595,7 @@ namespace XSRT2 {
                         return; // bail early if old & new are the same
                     }
                 }
+                context.PropertySetCount++;
                 if (defer != null) 
                 {
                     defer.Add(new DeferSetter<T>() { setter = setter, target = target, tok = tok, tokLast = tokLast });
@@ -604,7 +606,7 @@ namespace XSRT2 {
                 }
             }
         }
-        static void TrySetEvent<T>(JObject obj, JObject last, string name, T target, Setter<T> setter)
+        static void TrySetEvent<T>(DiffContext context, JObject obj, JObject last, string name, T target, Setter<T> setter)
         {
             JToken tok;
             JToken tokLast = null;
@@ -617,6 +619,7 @@ namespace XSRT2 {
                         return; // bail early if old & new are the same
                     }
                 }
+                context.EventSetCount++;
                 setter(target, tok, tokLast);
             }
         }
@@ -700,8 +703,13 @@ namespace XSRT2 {
                 this.lastNamedObjectMap = lastNamedObjectMap;
             }
 
-            public List<DeferSetter> defer;
-            
+            public List<DeferSetter> Defer;
+            public int EventSetCount;
+            public int PropertySetCount;
+            public int ObjectCreateCount;
+            public DateTime Start;
+            public DateTime End;
+                
             public Dictionary<String, object> GetNamedObjectMap() { return currentNamedObjectMap; }
 
             public object ReferenceObject(string name) 

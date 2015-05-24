@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -36,7 +37,13 @@ namespace XSTest
                 AutoCheckUpdates = true, // will future changes to app.js in RoaminState directory will be shown?
                 OverwriteIfExists = true // will embedded app.js always be overwriten on program start?
             };
+            host.Rendered += Host_Rendered;
             host.Startup();
+        }
+
+        private void Host_Rendered(object sender, DiffStats e)
+        {
+            ApplicationView.GetForCurrentView().Title = "{props:" + e.PropertySetCount + ", objs:" + e.ObjectCreateCount + ", elapsed:" + e.ElapsedMilliseconds.ToString("#")+ "ms }";
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)

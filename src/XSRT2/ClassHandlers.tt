@@ -360,7 +360,7 @@ namespace XSRT2 {
             {
                 FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
                 SetPanelChildren(t, obj, lastObj, context);
-                TrySet(obj, lastObj, "childrenTransitions", false, t, (target, x, lastX) => { RuntimeHelpers.SetChildrenTransitions(target, x, lastX, context); });
+                TrySet(context, obj, lastObj, "childrenTransitions", false, t, (target, x, lastX) => { RuntimeHelpers.SetChildrenTransitions(target, x, lastX, context); });
             }
 
         }
@@ -395,20 +395,21 @@ namespace XSRT2 {
                     }
                 }
             }
+            context.ObjectCreateCount++;
             var instance = new T();
             context.AddObject(resolvedName, instance);
             return new Tuple<bool, T>(false, instance);
         }
 
-        static void TrySet<T>(JObject obj, JObject last, string name, T target, Setter<T> setter)
+        static void TrySet<T>(DiffContext context, JObject obj, JObject last, string name, T target, Setter<T> setter)
         {
-            TrySet<T>(obj, last, name, false, target, setter);
+            TrySet<T>(context, obj, last, name, false, target, setter);
         }
-        static void TrySet<T>(JObject obj, JObject last, string name, bool aliasFirstChild, T target, Setter<T> setter)
+        static void TrySet<T>(DiffContext context, JObject obj, JObject last, string name, bool aliasFirstChild, T target, Setter<T> setter)
         {
-            TrySet<T>(obj, last, name, aliasFirstChild, target, setter, null);
+            TrySet<T>(context, obj, last, name, aliasFirstChild, target, setter, null);
         }
-        static void TrySet<T>(JObject obj, JObject last, string name, bool aliasFirstChild, T target, Setter<T> setter, List<DeferSetter> defer)
+        static void TrySet<T>(DiffContext context, JObject obj, JObject last, string name, bool aliasFirstChild, T target, Setter<T> setter, List<DeferSetter> defer)
         {
             JToken tok;
             JToken tokLast = null;
@@ -434,6 +435,7 @@ namespace XSRT2 {
                         return; // bail early if old & new are the same
                     }
                 }
+                context.PropertySetCount++;
                 if (defer != null) 
                 {
                     defer.Add(new DeferSetter<T>() { setter = setter, target = target, tok = tok, tokLast = tokLast });
@@ -444,7 +446,7 @@ namespace XSRT2 {
                 }
             }
         }
-        static void TrySetEvent<T>(JObject obj, JObject last, string name, T target, Setter<T> setter)
+        static void TrySetEvent<T>(DiffContext context, JObject obj, JObject last, string name, T target, Setter<T> setter)
         {
             JToken tok;
             JToken tokLast = null;
@@ -457,6 +459,7 @@ namespace XSRT2 {
                         return; // bail early if old & new are the same
                     }
                 }
+                context.EventSetCount++;
                 setter(target, tok, tokLast);
             }
         }
@@ -528,8 +531,13 @@ namespace XSRT2 {
                 this.lastNamedObjectMap = lastNamedObjectMap;
             }
 
-            public List<DeferSetter> defer;
-            
+            public List<DeferSetter> Defer;
+            public int EventSetCount;
+            public int PropertySetCount;
+            public int ObjectCreateCount;
+            public DateTime Start;
+            public DateTime End;
+                
             public Dictionary<String, object> GetNamedObjectMap() { return currentNamedObjectMap; }
 
             public object ReferenceObject(string name) 
@@ -673,19 +681,19 @@ void PropSetter(string name, string baseTypeName, PropEntry[] props, EventEntry[
         foreach (var prop in props) {
             string deferArg = "";
             if (prop.Defer) {
-                deferArg = ", context.defer";
+                deferArg = ", context.Defer";
             }
             if (prop.AliasFirstChild) {
-                WriteLine("TrySet(obj, lastObj, \"" + prop.Name + "\", true, t, (target, x, lastX) => " + prop.SetBody + deferArg + ");");
+                WriteLine("TrySet(context, obj, lastObj, \"" + prop.Name + "\", true, t, (target, x, lastX) => " + prop.SetBody + deferArg + ");");
             }
             else {
-                WriteLine("TrySet(obj, lastObj, \"" + prop.Name + "\", false, t, (target, x, lastX) => " + prop.SetBody + deferArg + ");");
+                WriteLine("TrySet(context, obj, lastObj, \"" + prop.Name + "\", false, t, (target, x, lastX) => " + prop.SetBody + deferArg + ");");
             }
         }
     }
     if (events != null) {
         foreach (var e in events) {
-            WriteLine("TrySetEvent(obj, lastObj, \"" + e.Name + "\", t, (target, x, lastX) => Set"+e.WinRTName+"EventHandler(x.ToString(), target));");
+            WriteLine("TrySetEvent(context, obj, lastObj, \"" + e.Name + "\", t, (target, x, lastX) => Set"+e.WinRTName+"EventHandler(x.ToString(), target));");
         }
     }
                 

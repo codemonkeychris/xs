@@ -44,6 +44,8 @@ var App;
             };
         }
 
+        public event EventHandler<DiffStats> Rendered;
+
         public bool StressReload { get; set; }
 
         public StateManager State { get { return state; } }
@@ -213,7 +215,11 @@ var App;
         {
             if (renderEventArgs != null && renderEventArgs.View != null)
             {
-                diff.Process(renderEventArgs.View.ToString());
+                var stats = diff.Process(renderEventArgs.View.ToString());
+                if (Rendered != null)
+                {
+                    Rendered(this, stats);
+                }
             }
         }
     }

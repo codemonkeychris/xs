@@ -15,6 +15,13 @@ using Windows.UI.Xaml.Controls.Primitives;
 
 namespace XSRT2
 {
+    public struct DiffStats
+    {
+        public int EventSetCount;
+        public int PropertySetCount;
+        public int ObjectCreateCount;
+        public double ElapsedMilliseconds;
+    }
     public sealed class Diff
     {
         ContentControl control;
@@ -27,19 +34,30 @@ namespace XSRT2
             this.stateManager = state;
             this.control = control;
         }
-        public void Process(string ui)
+        public DiffStats Process(string ui)
         {
             var newUI = JObject.Parse(ui);
             var context = new Handler.DiffContext(namedObjectMap) {
-                defer = new List<Handler.DeferSetter>()
+                Defer = new List<Handler.DeferSetter>(),
+                Start = DateTime.Now,
+                PropertySetCount = 0,
+                ObjectCreateCount = 0,
+                EventSetCount = 0
             };
             control.Content = Handler.CreateFromState(newUI, lastUI, context);
-            foreach (var d in context.defer)
+            foreach (var d in context.Defer)
             {
                 d.Do();
             }
+            context.End = DateTime.Now;
             namedObjectMap = context.GetNamedObjectMap();
             lastUI = newUI;
+            return new DiffStats
+            {
+                PropertySetCount = context.PropertySetCount,
+                ObjectCreateCount = context.ObjectCreateCount,
+                ElapsedMilliseconds = (context.End -context.Start).TotalMilliseconds
+            };
         }
    }
 }
