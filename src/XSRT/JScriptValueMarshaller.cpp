@@ -22,8 +22,14 @@ JsValueRef MergeObjectValue(JsValueRef target, JsValueRef source)
 {
     JsValueRef obj;
     JsConvertValueToObject(source, &obj);
+
+    // Object.keys... 
+    //
     JsValueRef propertyNames;
     JsGetOwnPropertyNames(obj, &propertyNames);
+
+    // for(int i=0; i<keys.length; i++) {
+    //
     JsPropertyIdRef lengthId;
     JsGetPropertyIdFromName(L"length", &lengthId);
     JsValueRef length;
@@ -33,23 +39,23 @@ JsValueRef MergeObjectValue(JsValueRef target, JsValueRef source)
 
     for (int i = 0; i < n; i++)
     {
+        // name = keys[i]
+        //
         JsValueRef index, name;
         JsIntToNumber(i, &index);
         JsGetIndexedProperty(propertyNames, index, &name);
 
-        JsValueRef stringValue;
-        JsConvertValueToString(name, &stringValue);
-
+        // target[name] = source[name]
+        //
         const wchar_t *strName;
         size_t strLen;
-        JsStringToPointer(stringValue, &strName, &strLen);
-
+        JsStringToPointer(name, &strName, &strLen);
         JsPropertyIdRef nameId;
         JsGetPropertyIdFromName(strName, &nameId);
 
+
         JsValueRef value;
         JsGetProperty(source, nameId, &value);
-
         JsSetProperty(target, nameId, value, true);
     }
 
