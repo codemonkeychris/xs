@@ -12,7 +12,13 @@ JScriptValueMarshaller::JScriptValueMarshaller()
 void JScriptValueMarshaller::FromJsValue(JsValueRef& value)
 {
     m_version++;
+    if (m_valueRoot != JS_INVALID_REFERENCE)
+    {
+        JsRelease(m_valueRoot, nullptr);
+        m_valueRoot = JS_INVALID_REFERENCE;
+    }
     m_valueRoot = value;
+    JsAddRef(m_valueRoot, nullptr);
 }
 JsValueRef JScriptValueMarshaller::ToJsValue()
 {
@@ -20,13 +26,14 @@ JsValueRef JScriptValueMarshaller::ToJsValue()
 }
 JsValueRef MergeObjectValue(JsValueRef target, JsValueRef source)
 {
-    JsValueRef obj;
-    JsConvertValueToObject(source, &obj);
+    JsValueRef objSource, objTarget;
+    JsConvertValueToObject(source, &objSource);
+    JsConvertValueToObject(target, &objTarget);
 
     // Object.keys... 
     //
     JsValueRef propertyNames;
-    JsGetOwnPropertyNames(obj, &propertyNames);
+    JsGetOwnPropertyNames(objSource, &propertyNames);
 
     // for(int i=0; i<keys.length; i++) {
     //
@@ -55,11 +62,11 @@ JsValueRef MergeObjectValue(JsValueRef target, JsValueRef source)
 
 
         JsValueRef value;
-        JsGetProperty(source, nameId, &value);
-        JsSetProperty(target, nameId, value, true);
+        JsGetProperty(objSource, nameId, &value);
+        JsSetProperty(objTarget, nameId, value, true);
     }
 
-    return target;
+    return objTarget;
 }
 
 void JScriptValueMarshaller::AssignJsValue(JsValueRef& value)
@@ -74,7 +81,8 @@ void JScriptValueMarshaller::AssignJsValue(JsValueRef& value)
         return; 
     }
     
-    m_valueRoot = MergeObjectValue(m_valueRoot, value);
+    JsValueRef newValue = MergeObjectValue(m_valueRoot, value);
+    this->FromJsValue(newValue);
 }
 
 Platform::Object^ XSRT::HandleAny(JsValueRef value)
@@ -271,5 +279,7 @@ JsValueRef XSRT::InvertHandlePrimitive(Platform::Object^ value)
 void JScriptValueMarshaller::FromObject(Platform::Object^ value)
 {
     m_version++;
-    m_valueRoot = XSRT::InvertHandleAny(value);
+
+    JsValueRef newValue = XSRT::InvertHandleAny(value);
+    this->FromJsValue(newValue);
 }
