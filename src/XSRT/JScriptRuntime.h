@@ -24,6 +24,7 @@ namespace XSRT
         int m_timerCounter;
         std::map<int, Windows::UI::Xaml::DispatcherTimer^> m_timers;
         std::map<int, JsValueRef> m_timerHandlers;
+        JScriptValueMarshaller^ m_state;
 
         JsErrorCode CreateHostContext(JsRuntimeHandle runtime, JsContextRef *context);
         ~JScriptRuntime();
@@ -31,12 +32,17 @@ namespace XSRT
         JsValueRef CALLBACK Echo(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState);
         JsValueRef CALLBACK SetInterval(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState);
         JsValueRef CALLBACK ClearInterval(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState);
+        JsValueRef CALLBACK SetState(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState);
+        JsValueRef CALLBACK GetState(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState);
     public:
         JScriptRuntime();
         void SetActive();
         void StartDebugging();
         void ClearActive();
         void ClearTimers();
+        uint64 GetStateVersion() { return m_state->GetValueVersion(); }
+        Platform::Object^ SaveState() { return m_state->ToObject(); }
+        void LoadState(Platform::Object^ value) { m_state->FromObject(value); }
         Platform::String^ GetScriptException();
         void AddWinRTNamespace(Platform::String^ name);
         void AddHostObject(Platform::String^ name, Platform::Object^ value);

@@ -21,6 +21,7 @@ namespace XSRT2
         DispatcherTimer dt;
         Type appType;
         string programFileName;
+        UInt64 lastSeenVersion = UInt64.MaxValue;
         const string defaultPath = "xs-program.js";
         const string defaultProgram = @"
 var App;
@@ -61,6 +62,10 @@ var App;
             get { return overwriteIfExists; }
             set { overwriteIfExists = value; }
         }
+
+        public object SaveState() { return jsrt.SaveState(); }
+        public void LoadState(object value) { jsrt.LoadState(value); }
+
 
         void UpdateAutoTimer()
         {
@@ -104,6 +109,12 @@ var App;
         {
             try
             {
+                // UNDONE: temporary, sync version between StateManager and host "state"
+                //
+                var lastVer = jsrt.GetStateVersion();
+                if (lastVer != lastSeenVersion) { state.NotifyChanged(); }
+                lastSeenVersion = lastVer;
+
                 Display(state.RenderIfNeeded());
             }
             catch (Exception x)
@@ -190,8 +201,10 @@ var App;
 
         void Initialize(string program, string runtime)
         {
+            object lastState = null;
             if (jsrt != null)
             {
+                lastState = jsrt.SaveState();
                 state.ReleaseEventHandlers();
                 jsrt.ClearActive();
                 jsrt.ClearTimers();
@@ -206,6 +219,10 @@ var App;
             //
             jsrt.AddWinRTNamespace("Windows");
             jsrt.AddWinRTNamespace("XSRT2");
+            if (lastState != null)
+            {
+                jsrt.LoadState(lastState);
+            }
             jsrt.AddHostObject("state", state);
             jsrt.AddHostObject("helpers", new Helpers());
             jsrt.Eval(program + "\r\n" + runtime);

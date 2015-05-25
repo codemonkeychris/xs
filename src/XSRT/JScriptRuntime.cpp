@@ -1,4 +1,5 @@
 ﻿#include "pch.h"
+#include "JScriptValueMarshaller.h"
 #include "JScriptRuntime.h"
 
 using namespace XSRT;
@@ -7,6 +8,7 @@ using namespace Windows::UI::Xaml;
 
 JScriptRuntime::JScriptRuntime()
 {
+    m_state = ref new JScriptValueMarshaller();
     IfFailError(JsCreateRuntime(JsRuntimeAttributeNone, nullptr, &m_runtime), L"failed to create runtime.");
     IfFailError(CreateHostContext(m_runtime, &m_context), L"failed to create execution context.");
 error:
@@ -24,6 +26,10 @@ JsValueRef CALLBACK Shim(JsValueRef callee, bool isConstructCall, JsValueRef *ar
         return holder->ref->SetInterval(callee, isConstructCall, arguments, argumentCount, nullptr);
     case 2:
         return holder->ref->ClearInterval(callee, isConstructCall, arguments, argumentCount, nullptr);
+    case 3:
+        return holder->ref->SetState(callee, isConstructCall, arguments, argumentCount, nullptr);
+    case 4:
+        return holder->ref->GetState(callee, isConstructCall, arguments, argumentCount, nullptr);
     }
 }
 
@@ -78,6 +84,18 @@ JsErrorCode JScriptRuntime::CreateHostContext(JsRuntimeHandle runtime, JsContext
     m_holders.push_back(echo);
     IfFailRet(DefineHostCallback(m_hostObject, L"echo", Shim, echo.get()));
 
+    std::shared_ptr<JScriptRuntimeNativeHolder> setState = std::make_shared<JScriptRuntimeNativeHolder>();
+    setState->ref = this;
+    setState->method = 3;
+    m_holders.push_back(setState);
+    IfFailRet(DefineHostCallback(m_hostObject, L"setState", Shim, setState.get()));
+
+    std::shared_ptr<JScriptRuntimeNativeHolder> getState = std::make_shared<JScriptRuntimeNativeHolder>();
+    getState->ref = this;
+    getState->method = 4;
+    m_holders.push_back(getState);
+    IfFailRet(DefineHostCallback(m_hostObject, L"getState", Shim, getState.get()));
+
     IfFailRet(DefineHostCallback(m_hostObject, L"runScript", RunScript, nullptr));
 
     // Set/ClearInterval 
@@ -89,7 +107,7 @@ JsErrorCode JScriptRuntime::CreateHostContext(JsRuntimeHandle runtime, JsContext
     IfFailRet(DefineHostCallback(globalObject, L"setInterval", Shim, setInterval.get()));
     std::shared_ptr<JScriptRuntimeNativeHolder> clearInterval = std::make_shared<JScriptRuntimeNativeHolder>();
     clearInterval->ref = this;
-    clearInterval->method = 2;
+    clearInterval->method = 3;
     m_holders.push_back(clearInterval);
     IfFailRet(DefineHostCallback(globalObject, L"clearInterval", Shim, clearInterval.get()));
 
@@ -172,6 +190,15 @@ void JScriptRuntime::TriggerTimer(int id)
     }
 }
 
+JsValueRef CALLBACK JScriptRuntime::SetState(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState)
+{
+    m_state->AssignJsValue(arguments[1]);
+    return JS_INVALID_REFERENCE;
+}
+JsValueRef CALLBACK JScriptRuntime::GetState(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState)
+{
+    return m_state->ToJsValue();
+}
 JsValueRef CALLBACK JScriptRuntime::Echo(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState)
 {
     for (unsigned int index = 1; index < argumentCount; index++)

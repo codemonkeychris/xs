@@ -10,10 +10,12 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="chakrahost.cpp" />
     <ClCompile Include="JScriptRuntime.cpp" />
+    <ClCompile Include="JScriptValueMarshaller.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="JScriptRuntime.h" />
     <ClInclude Include="chakrahost.h" />
+    <ClInclude Include="JScriptValueMarshaller.h" />
   </ItemGroup>
 </Project>
