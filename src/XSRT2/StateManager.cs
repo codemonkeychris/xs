@@ -37,18 +37,6 @@ namespace XSRT2
             isDirty = true;
         }
 
-        public void SetState(string key, object value)
-        {
-            state[key] = value;
-            NotifyChanged();
-        }
-        public object GetState(string key, object defaultValue)
-        {
-            object value = defaultValue;
-            state.TryGetValue(key, out value);
-            return value;
-        }
-
         public event EventHandler<RenderEventArgs> Render
         {
             add { return render.AddEventHandler(value); }

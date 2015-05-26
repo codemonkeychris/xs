@@ -191,8 +191,8 @@ namespace XSRT2 {
             internal static void SetProperties(ItemsControl t, JObject obj, JObject lastObj, DiffContext context)
             {
                 ControlHandler.SetProperties(t, obj, lastObj, context);
-                TrySet(context, obj, lastObj, "itemsSource", false, t, (target, x, lastX) => { RuntimeHelpers.SetItemsSource(target, x, lastX, context); });
-                TrySet(context, obj, lastObj, "itemContainerTransitions", false, t, (target, x, lastX) => { RuntimeHelpers.SetItemContainerTransitions(target, x, lastX, context); });
+                TrySet(context, obj, lastObj, "itemsSource", false, t, (target, x, lastX) => { SetItemsSource(target, x, lastX, context); });
+                TrySet(context, obj, lastObj, "itemContainerTransitions", false, t, (target, x, lastX) => { SetItemContainerTransitions(target, x, lastX, context); });
             }
         }
 
@@ -520,7 +520,7 @@ namespace XSRT2 {
             {
                 FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
                 SetPanelChildren(t, obj, lastObj, context);
-                TrySet(context, obj, lastObj, "childrenTransitions", false, t, (target, x, lastX) => { RuntimeHelpers.SetChildrenTransitions(target, x, lastX, context); });
+                TrySet(context, obj, lastObj, "childrenTransitions", false, t, (target, x, lastX) => { SetChildrenTransitions(target, x, lastX, context); });
             }
 
         }
@@ -530,6 +530,142 @@ namespace XSRT2 {
         static Dictionary<string, CreateCallback> handlers;
 
         public static event EventHandler<CommandEventArgs> Command;
+
+
+        delegate void SetCollectionPropertyCallback<TObject, TValue>(TObject target, List<TValue> items);
+        internal static void SetItemContainerTransitions(ItemsControl control, JToken obj, JToken last, Handler.DiffContext context)
+        {
+            SetCollectionProperty<ItemsControl, Transition>(
+                control,
+                "itemContainerTransitions",
+                obj,
+                last,
+                context,
+                (target, list) =>
+                {
+                    target.ItemContainerTransitions.Clear();
+                    foreach (var child in list)
+                    {
+                        target.ItemContainerTransitions.Add(child);
+                    }
+                });
+
+        }
+        internal static void SetChildrenTransitions(Panel control, JToken obj, JToken last, Handler.DiffContext context)
+        {
+            SetCollectionProperty<Panel, Transition>(
+                control,
+                "itemContainerTransitions",
+                obj,
+                last,
+                context,
+                (target, list) =>
+                {
+                    TransitionCollection col = target.ChildrenTransitions;
+                    if (col == null)
+                    {
+                        target.ChildrenTransitions = col = new TransitionCollection();
+                    }
+                    else
+                    {
+                        col.Clear();
+                    }
+                    foreach (var child in list)
+                    {
+                        col.Add(child);
+                    }
+                });
+
+        }
+
+        static void SetCollectionProperty<TObject, TValue>(
+            TObject t, 
+            string propertyName,
+            JToken obj,
+            JToken lastObj,
+            Handler.DiffContext context, 
+            SetCollectionPropertyCallback<TObject, TValue> setter) where TValue : DependencyObject
+        {
+            List<TValue> children = new List<TValue>();
+            IJEnumerable<JToken> lastChildren = null;
+            if (lastObj != null)
+            {
+                lastChildren = lastObj.AsJEnumerable();
+            }
+            CollectItemsWorker(t, obj.AsJEnumerable(), lastChildren, children, context);
+            // UNDONE: better diff
+            //
+            var setChildrenNeeded = true;
+
+            if (setChildrenNeeded)
+            {
+                setter(t, children);
+            }
+        }
+        static void CollectItemsWorker<TObject, TValue>(
+            TObject t, 
+            IJEnumerable<JToken> items, 
+            IEnumerable<JToken> lastItems, 
+            List<TValue> children,
+            Handler.DiffContext context) where TValue : DependencyObject
+        {
+            IEnumerator<JToken> enumerator = null;
+            if (lastItems != null)
+            {
+                enumerator = lastItems.GetEnumerator();
+                enumerator.Reset();
+            }
+            foreach (var child in items)
+            {
+                JToken lastChild = null;
+                if (enumerator != null && enumerator.MoveNext()) { lastChild = enumerator.Current; }
+
+                if (child.Type == JTokenType.Array)
+                {
+                    CollectItemsWorker(t, child.AsJEnumerable(), lastChild != null ? lastChild.AsJEnumerable() : null, children, context);
+                }
+                else
+                {
+                    var instance = Handler.CreateFromState((JObject)child, lastChild as JObject, context);
+                    children.Add((TValue)instance);
+                }
+            }
+        }
+
+
+        internal static void SetItemsSource(ItemsControl control, JToken source, JToken lastSource, Handler.DiffContext context)
+        {
+            // UNDONE: need to do delta on previous version of the list
+            //
+            List<object> collection = new List<object>();
+            if (source.Type == JTokenType.Array)
+            {
+                foreach (var child in source.AsJEnumerable())
+                {
+                    switch (child.Type)
+                    {
+                        case JTokenType.Float:
+                            collection.Add(child.Value<double>());
+                            break;
+                        case JTokenType.Integer:
+                            collection.Add(child.Value<int>());
+                            break;
+                        case JTokenType.String:
+                            collection.Add(child.Value<string>());
+                            break;
+                        case JTokenType.Object:
+                            var instance = Handler.CreateFromState((JObject)child, lastSource as JObject, context);
+                            collection.Add(instance);
+                            break;
+                        default:
+                            collection.Add("Unhandled:" + Enum.GetName(typeof(JTokenType), child.Type));
+                            break;
+                    }
+                }
+            }
+
+            control.ItemsSource = collection;
+        }
 
         static Tuple<bool, T> CreateOrGetLast<T>(JObject obj, DiffContext context) where T:new()
         {
