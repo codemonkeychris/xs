@@ -1,5 +1,9 @@
 #include "pch.h"
 #include "JScriptValueMarshaller.h"
+// #define DEBUG_WRITE(x) OutputDebugString(x);
+// #define DEBUG_WRITELN(x) { OutputDebugString(x); OutputDebugString(L"\n"); }
+#define DEBUG_WRITE(x) ;
+#define DEBUG_WRITELN(x) ;
 
 using namespace XSRT;
 
@@ -229,23 +233,25 @@ JsValueRef XSRT::InvertHandleAny(Platform::Object^ value)
 }
 JsValueRef XSRT::InvertHandleRecord(Windows::Foundation::Collections::IMap<Platform::String^, Platform::Object^>^ value)
 {
-    JsValueRef v;
-    JsCreateObject(&v);
+    JsValueRef result;
+    JsCreateObject(&result);
 
     auto it = value->First();
     while (it->HasCurrent)
     {
         auto key = it->Current->Key;
         auto v = XSRT::InvertHandleAny(it->Current->Value);
-        
+        DEBUG_WRITE(L"prop:");
+        DEBUG_WRITELN(key->Data());
+
         JsPropertyIdRef prop;
         JsGetPropertyIdFromName(key->Data(), &prop);
 
-        JsSetProperty(v, prop, v, true);
+        JsSetProperty(result, prop, v, true);
         it->MoveNext();
     }
 
-    return v;
+    return result;
 }
 JsValueRef XSRT::InvertHandleArray(Windows::Foundation::Collections::IVector<Platform::Object^>^ value)
 {
@@ -254,23 +260,27 @@ JsValueRef XSRT::InvertHandleArray(Windows::Foundation::Collections::IVector<Pla
 JsValueRef XSRT::InvertHandlePrimitive(Platform::Object^ value)
 {
     JsValueRef v = JS_INVALID_REFERENCE;
+    DEBUG_WRITE(L"value:");
 
     auto d = dynamic_cast<Platform::Box<double>^>(value);
     if (d != nullptr)
     {
         JsDoubleToNumber((double)d, &v);
+        DEBUG_WRITELN(L"number");
         return v;
     }
     auto b = dynamic_cast<Platform::Box<bool>^>(value);
     if (b != nullptr)
     {
         JsBoolToBoolean((bool)b, &v);
+        DEBUG_WRITELN(((bool)b) ? L"true" : L"false");
         return v;
     }
     auto str = dynamic_cast<Platform::String^>(value);
     if (str != nullptr)
     {
         JsPointerToString(str->Data(), str->Length(), &v);
+        DEBUG_WRITELN(str->Data());
         return v;
     }
     return v;

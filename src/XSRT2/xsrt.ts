@@ -74,6 +74,7 @@ module Xaml {
     export function ProgressBar() { return { type: 'ProgressBar' } };
     export function TextBox() { return { type: 'TextBox' } };
     export function ListBox() { return { type: 'ListBox' } };
+    export function ComboBox() { return { type: 'ComboBox' } };
     export function CalendarDatePicker() { return { type: 'CalendarDatePicker' } };
     export function CalendarView() { return { type: 'CalendarView' } };
     export function RelativePanel() { return { type: 'RelativePanel' } };

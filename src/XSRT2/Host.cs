@@ -219,13 +219,13 @@ var App;
             //
             jsrt.AddWinRTNamespace("Windows");
             jsrt.AddWinRTNamespace("XSRT2");
+            jsrt.AddHostObject("state", state);
+            jsrt.AddHostObject("helpers", new Helpers());
+            jsrt.Eval(program + "\r\n" + runtime);
             if (lastState != null)
             {
                 jsrt.LoadState(lastState);
             }
-            jsrt.AddHostObject("state", state);
-            jsrt.AddHostObject("helpers", new Helpers());
-            jsrt.Eval(program + "\r\n" + runtime);
         }
 
         void Display(RenderEventArgs renderEventArgs)

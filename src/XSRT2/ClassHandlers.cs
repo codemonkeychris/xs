@@ -144,6 +144,20 @@ namespace XSRT2 {
             }
         }
         
+        internal static class ComboBoxHandler
+        {
+            internal static ComboBox Create(JObject obj, JObject lastObj, DiffContext context)
+            {
+                var createResult = CreateOrGetLast<ComboBox>(obj, context);
+                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, context);
+                return createResult.Item2;
+            }
+            internal static void SetProperties(ComboBox t, JObject obj, JObject lastObj, DiffContext context)
+            {
+                SelectorHandler.SetProperties(t, obj, lastObj, context);
+            }
+        }
+        
         internal static class ListBoxHandler
         {
             internal static ListBox Create(JObject obj, JObject lastObj, DiffContext context)
@@ -163,6 +177,7 @@ namespace XSRT2 {
             internal static void SetProperties(Selector t, JObject obj, JObject lastObj, DiffContext context)
             {
                 ItemsControlHandler.SetProperties(t, obj, lastObj, context);
+                TrySet(context, obj, lastObj, "selectedItem", false, t, (target, x, lastX) => { target.SelectedItem = CreateForObjectType(x, lastX, context); });
                 TrySetEvent(context, obj, lastObj, "SelectionChanged", t, (target, x, lastX) => SetSelectionChangedEventHandler(x.ToString(), target));
             }
             static void SelectionChangedRouter(object sender, SelectionChangedEventArgs e)
@@ -483,10 +498,21 @@ namespace XSRT2 {
                     t.Children.Clear();
                     foreach (var child in children)
                     {
-                        var parent = VisualTreeHelper.GetParent(child) as Panel;
-                        if (parent != null)
+                        DependencyObject visualParent = null;
+
+                        var fe = child as FrameworkElement;
+                        if (fe != null && fe.Parent != null)
                         {
-                            parent.Children.Remove(child);
+                            visualParent = fe.Parent;
+                        }
+                        if (visualParent == null)
+                        {
+                            visualParent = VisualTreeHelper.GetParent(child);
+                        }
+                        var parentPanel = visualParent as Panel;
+                        if (parentPanel != null)
+                        {
+                            parentPanel.Children.Remove(child);
                         }
                         t.Children.Add(child);
                     }
@@ -632,6 +658,23 @@ namespace XSRT2 {
             }
         }
 
+        internal static object CreateForObjectType(JToken obj, JToken objLast, Handler.DiffContext context)
+        {
+            switch (obj.Type)
+            {
+                case JTokenType.Float:
+                    return obj.Value<double>();
+                case JTokenType.Integer:
+                    return obj.Value<int>();
+                case JTokenType.String:
+                    return obj.Value<string>();
+                case JTokenType.Object:
+                    var instance = Handler.CreateFromState((JObject)obj, objLast as JObject, context);
+                    return instance;
+                default:
+                    return "Unhandled:" + Enum.GetName(typeof(JTokenType), obj.Type);
+            }
+        }
 
         internal static void SetItemsSource(ItemsControl control, JToken source, JToken lastSource, Handler.DiffContext context)
         {
@@ -642,25 +685,7 @@ namespace XSRT2 {
             {
                 foreach (var child in source.AsJEnumerable())
                 {
-                    switch (child.Type)
-                    {
-                        case JTokenType.Float:
-                            collection.Add(child.Value<double>());
-                            break;
-                        case JTokenType.Integer:
-                            collection.Add(child.Value<int>());
-                            break;
-                        case JTokenType.String:
-                            collection.Add(child.Value<string>());
-                            break;
-                        case JTokenType.Object:
-                            var instance = Handler.CreateFromState((JObject)child, lastSource as JObject, context);
-                            collection.Add(instance);
-                            break;
-                        default:
-                            collection.Add("Unhandled:" + Enum.GetName(typeof(JTokenType), child.Type));
-                            break;
-                    }
+                    collection.Add(CreateForObjectType(child, lastSource, context));
                 }
             }
 
@@ -776,6 +801,7 @@ namespace XSRT2 {
                 handlers["TextBox"] = TextBoxHandler.Create;
                 handlers["GridView"] = GridViewHandler.Create;
                 handlers["ListView"] = ListViewHandler.Create;
+                handlers["ComboBox"] = ComboBoxHandler.Create;
                 handlers["ListBox"] = ListBoxHandler.Create;
                 handlers["Button"] = ButtonHandler.Create;
                 handlers["CalendarDatePicker"] = CalendarDatePickerHandler.Create;

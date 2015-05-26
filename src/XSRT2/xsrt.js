@@ -90,6 +90,9 @@ var Xaml;
     function ListBox() { return { type: 'ListBox' }; }
     Xaml.ListBox = ListBox;
     ;
+    function ComboBox() { return { type: 'ComboBox' }; }
+    Xaml.ComboBox = ComboBox;
+    ;
     function CalendarDatePicker() { return { type: 'CalendarDatePicker' }; }
     Xaml.CalendarDatePicker = CalendarDatePicker;
     ;
