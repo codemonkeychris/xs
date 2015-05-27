@@ -20,6 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{8992
 		..\samples\listview-demo.js = ..\samples\listview-demo.js
 		..\samples\relative-panel.js = ..\samples\relative-panel.js
 		..\samples\simple-demo.js = ..\samples\simple-demo.js
+		..\samples\word-count.js = ..\samples\word-count.js
 	EndProjectSection
 EndProject
 Global

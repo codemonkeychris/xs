@@ -2,6 +2,7 @@
 #include "JScriptValueMarshaller.h"
 // #define DEBUG_WRITE(x) OutputDebugString(x);
 // #define DEBUG_WRITELN(x) { OutputDebugString(x); OutputDebugString(L"\n"); }
+// #define DEBUG
 #define DEBUG_WRITE(x) ;
 #define DEBUG_WRITELN(x) ;
 
@@ -64,9 +65,19 @@ JsValueRef MergeObjectValue(JsValueRef target, JsValueRef source)
         JsPropertyIdRef nameId;
         JsGetPropertyIdFromName(strName, &nameId);
 
-
+        DEBUG_WRITE(L"merge name:");
+        DEBUG_WRITELN(strName)
         JsValueRef value;
         JsGetProperty(objSource, nameId, &value);
+#ifdef DEBUG
+        JsValueType vt(JsValueType::JsUndefined);
+        if (vt == JsValueType::JsString)
+        {
+            JsStringToPointer(value, &strName, &strLen);
+            DEBUG_WRITE(L"merge value:");
+            DEBUG_WRITELN(strName);
+        }
+#endif
         JsSetProperty(objTarget, nameId, value, true);
     }
 

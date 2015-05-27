@@ -151,7 +151,15 @@ var App;
             {
                 file = await Windows.Storage.ApplicationData.Current.RoamingFolder.CreateFileAsync(programFileName, CreationCollisionOption.OpenIfExists);
             }
-            return await ReadText(file);
+
+            if (overwriteIfExists)
+            {
+                return await RuntimeHelpers.GetResource(appType, programFileName);
+            }
+            else
+            {
+                return await ReadText(file);
+            }
         }
 
         // This is here purely as a debugging aid for hard coding content of the file in cases

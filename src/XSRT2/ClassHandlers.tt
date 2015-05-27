@@ -627,7 +627,7 @@ namespace XSRT2 {
                 {
                     if (!last.TryGetValue(name, out tokLast))
                     {
-                        if (aliasFirstChild && obj.TryGetValue("children", out tokLast))
+                        if (aliasFirstChild && last.TryGetValue("children", out tokLast))
                         {
                             tokLast = ((JArray)tokLast).First;
                         }
