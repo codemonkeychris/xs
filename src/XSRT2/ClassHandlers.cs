@@ -60,8 +60,10 @@ namespace XSRT2 {
             internal static TextBlock Create(JObject obj, JObject lastObj, DiffContext context)
             {
                 var createResult = CreateOrGetLast<TextBlock>(obj, context);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, context);
-                return createResult.Item2;
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
             }
             internal static void SetProperties(TextBlock t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -78,8 +80,10 @@ namespace XSRT2 {
             internal static TextBox Create(JObject obj, JObject lastObj, DiffContext context)
             {
                 var createResult = CreateOrGetLast<TextBox>(obj, context);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, context);
-                return createResult.Item2;
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
             }
             internal static void SetProperties(TextBox t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -113,8 +117,10 @@ namespace XSRT2 {
             internal static GridView Create(JObject obj, JObject lastObj, DiffContext context)
             {
                 var createResult = CreateOrGetLast<GridView>(obj, context);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, context);
-                return createResult.Item2;
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
             }
             internal static void SetProperties(GridView t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -127,8 +133,10 @@ namespace XSRT2 {
             internal static ListView Create(JObject obj, JObject lastObj, DiffContext context)
             {
                 var createResult = CreateOrGetLast<ListView>(obj, context);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, context);
-                return createResult.Item2;
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
             }
             internal static void SetProperties(ListView t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -149,8 +157,10 @@ namespace XSRT2 {
             internal static ComboBox Create(JObject obj, JObject lastObj, DiffContext context)
             {
                 var createResult = CreateOrGetLast<ComboBox>(obj, context);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, context);
-                return createResult.Item2;
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
             }
             internal static void SetProperties(ComboBox t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -163,8 +173,10 @@ namespace XSRT2 {
             internal static ListBox Create(JObject obj, JObject lastObj, DiffContext context)
             {
                 var createResult = CreateOrGetLast<ListBox>(obj, context);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, context);
-                return createResult.Item2;
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
             }
             internal static void SetProperties(ListBox t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -250,8 +262,10 @@ namespace XSRT2 {
             internal static Button Create(JObject obj, JObject lastObj, DiffContext context)
             {
                 var createResult = CreateOrGetLast<Button>(obj, context);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, context);
-                return createResult.Item2;
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
             }
             internal static void SetProperties(Button t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -263,8 +277,10 @@ namespace XSRT2 {
             internal static CalendarDatePicker Create(JObject obj, JObject lastObj, DiffContext context)
             {
                 var createResult = CreateOrGetLast<CalendarDatePicker>(obj, context);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, context);
-                return createResult.Item2;
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
             }
             internal static void SetProperties(CalendarDatePicker t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -276,8 +292,10 @@ namespace XSRT2 {
             internal static CalendarView Create(JObject obj, JObject lastObj, DiffContext context)
             {
                 var createResult = CreateOrGetLast<CalendarView>(obj, context);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, context);
-                return createResult.Item2;
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
             }
             internal static void SetProperties(CalendarView t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -289,8 +307,10 @@ namespace XSRT2 {
             internal static RelativePanel Create(JObject obj, JObject lastObj, DiffContext context)
             {
                 var createResult = CreateOrGetLast<RelativePanel>(obj, context);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, context);
-                return createResult.Item2;
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
             }
             internal static void SetProperties(RelativePanel t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -302,8 +322,10 @@ namespace XSRT2 {
             internal static RepositionThemeTransition Create(JObject obj, JObject lastObj, DiffContext context)
             {
                 var createResult = CreateOrGetLast<RepositionThemeTransition>(obj, context);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, context);
-                return createResult.Item2;
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
             }
             internal static void SetProperties(RepositionThemeTransition t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -314,8 +336,10 @@ namespace XSRT2 {
             internal static ProgressBar Create(JObject obj, JObject lastObj, DiffContext context)
             {
                 var createResult = CreateOrGetLast<ProgressBar>(obj, context);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, context);
-                return createResult.Item2;
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
             }
             internal static void SetProperties(ProgressBar t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -327,8 +351,10 @@ namespace XSRT2 {
             internal static Slider Create(JObject obj, JObject lastObj, DiffContext context)
             {
                 var createResult = CreateOrGetLast<Slider>(obj, context);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, context);
-                return createResult.Item2;
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
             }
             internal static void SetProperties(Slider t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -342,8 +368,10 @@ namespace XSRT2 {
             internal static CheckBox Create(JObject obj, JObject lastObj, DiffContext context)
             {
                 var createResult = CreateOrGetLast<CheckBox>(obj, context);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, context);
-                return createResult.Item2;
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
             }
             internal static void SetProperties(CheckBox t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -419,8 +447,10 @@ namespace XSRT2 {
             internal static StackPanel Create(JObject obj, JObject lastObj, DiffContext context)
             {
                 var createResult = CreateOrGetLast<StackPanel>(obj, context);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, context);
-                return createResult.Item2;
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
             }
             internal static void SetProperties(StackPanel t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -432,8 +462,10 @@ namespace XSRT2 {
             internal static Grid Create(JObject obj, JObject lastObj, DiffContext context)
             {
                 var createResult = CreateOrGetLast<Grid>(obj, context);
-                SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, context);
-                return createResult.Item2;
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
             }
             internal static void SetProperties(Grid t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -713,7 +745,7 @@ namespace XSRT2 {
             control.ItemsSource = collection;
         }
 
-        static Tuple<bool, T> CreateOrGetLast<T>(JObject obj, DiffContext context) where T:new()
+        static CreateResult<T> CreateOrGetLast<T>(JObject obj, DiffContext context) where T:new()
         {
             JToken name;
             string resolvedName = null;
@@ -733,14 +765,14 @@ namespace XSRT2 {
                 {
                     if (value != null && value is T)
                     {
-                        return new Tuple<bool, T>(true, (T)value);
+                        return new CreateResult<T>() { Value = (T)value, Recycled = true, Name = resolvedName };
                     }
                 }
             }
             context.ObjectCreateCount++;
             var instance = new T();
             context.AddObject(resolvedName, instance);
-            return new Tuple<bool, T>(false, instance);
+            return new CreateResult<T>() { Value = instance, Recycled = false, Name = resolvedName };
         }
 
         static void TrySet<T>(DiffContext context, JObject obj, JObject last, string name, T target, Setter<T> setter)
@@ -858,6 +890,12 @@ namespace XSRT2 {
         internal delegate void Setter<T>(T target, JToken value, JToken lastValue);
         delegate DependencyObject CreateCallback(JObject obj, JObject lastObj, DiffContext context);
 
+        struct CreateResult<T> 
+        {
+            public T Value;
+            public bool Recycled;
+            public string Name;
+        }
         internal abstract class DeferSetter
         {
             public abstract void Do();
@@ -880,6 +918,7 @@ namespace XSRT2 {
             Dictionary<string, object> currentNamedObjectMap = new Dictionary<string, object>();
             // UNDONE: get smarter about surrogate key generation
             Dictionary<string, int> surrogateKeys = new Dictionary<string, int>();
+            List<string> nameStack = new List<string>();
 
             internal DiffContext(Dictionary<string, object> lastNamedObjectMap)
             {
@@ -929,8 +968,21 @@ namespace XSRT2 {
                     n++;
                 }
                 surrogateKeys[baseName] = n;
-                string key = baseName + n; 
-                return key;
+                string key = baseName + n;
+
+                var concat = nameStack.Count > 0 ? nameStack.Aggregate((a, b) => a + "-" + b) : "root";
+                 
+                return concat + "-" + key;
+            }
+            public void PushName(string name)
+            {
+                nameStack.Add(name);
+            }
+            public void PopName(string name)
+            {
+                var n = nameStack[nameStack.Count - 1];
+                if (name != n) { throw new InvalidOperationException("unbalanced name"); }
+                nameStack.RemoveAt(nameStack.Count - 1);
             }
         }
     }

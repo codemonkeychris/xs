@@ -16,7 +16,7 @@ var App;
 
     setInterval(function() {
         host.setState({ frameCount: host.getState().frameCount + 1 });
-    }, 500)
+    }, 200)
 
     function sliderChanged(sender, e) {
         host.setState({ sliderPos: e.newValue });
@@ -100,11 +100,13 @@ var App;
     }
     
     function renderDemo2() {
+        function i1() { return "i1 => (frame: " + host.getState().frameCount + ")"; }
+
         switch (host.getState().frameCount % 5) {
             case 0:
                 return (
                     <Xaml.StackPanel>
-                        <Xaml.TextBlock name='i1' text={"i1(" + host.getState().frameCount + ")"} />
+                        <Xaml.TextBlock name='i1' text={i1()} />
                         <Xaml.TextBlock name='i2' text="i2" />
                         <Xaml.TextBlock name='i3' text="i3" />
                         <Xaml.StackPanel>
@@ -117,7 +119,7 @@ var App;
             case 1:
                 return (
                     <Xaml.StackPanel>
-                        <Xaml.TextBlock name='i1' text={"i1(" + host.getState().frameCount + ")"} />
+                        <Xaml.TextBlock name='i1' text={i1()} />
                         <Xaml.TextBlock name='i2' text="i2" />
                         <Xaml.TextBlock name='i3' text="i3" />
                         <Xaml.TextBlock text="annon1" />
@@ -129,7 +131,7 @@ var App;
             case 2:
                 return (
                     <Xaml.StackPanel>
-                        <Xaml.TextBlock name='i1' text={"i1(" + host.getState().frameCount + ")"} />
+                        <Xaml.TextBlock name='i1' text={i1()} />
                         <Xaml.TextBlock name='i2' text="i2" />
                         <Xaml.TextBlock text="annon1" />
                         <Xaml.TextBlock name='i3' text="i3" />
@@ -142,7 +144,7 @@ var App;
             case 3:
                 return (
                     <Xaml.StackPanel>
-                        <Xaml.TextBlock name='i1' text={"i1(" + host.getState().frameCount + ")"} />
+                        <Xaml.TextBlock name='i1' text={i1()} />
                         <Xaml.TextBlock name='i2' text="i2" />
                         <Xaml.TextBlock text="annon1" />
                         <Xaml.TextBlock text="annon2" />
@@ -155,7 +157,7 @@ var App;
             case 4:
                 return (
                     <Xaml.StackPanel>
-                        <Xaml.TextBlock name='i1' text={"i1(" + host.getState().frameCount + ")"} />
+                        <Xaml.TextBlock name='i1' text={i1()} />
                         <Xaml.TextBlock name='i2' text="i2" />
                         <Xaml.TextBlock text="annon1" />
                         <Xaml.TextBlock text="annon2" />

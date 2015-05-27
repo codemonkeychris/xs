@@ -551,7 +551,7 @@ namespace XSRT2 {
             control.ItemsSource = collection;
         }
 
-        static Tuple<bool, T> CreateOrGetLast<T>(JObject obj, DiffContext context) where T:new()
+        static CreateResult<T> CreateOrGetLast<T>(JObject obj, DiffContext context) where T:new()
         {
             JToken name;
             string resolvedName = null;
@@ -571,14 +571,14 @@ namespace XSRT2 {
                 {
                     if (value != null && value is T)
                     {
-                        return new Tuple<bool, T>(true, (T)value);
+                        return new CreateResult<T>() { Value = (T)value, Recycled = true, Name = resolvedName };
                     }
                 }
             }
             context.ObjectCreateCount++;
             var instance = new T();
             context.AddObject(resolvedName, instance);
-            return new Tuple<bool, T>(false, instance);
+            return new CreateResult<T>() { Value = instance, Recycled = false, Name = resolvedName };
         }
 
         static void TrySet<T>(DiffContext context, JObject obj, JObject last, string name, T target, Setter<T> setter)
@@ -683,6 +683,12 @@ namespace XSRT2 {
         internal delegate void Setter<T>(T target, JToken value, JToken lastValue);
         delegate DependencyObject CreateCallback(JObject obj, JObject lastObj, DiffContext context);
 
+        struct CreateResult<T> 
+        {
+            public T Value;
+            public bool Recycled;
+            public string Name;
+        }
         internal abstract class DeferSetter
         {
             public abstract void Do();
@@ -705,6 +711,7 @@ namespace XSRT2 {
             Dictionary<string, object> currentNamedObjectMap = new Dictionary<string, object>();
             // UNDONE: get smarter about surrogate key generation
             Dictionary<string, int> surrogateKeys = new Dictionary<string, int>();
+            List<string> nameStack = new List<string>();
 
             internal DiffContext(Dictionary<string, object> lastNamedObjectMap)
             {
@@ -754,8 +761,21 @@ namespace XSRT2 {
                     n++;
                 }
                 surrogateKeys[baseName] = n;
-                string key = baseName + n; 
-                return key;
+                string key = baseName + n;
+
+                var concat = nameStack.Count > 0 ? nameStack.Aggregate((a, b) => a + "-" + b) : "root";
+                 
+                return concat + "-" + key;
+            }
+            public void PushName(string name)
+            {
+                nameStack.Add(name);
+            }
+            public void PopName(string name)
+            {
+                var n = nameStack[nameStack.Count - 1];
+                if (name != n) { throw new InvalidOperationException("unbalanced name"); }
+                nameStack.RemoveAt(nameStack.Count - 1);
             }
         }
     }
@@ -844,8 +864,10 @@ void Create(string name) {
     WriteLine("{");
     PushIndent("    ");
     WriteLine("var createResult = CreateOrGetLast<" + name + ">(obj, context);");
-    WriteLine("SetProperties(createResult.Item2, obj, createResult.Item1 ? lastObj : null, context);");
-    WriteLine("return createResult.Item2;");
+    WriteLine("context.PushName(createResult.Name);");
+    WriteLine("SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);");
+    WriteLine("context.PopName(createResult.Name);");
+    WriteLine("return createResult.Value;");
     PopIndent();
     WriteLine("}");
 }

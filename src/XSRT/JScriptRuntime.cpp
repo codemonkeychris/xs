@@ -133,6 +133,8 @@ JsValueRef CALLBACK JScriptRuntime::SetInterval(JsValueRef callee, bool isConstr
 
     auto timer = m_timers[timerId] = ref new DispatcherTimer();
     m_timerHandlers[timerId] = func;
+    JsAddRef(func, nullptr);
+
     Windows::Foundation::TimeSpan t;
     t.Duration = (long long)(interval * 10000L);
     timer->Interval = t;
@@ -168,6 +170,7 @@ JsValueRef CALLBACK JScriptRuntime::ClearInterval(JsValueRef callee, bool isCons
     auto timerHandler = m_timerHandlers.find(timerId);
     auto timer = m_timers.find(timerId);
     if (timerHandler != m_timerHandlers.end()) {
+        JsRelease(timerHandler->second, nullptr);
         m_timerHandlers.erase(timerHandler);
     }
     if (timer != m_timers.end()) {
@@ -256,7 +259,7 @@ void JScriptRuntime::ClearTimers()
 {
     for (auto it = m_timerHandlers.begin(); it != m_timerHandlers.end(); it++)
     {
-        // ?
+        JsRelease(it->second, nullptr);
     }
     m_timerHandlers.clear();
 
