@@ -516,6 +516,41 @@ namespace XSRT2 {
                 }
             }
 
+            static void Unparent(UIElement child)
+            {
+                DependencyObject visualParent = null;
+
+                var fe = child as FrameworkElement;
+                if (fe != null && fe.Parent != null)
+                {
+                    visualParent = fe.Parent;
+                }
+                if (visualParent == null)
+                {
+                    visualParent = VisualTreeHelper.GetParent(child);
+                }
+                var parentContent = visualParent as ContentControl;
+                var parentPresenter = visualParent as ContentPresenter;
+                var parentBorder = visualParent as Border;
+                var parentPanel = visualParent as Panel;
+                if (parentPanel != null)
+                {
+                    parentPanel.Children.Remove(child);
+                }
+                else if (parentContent != null)
+                {
+                    parentContent.Content = null;
+                }
+                else if (parentBorder != null)
+                {
+                    parentBorder.Child = null;
+                }
+                else if (parentPresenter != null)
+                {
+                    parentPresenter.Content = null;
+                }
+            }
+
             static void SetPanelChildren(Panel t, JObject obj, JObject lastObj, DiffContext context)
             {
                 Handler.FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
@@ -545,43 +580,10 @@ namespace XSRT2 {
 
                 if (setChildrenNeeded)
                 {
-                    // UNDONE: this step is to explicitly call "DisconnectChildrenRecursive"
-                    // which appears to be neccessary for moving elements between containers
-                    // however, it also leaves the elements non-rendering (in some cases)... 
-                    //
-                    List<UIElement> toRemove = new List<UIElement>();
-                    foreach (var old in t.Children)
-                    {
-                        if (!children.Contains(old))
-                        {
-                            toRemove.Add(old);
-                        }
-                    }
-                    foreach (var old in toRemove)
-                    {
-                        t.Children.Remove(old);
-                        VisualTreeHelper.DisconnectChildrenRecursive(old);
-                    }
-
                     t.Children.Clear();
                     foreach (var child in children)
                     {
-                        DependencyObject visualParent = null;
-
-                        var fe = child as FrameworkElement;
-                        if (fe != null && fe.Parent != null)
-                        {
-                            visualParent = fe.Parent;
-                        }
-                        if (visualParent == null)
-                        {
-                            visualParent = VisualTreeHelper.GetParent(child);
-                        }
-                        var parentPanel = visualParent as Panel;
-                        if (parentPanel != null)
-                        {
-                            parentPanel.Children.Remove(child);
-                        }
+                        Unparent(child);
                         t.Children.Add(child);
                     }
                 }
@@ -820,9 +822,17 @@ namespace XSRT2 {
             }
             if (found)
             {
-                if (last != null && last.TryGetValue(name, out tokLast))
+                if (last != null)
                 {
-                    if (tokLast.ToString() == tok.ToString())
+                    if (!last.TryGetValue(name, out tokLast))
+                    {
+                        if (aliasFirstChild && obj.TryGetValue("children", out tokLast))
+                        {
+                            tokLast = ((JArray)tokLast).First;
+                        }
+                    }
+
+                    if (tokLast != null && tokLast.ToString() == tok.ToString())
                     {
                         return; // bail early if old & new are the same
                     }
