@@ -333,6 +333,24 @@ namespace XSRT2 {
 
                 if (setChildrenNeeded)
                 {
+                    // UNDONE: this step is to explicitly call "DisconnectChildrenRecursive"
+                    // which appears to be neccessary for moving elements between containers
+                    // however, it also leaves the elements non-rendering (in some cases)... 
+                    //
+                    List<UIElement> toRemove = new List<UIElement>();
+                    foreach (var old in t.Children)
+                    {
+                        if (!children.Contains(old))
+                        {
+                            toRemove.Add(old);
+                        }
+                    }
+                    foreach (var old in toRemove)
+                    {
+                        t.Children.Remove(old);
+                        VisualTreeHelper.DisconnectChildrenRecursive(old);
+                    }
+
                     t.Children.Clear();
                     foreach (var child in children)
                     {
@@ -364,19 +382,22 @@ namespace XSRT2 {
                     enumerator = lastItems.GetEnumerator();
                     enumerator.Reset();
                 }
-                foreach (var child in items)
+                if(items != null)
                 {
-                    JToken lastChild = null;
-                    if (enumerator != null && enumerator.MoveNext()) { lastChild = enumerator.Current; }
+                    foreach (var child in items)
+                    {
+                        JToken lastChild = null;
+                        if (enumerator != null && enumerator.MoveNext()) { lastChild = enumerator.Current; }
 
-                    if (child.Type == JTokenType.Array)
-                    {
-                        CollectPanelChildrenWorker(t, child.AsJEnumerable(), lastChild != null ? lastChild.AsJEnumerable() : null, children, context);
-                    }
-                    else
-                    {
-                        var instance = CreateFromState((JObject)child, lastChild as JObject, context);
-                        children.Add((FrameworkElement)instance);
+                        if (child.Type == JTokenType.Array)
+                        {
+                            CollectPanelChildrenWorker(t, child.AsJEnumerable(), lastChild != null ? lastChild.AsJEnumerable() : null, children, context);
+                        }
+                        else
+                        {
+                            var instance = CreateFromState((JObject)child, lastChild as JObject, context);
+                            children.Add((FrameworkElement)instance);
+                        }
                     }
                 }
             }

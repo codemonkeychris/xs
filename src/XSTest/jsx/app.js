@@ -7,11 +7,16 @@ var App;
             prefix: "Item",
             sliderPos: 1,
             filter: true,
-            activePage: 'Demo1'
+            activePage: 'Demo1',
+            frameCount: 0
         });
     };
 
     var pages = ["Demo1", "Demo2"];
+
+    setInterval(function() {
+        host.setState({ frameCount: host.getState().frameCount + 1 });
+    }, 500)
 
     function sliderChanged(sender, e) {
         host.setState({ sliderPos: e.newValue });
@@ -95,7 +100,72 @@ var App;
     }
     
     function renderDemo2() {
-        return <Xaml.TextBlock name='page2' text="UNDONE: make page 2 better" />
+        switch (host.getState().frameCount % 5) {
+            case 0:
+                return (
+                    <Xaml.StackPanel>
+                        <Xaml.TextBlock name='i1' text={"i1(" + host.getState().frameCount + ")"} />
+                        <Xaml.TextBlock name='i2' text="i2" />
+                        <Xaml.TextBlock name='i3' text="i3" />
+                        <Xaml.StackPanel>
+                            <Xaml.TextBlock text="annon1" />
+                            <Xaml.TextBlock text="annon2" />
+                            <Xaml.TextBlock text="annon3" />
+                        </Xaml.StackPanel>
+                    </Xaml.StackPanel>
+                );
+            case 1:
+                return (
+                    <Xaml.StackPanel>
+                        <Xaml.TextBlock name='i1' text={"i1(" + host.getState().frameCount + ")"} />
+                        <Xaml.TextBlock name='i2' text="i2" />
+                        <Xaml.TextBlock name='i3' text="i3" />
+                        <Xaml.TextBlock text="annon1" />
+                        <Xaml.TextBlock text="annon2" />
+                        <Xaml.TextBlock text="annon3" />
+                        <Xaml.StackPanel />
+                    </Xaml.StackPanel>
+                );
+            case 2:
+                return (
+                    <Xaml.StackPanel>
+                        <Xaml.TextBlock name='i1' text={"i1(" + host.getState().frameCount + ")"} />
+                        <Xaml.TextBlock name='i2' text="i2" />
+                        <Xaml.TextBlock text="annon1" />
+                        <Xaml.TextBlock name='i3' text="i3" />
+                        <Xaml.TextBlock text="annon2" />
+                        <Xaml.StackPanel>
+                            <Xaml.TextBlock text="annon3" />
+                        </Xaml.StackPanel>
+                    </Xaml.StackPanel>
+                );
+            case 3:
+                return (
+                    <Xaml.StackPanel>
+                        <Xaml.TextBlock name='i1' text={"i1(" + host.getState().frameCount + ")"} />
+                        <Xaml.TextBlock name='i2' text="i2" />
+                        <Xaml.TextBlock text="annon1" />
+                        <Xaml.TextBlock text="annon2" />
+                        <Xaml.StackPanel>
+                            <Xaml.TextBlock name='i3' text="i3" />
+                            <Xaml.TextBlock text="annon3" />
+                        </Xaml.StackPanel>
+                    </Xaml.StackPanel>
+                );
+            case 4:
+                return (
+                    <Xaml.StackPanel>
+                        <Xaml.TextBlock name='i1' text={"i1(" + host.getState().frameCount + ")"} />
+                        <Xaml.TextBlock name='i2' text="i2" />
+                        <Xaml.TextBlock text="annon1" />
+                        <Xaml.TextBlock text="annon2" />
+                        <Xaml.TextBlock text="annon3" />
+                        <Xaml.StackPanel>
+                            <Xaml.TextBlock name='i3' text="i3" />
+                        </Xaml.StackPanel>
+                    </Xaml.StackPanel>
+                );
+        }
     }
 
     function ActivePage() {

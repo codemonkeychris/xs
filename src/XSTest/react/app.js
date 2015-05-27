@@ -7,11 +7,16 @@ var App;
             prefix: "Item",
             sliderPos: 1,
             filter: true,
-            activePage: 'Demo1'
+            activePage: 'Demo2',
+            frameCount: 0
         });
     };
 
     var pages = ["Demo1", "Demo2"];
+
+    setInterval(function() {
+        host.setState({ frameCount: host.getState().frameCount + 1 });
+    }, 500)
 
     function sliderChanged(sender, e) {
         host.setState({ sliderPos: e.newValue });
@@ -53,7 +58,7 @@ var App;
                     grid$row: "2", 
                     grid$column: "1", 
                     acc$labeledBy: "label1", 
-                    minimum: "1", maximum: "20", value: "5", 
+                    minimum: "1", maximum: "20", value: host.getState().sliderPos, 
                     onValueChanged: sliderChanged}), 
                 React.createElement(Xaml.ProgressBar, {
                     grid$row: "3", 
@@ -95,7 +100,72 @@ var App;
     }
     
     function renderDemo2() {
-        return React.createElement(Xaml.TextBlock, {name: "page2", text: "UNDONE: page 2"})
+        switch (host.getState().frameCount % 5) {
+            case 0:
+                return (
+                    React.createElement(Xaml.StackPanel, null, 
+                        React.createElement(Xaml.TextBlock, {name: "i1", text: "i1(" + host.getState().frameCount + ")"}), 
+                        React.createElement(Xaml.TextBlock, {name: "i2", text: "i2"}), 
+                        React.createElement(Xaml.TextBlock, {name: "i3", text: "i3"}), 
+                        React.createElement(Xaml.StackPanel, null, 
+                            React.createElement(Xaml.TextBlock, {text: "annon1"}), 
+                            React.createElement(Xaml.TextBlock, {text: "annon2"}), 
+                            React.createElement(Xaml.TextBlock, {text: "annon3"})
+                        )
+                    )
+                );
+            case 1:
+                return (
+                    React.createElement(Xaml.StackPanel, null, 
+                        React.createElement(Xaml.TextBlock, {name: "i1", text: "i1(" + host.getState().frameCount + ")"}), 
+                        React.createElement(Xaml.TextBlock, {name: "i2", text: "i2"}), 
+                        React.createElement(Xaml.TextBlock, {name: "i3", text: "i3"}), 
+                        React.createElement(Xaml.TextBlock, {text: "annon1"}), 
+                        React.createElement(Xaml.TextBlock, {text: "annon2"}), 
+                        React.createElement(Xaml.TextBlock, {text: "annon3"}), 
+                        React.createElement(Xaml.StackPanel, null)
+                    )
+                );
+            case 2:
+                return (
+                    React.createElement(Xaml.StackPanel, null, 
+                        React.createElement(Xaml.TextBlock, {name: "i1", text: "i1(" + host.getState().frameCount + ")"}), 
+                        React.createElement(Xaml.TextBlock, {name: "i2", text: "i2"}), 
+                        React.createElement(Xaml.TextBlock, {text: "annon1"}), 
+                        React.createElement(Xaml.TextBlock, {name: "i3", text: "i3"}), 
+                        React.createElement(Xaml.TextBlock, {text: "annon2"}), 
+                        React.createElement(Xaml.StackPanel, null, 
+                            React.createElement(Xaml.TextBlock, {text: "annon3"})
+                        )
+                    )
+                );
+            case 3:
+                return (
+                    React.createElement(Xaml.StackPanel, null, 
+                        React.createElement(Xaml.TextBlock, {name: "i1", text: "i1(" + host.getState().frameCount + ")"}), 
+                        React.createElement(Xaml.TextBlock, {name: "i2", text: "i2"}), 
+                        React.createElement(Xaml.TextBlock, {text: "annon1"}), 
+                        React.createElement(Xaml.TextBlock, {text: "annon2"}), 
+                        React.createElement(Xaml.StackPanel, null, 
+                            React.createElement(Xaml.TextBlock, {name: "i3", text: "i3"}), 
+                            React.createElement(Xaml.TextBlock, {text: "annon3"})
+                        )
+                    )
+                );
+            case 4:
+                return (
+                    React.createElement(Xaml.StackPanel, null, 
+                        React.createElement(Xaml.TextBlock, {name: "i1", text: "i1(" + host.getState().frameCount + ")"}), 
+                        React.createElement(Xaml.TextBlock, {name: "i2", text: "i2"}), 
+                        React.createElement(Xaml.TextBlock, {text: "annon1"}), 
+                        React.createElement(Xaml.TextBlock, {text: "annon2"}), 
+                        React.createElement(Xaml.TextBlock, {text: "annon3"}), 
+                        React.createElement(Xaml.StackPanel, null, 
+                            React.createElement(Xaml.TextBlock, {name: "i3", text: "i3"})
+                        )
+                    )
+                );
+        }
     }
 
     function ActivePage() {
