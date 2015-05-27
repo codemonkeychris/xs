@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Automation.Peers;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace XSRT2 {
     public static class Handler
@@ -72,6 +73,23 @@ namespace XSRT2 {
                 TrySet(context, obj, lastObj, "fontFamily", false, t, (target, x, lastX) => target.FontFamily = new FontFamily(x.ToString()));
                 TrySet(context, obj, lastObj, "fontSize", false, t, (target, x, lastX) => target.FontSize = x.Value<double>());
                 TrySet(context, obj, lastObj, "fontWeight", false, t, (target, x, lastX) => target.FontWeight = XamlStringParse<FontWeight>(x));
+            }
+        }
+
+        internal static class ImageHandler
+        {
+            internal static Image Create(JObject obj, JObject lastObj, DiffContext context)
+            {
+                var createResult = CreateOrGetLast<Image>(obj, context);
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
+            }
+            internal static void SetProperties(Image t, JObject obj, JObject lastObj, DiffContext context)
+            {
+                FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
+                TrySet(context, obj, lastObj, "source", false, t, (target, x, lastX) => target.Source = new BitmapImage(FromRelativeUri(target, x.ToString(), context)), context.Defer);
             }
         }
 
@@ -851,6 +869,7 @@ namespace XSRT2 {
             {
                 handlers = new Dictionary<string, CreateCallback>();
                 handlers["TextBlock"] = TextBlockHandler.Create;
+                handlers["Image"] = ImageHandler.Create;
                 handlers["TextBox"] = TextBoxHandler.Create;
                 handlers["GridView"] = GridViewHandler.Create;
                 handlers["ListView"] = ListViewHandler.Create;
@@ -885,6 +904,20 @@ namespace XSRT2 {
             {
                 return new TextBlock() { Text = item.ToString() };
             }
+        }
+        internal static Uri FromRelativeUri(FrameworkElement relativeElement, string path, DiffContext context)
+        {
+            var r = relativeElement;
+            var b = r.BaseUri;
+            while (b == null)
+            {
+                r = VisualTreeHelper.GetParent(r) as FrameworkElement;
+                if (r == null) { b = context.HostElement.BaseUri; break; }
+                b = r.BaseUri;
+            }
+            if (b == null) { throw new InvalidOperationException("Can't determine base uri"); }
+            var u = new Uri(b, path);
+            return u;
         }
 
         internal delegate void Setter<T>(T target, JToken value, JToken lastValue);
@@ -931,6 +964,7 @@ namespace XSRT2 {
             public int ObjectCreateCount;
             public DateTime Start;
             public DateTime End;
+            public FrameworkElement HostElement;
                 
             public Dictionary<String, object> GetNamedObjectMap() { return currentNamedObjectMap; }
 

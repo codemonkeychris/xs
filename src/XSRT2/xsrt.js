@@ -69,6 +69,9 @@ var Xaml;
     function StackPanel() { return { type: 'StackPanel' }; }
     Xaml.StackPanel = StackPanel;
     ;
+    function Image() { return { type: 'Image' }; }
+    Xaml.Image = Image;
+    ;
     function TextBlock() { return { type: 'TextBlock' }; }
     Xaml.TextBlock = TextBlock;
     ;

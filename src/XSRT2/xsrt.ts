@@ -67,6 +67,7 @@ module Xaml {
     export function ListView() { return { type: 'ListView' } };
     export function Grid() { return { type: 'Grid' } };
     export function StackPanel() { return { type: 'StackPanel' } };
+    export function Image() { return { type: 'Image' } };
     export function TextBlock() { return { type: 'TextBlock' } };
     export function Button() { return { type: 'Button' } };
     export function CheckBox() { return { type: 'CheckBox' } };

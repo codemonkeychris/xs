@@ -42,7 +42,8 @@ namespace XSRT2
                 Start = DateTime.Now,
                 PropertySetCount = 0,
                 ObjectCreateCount = 0,
-                EventSetCount = 0
+                EventSetCount = 0,
+                HostElement = control
             };
             control.Content = Handler.CreateFromState(newUI, lastUI, context);
             foreach (var d in context.Defer)

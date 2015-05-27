@@ -22,6 +22,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Automation.Peers;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace XSRT2 {
     public static class Handler
@@ -88,6 +89,18 @@ namespace XSRT2 {
                 BasicProp("FontFamily", "new FontFamily(x.ToString())"),
                 DoubleProp("FontSize"),
                 XamlProperty("FontWeight", "FontWeight")
+            },
+            null
+        );
+        #>
+
+        <#
+        ClassDef(
+            "Image",
+            true,
+            "FrameworkElement",
+            new PropEntry[] {
+                DeferBasicProp("Source", "new BitmapImage(FromRelativeUri(target, x.ToString(), context))")
             },
             null
         );
@@ -679,6 +692,20 @@ namespace XSRT2 {
                 return new TextBlock() { Text = item.ToString() };
             }
         }
+        internal static Uri FromRelativeUri(FrameworkElement relativeElement, string path, DiffContext context)
+        {
+            var r = relativeElement;
+            var b = r.BaseUri;
+            while (b == null)
+            {
+                r = VisualTreeHelper.GetParent(r) as FrameworkElement;
+                if (r == null) { b = context.HostElement.BaseUri; break; }
+                b = r.BaseUri;
+            }
+            if (b == null) { throw new InvalidOperationException("Can't determine base uri"); }
+            var u = new Uri(b, path);
+            return u;
+        }
 
         internal delegate void Setter<T>(T target, JToken value, JToken lastValue);
         delegate DependencyObject CreateCallback(JObject obj, JObject lastObj, DiffContext context);
@@ -724,6 +751,7 @@ namespace XSRT2 {
             public int ObjectCreateCount;
             public DateTime Start;
             public DateTime End;
+            public FrameworkElement HostElement;
                 
             public Dictionary<String, object> GetNamedObjectMap() { return currentNamedObjectMap; }
 
@@ -815,6 +843,9 @@ PropEntry DefaultStringProp(string name) {
 }
 PropEntry BasicProp(string name, string setter) {
     return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = " + setter };
+}
+PropEntry DeferBasicProp(string name, string setter) {
+    return new PropEntry() { Name=CamelCase(name), Defer=true, SetBody="target." + name + " = " + setter };
 }
 PropEntry DefaultBasicProp(string name, string setter) {
     return new PropEntry() { Name=CamelCase(name), AliasFirstChild=true, SetBody="target." + name + " = " + setter };
