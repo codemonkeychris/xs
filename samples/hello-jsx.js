@@ -2,17 +2,16 @@ var App;
 (function (App) {
 
     App.setInitialState = function() {
-        host.state.setState("x1", "Click Me!");
-        host.state.setState("frame", "0");
+        host.setState({x1: "Click Me!", frame : 0 });
     };
     
     function clicked() {
-        host.state.setState("x1", "Clicked!");
+        host.setState({ x1: "Clicked!" });
     }
 
     setInterval(function() {
-        var c = +host.state.getState("frame", "0");
-        host.state.setState("frame", c+1);
+        var c = +host.getState().frame;
+        host.setState({frame: c+1});
     }, 250);
 
     App.render = function() {
@@ -25,7 +24,7 @@ var App;
                 <Xaml.Button name='b1' onClick={clicked}
                     content={<Xaml.TextBlock
                         name='t1'
-                        text={host.state.getState('frame','0') + ':' + host.state.getState("x1", "unset")} /> 
+                        text={host.getState().frame + ':' + host.getState().x1} /> 
                     } />
             </Xaml.StackPanel>
         );
