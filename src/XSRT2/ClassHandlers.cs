@@ -25,6 +25,8 @@ namespace XSRT2 {
         {
             internal static void SetProperties(FrameworkElement t, JObject obj, JObject lastObj, DiffContext context)
             {
+                TrySet(context, obj, lastObj, "scrollViewer$verticalScrollBarVisibility", false, t, (target, x, lastX) => { target.SetValue(ScrollViewer.VerticalScrollBarVisibilityProperty, XamlStringParse<ScrollBarVisibility>(x)); });
+                TrySet(context, obj, lastObj, "scrollViewer$horizontalScrollBarVisibility", false, t, (target, x, lastX) => { target.SetValue(ScrollViewer.HorizontalScrollBarVisibilityProperty, XamlStringParse<ScrollBarVisibility>(x)); });
                 TrySet(context, obj, lastObj, "grid$row", false, t, (target, x, lastX) => { target.SetValue(Grid.RowProperty, Convert.ToInt32(x.Value<double>())); });
                 TrySet(context, obj, lastObj, "grid$rowSpan", false, t, (target, x, lastX) => { target.SetValue(Grid.RowSpanProperty, Convert.ToInt32(x.Value<double>())); });
                 TrySet(context, obj, lastObj, "grid$column", false, t, (target, x, lastX) => { target.SetValue(Grid.ColumnProperty, Convert.ToInt32(x.Value<double>())); });
@@ -92,6 +94,53 @@ namespace XSRT2 {
                 TrySet(context, obj, lastObj, "source", false, t, (target, x, lastX) => target.Source = new BitmapImage(FromRelativeUri(target, x.ToString(), context)), context.Defer);
             }
         }
+        
+        internal static class RichEditBoxHandler
+        {
+            internal static RichEditBox Create(JObject obj, JObject lastObj, DiffContext context)
+            {
+                var createResult = CreateOrGetLast<RichEditBox>(obj, context);
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
+            }
+            internal static void SetProperties(RichEditBox t, JObject obj, JObject lastObj, DiffContext context)
+            {
+                ControlHandler.SetProperties(t, obj, lastObj, context);
+                TrySet(context, obj, lastObj, "acceptsReturn", false, t, (target, x, lastX) => target.AcceptsReturn = Convert.ToBoolean(((JValue)x).Value));
+                TrySet(context, obj, lastObj, "text", false, t, (target, x, lastX) => target.Document.SetText(TextSetOptions.None, x.ToString()));
+                TrySet(context, obj, lastObj, "isColorFontEnabled", false, t, (target, x, lastX) => target.IsColorFontEnabled = Convert.ToBoolean(((JValue)x).Value));
+                TrySet(context, obj, lastObj, "isReadOnly", false, t, (target, x, lastX) => target.IsReadOnly = Convert.ToBoolean(((JValue)x).Value));
+                TrySet(context, obj, lastObj, "isSpellCheckEnabled", false, t, (target, x, lastX) => target.IsSpellCheckEnabled = Convert.ToBoolean(((JValue)x).Value));
+                TrySet(context, obj, lastObj, "isTextPredictionEnabled", false, t, (target, x, lastX) => target.IsTextPredictionEnabled = Convert.ToBoolean(((JValue)x).Value));
+                TrySet(context, obj, lastObj, "placeholderText", false, t, (target, x, lastX) => target.PlaceholderText = x.ToString());
+                TrySet(context, obj, lastObj, "preventKeyboardDisplayOnProgrammaticFocus", false, t, (target, x, lastX) => target.PreventKeyboardDisplayOnProgrammaticFocus = Convert.ToBoolean(((JValue)x).Value));
+                TrySet(context, obj, lastObj, "textAlignment", false, t, (target, x, lastX) => target.TextAlignment = ParseEnum<TextAlignment>(x));
+                TrySet(context, obj, lastObj, "textReadingOrder", false, t, (target, x, lastX) => target.TextReadingOrder = ParseEnum<TextReadingOrder>(x));
+                TrySet(context, obj, lastObj, "textWrapping", false, t, (target, x, lastX) => target.TextWrapping = ParseEnum<TextWrapping>(x));
+                TrySetEvent(context, obj, lastObj, "TextChanged", t, (target, x, lastX) => SetTextChangedEventHandler(x.ToString(), target));
+            }
+            static void TextChangedRouter(object sender, RoutedEventArgs e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["TextChanged"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetTextChangedEventHandler(string handlerName, RichEditBox element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["TextChanged"] = handlerName;
+                element.TextChanged -= TextChangedRouter;
+                element.TextChanged += TextChangedRouter;
+            }
+        }
 
         internal static class TextBoxHandler
         {
@@ -106,7 +155,20 @@ namespace XSRT2 {
             internal static void SetProperties(TextBox t, JObject obj, JObject lastObj, DiffContext context)
             {
                 ControlHandler.SetProperties(t, obj, lastObj, context);
+                TrySet(context, obj, lastObj, "acceptsReturn", false, t, (target, x, lastX) => target.AcceptsReturn = Convert.ToBoolean(((JValue)x).Value));
                 TrySet(context, obj, lastObj, "text", true, t, (target, x, lastX) => target.Text = x.ToString());
+                TrySet(context, obj, lastObj, "isColorFontEnabled", false, t, (target, x, lastX) => target.IsColorFontEnabled = Convert.ToBoolean(((JValue)x).Value));
+                TrySet(context, obj, lastObj, "isReadOnly", false, t, (target, x, lastX) => target.IsReadOnly = Convert.ToBoolean(((JValue)x).Value));
+                TrySet(context, obj, lastObj, "isSpellCheckEnabled", false, t, (target, x, lastX) => target.IsSpellCheckEnabled = Convert.ToBoolean(((JValue)x).Value));
+                TrySet(context, obj, lastObj, "isTextPredictionEnabled", false, t, (target, x, lastX) => target.IsTextPredictionEnabled = Convert.ToBoolean(((JValue)x).Value));
+                TrySet(context, obj, lastObj, "maxLength", false, t, (target, x, lastX) => target.MaxLength = x.Value<int>());
+                TrySet(context, obj, lastObj, "placeholderText", false, t, (target, x, lastX) => target.PlaceholderText = x.ToString());
+                TrySet(context, obj, lastObj, "preventKeyboardDisplayOnProgrammaticFocus", false, t, (target, x, lastX) => target.PreventKeyboardDisplayOnProgrammaticFocus = Convert.ToBoolean(((JValue)x).Value));
+                TrySet(context, obj, lastObj, "selectionLength", false, t, (target, x, lastX) => target.SelectionLength = x.Value<int>());
+                TrySet(context, obj, lastObj, "selectionStart", false, t, (target, x, lastX) => target.SelectionStart = x.Value<int>());
+                TrySet(context, obj, lastObj, "textAlignment", false, t, (target, x, lastX) => target.TextAlignment = ParseEnum<TextAlignment>(x));
+                TrySet(context, obj, lastObj, "textReadingOrder", false, t, (target, x, lastX) => target.TextReadingOrder = ParseEnum<TextReadingOrder>(x));
+                TrySet(context, obj, lastObj, "textWrapping", false, t, (target, x, lastX) => target.TextWrapping = ParseEnum<TextWrapping>(x));
                 TrySetEvent(context, obj, lastObj, "TextChanged", t, (target, x, lastX) => SetTextChangedEventHandler(x.ToString(), target));
             }
             static void TextChangedRouter(object sender, RoutedEventArgs e)
@@ -619,6 +681,7 @@ namespace XSRT2 {
             {
                 FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
                 SetPanelChildren(t, obj, lastObj, context);
+                TrySet(context, obj, lastObj, "background", false, t, (target, x, lastX) => target.Background = XamlStringParse<Brush>(x));
                 TrySet(context, obj, lastObj, "childrenTransitions", false, t, (target, x, lastX) => { SetChildrenTransitions(target, x, lastX, context); });
             }
 
@@ -880,6 +943,7 @@ namespace XSRT2 {
                 handlers = new Dictionary<string, CreateCallback>();
                 handlers["TextBlock"] = TextBlockHandler.Create;
                 handlers["Image"] = ImageHandler.Create;
+                handlers["RichEditBox"] = RichEditBoxHandler.Create;
                 handlers["TextBox"] = TextBoxHandler.Create;
                 handlers["GridView"] = GridViewHandler.Create;
                 handlers["ListView"] = ListViewHandler.Create;

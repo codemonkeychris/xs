@@ -35,6 +35,10 @@ namespace XSRT2 {
             // UNDONE: what is the scalable story for attached properties?
             //
             new PropEntry[] { 
+                new PropEntry() { Name="scrollViewer$verticalScrollBarVisibility", SetBody="{ target.SetValue(ScrollViewer.VerticalScrollBarVisibilityProperty, XamlStringParse<ScrollBarVisibility>(x)); }" },
+                new PropEntry() { Name="scrollViewer$horizontalScrollBarVisibility", SetBody="{ target.SetValue(ScrollViewer.HorizontalScrollBarVisibilityProperty, XamlStringParse<ScrollBarVisibility>(x)); }" },
+
+
                 // UNDONE: rest of grid
                 //
                 new PropEntry() { Name="grid$row", SetBody="{ target.SetValue(Grid.RowProperty, Convert.ToInt32(x.Value<double>())); }" },
@@ -70,8 +74,8 @@ namespace XSRT2 {
                 
                 // UNDONE: rest of framework element
                 //
-                EnumProperty("HorizontalAlignment"),
-                EnumProperty("VerticalAlignment"),
+                EnumProp("HorizontalAlignment"),
+                EnumProp("VerticalAlignment"),
                 XamlProperty("Margin", "Thickness"),
                 new PropEntry() { Name="name", SetBody="{ target.Name = x.ToString(); }" }
             },
@@ -105,6 +109,30 @@ namespace XSRT2 {
             null
         );
         #>
+        
+        <#
+        ClassDef(
+            "RichEditBox",
+            true,
+            "Control",
+            new PropEntry[] {
+                BooleanProp("AcceptsReturn"),
+                new PropEntry() { Name="text", SetBody="target.Document.SetText(TextSetOptions.None, x.ToString())" },
+                BooleanProp("IsColorFontEnabled"),
+                BooleanProp("IsReadOnly"),
+                BooleanProp("IsSpellCheckEnabled"),
+                BooleanProp("IsTextPredictionEnabled"),
+                StringProp("PlaceholderText"),
+                BooleanProp("PreventKeyboardDisplayOnProgrammaticFocus"),
+                EnumProp("TextAlignment"),
+                EnumProp("TextReadingOrder"),
+                EnumProp("TextWrapping")
+            },
+            new EventEntry[] {
+                new EventEntry() { Name="TextChanged", WinRTName="TextChanged", EventType="RoutedEventArgs" }
+            }
+        );
+        #>
 
         <#
         ClassDef(
@@ -112,7 +140,20 @@ namespace XSRT2 {
             true,
             "Control",
             new PropEntry[] {
-                DefaultStringProp("Text")
+                BooleanProp("AcceptsReturn"),
+                DefaultStringProp("Text"),
+                BooleanProp("IsColorFontEnabled"),
+                BooleanProp("IsReadOnly"),
+                BooleanProp("IsSpellCheckEnabled"),
+                BooleanProp("IsTextPredictionEnabled"),
+                IntProp("MaxLength"),
+                StringProp("PlaceholderText"),
+                BooleanProp("PreventKeyboardDisplayOnProgrammaticFocus"),
+                IntProp("SelectionLength"),
+                IntProp("SelectionStart"),
+                EnumProp("TextAlignment"),
+                EnumProp("TextReadingOrder"),
+                EnumProp("TextWrapping")
             },
             new EventEntry[] {
                 new EventEntry() { Name="TextChanged", WinRTName="TextChanged", EventType="RoutedEventArgs" }
@@ -274,7 +315,7 @@ namespace XSRT2 {
                 XamlProperty("Foreground", "Brush"),
                 BasicProp("FontFamily", "new FontFamily(x.ToString())"),
                 DoubleProp("FontSize"),
-                EnumProperty("FontWeight")
+                EnumProp("FontWeight")
             },
             null
         );
@@ -420,6 +461,7 @@ namespace XSRT2 {
             {
                 FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
                 SetPanelChildren(t, obj, lastObj, context);
+                TrySet(context, obj, lastObj, "background", false, t, (target, x, lastX) => target.Background = XamlStringParse<Brush>(x));
                 TrySet(context, obj, lastObj, "childrenTransitions", false, t, (target, x, lastX) => { SetChildrenTransitions(target, x, lastX, context); });
             }
 
@@ -836,14 +878,17 @@ class EventEntry {
 string CamelCase(string name) {
     return Char.ToLowerInvariant(name[0]) + name.Substring(1);
 }
-PropEntry EnumProperty(string name) {
+PropEntry EnumProp(string name) {
     return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = ParseEnum<" + name + ">(x)" };
 }
-PropEntry EnumProperty(string name, string winRTTypeName) {
+PropEntry EnumProp(string name, string winRTTypeName) {
     return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = ParseEnum<" + winRTTypeName + ">(x)" };
 }
 PropEntry XamlProperty(string name, string typeName) {
     return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = XamlStringParse<" + typeName + ">(x)" };
+}
+PropEntry IntProp(string name) {
+    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = x.Value<int>()" };
 }
 PropEntry StringProp(string name) {
     return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = x.ToString()" };

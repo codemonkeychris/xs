@@ -252,5 +252,11 @@ var App;
     public sealed class Helpers
     {
         public bool? GetIsChecked(object v) { return ((ToggleButton)v).IsChecked; }
+        public string GetText(object v)
+        {
+            string s;
+            ((RichEditBox)v).Document.GetText(Windows.UI.Text.TextGetOptions.UseCrlf, out s);
+            return s;
+        }
     }
 }

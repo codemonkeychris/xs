@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
+using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -32,7 +33,14 @@ namespace XSTest
         public MainPage()
         {
             this.InitializeComponent();
-            this.Content = new ContentControl();
+            this.HorizontalContentAlignment = HorizontalAlignment.Stretch;
+            this.VerticalContentAlignment = VerticalAlignment.Stretch;
+            this.Content = new ContentControl() {
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch,
+                HorizontalContentAlignment=HorizontalAlignment.Stretch,
+                VerticalContentAlignment=VerticalAlignment.Stretch
+            };
             host = new Host((ContentControl)this.Content, typeof(MainPage), "app.js") {
                 AutoCheckUpdates = true, // will future changes to app.js in RoaminState directory will be shown?
                 OverwriteIfExists = true // will embedded app.js always be overwriten on program start?

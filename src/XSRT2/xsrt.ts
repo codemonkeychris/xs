@@ -73,6 +73,7 @@ module Xaml {
     export function CheckBox() { return { type: 'CheckBox' } };
     export function Slider() { return { type: 'Slider' } };
     export function ProgressBar() { return { type: 'ProgressBar' } };
+    export function RichEditBox() { return { type: 'RichEditBox' } };
     export function TextBox() { return { type: 'TextBox' } };
     export function ListBox() { return { type: 'ListBox' } };
     export function ComboBox() { return { type: 'ComboBox' } };

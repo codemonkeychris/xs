@@ -11,15 +11,26 @@ var App;
         host.setState({ text: sender.text });
     }
 
+    function MultiLineTextBox() {
+        return React.createElement(Xaml.TextBox, {
+            scrollViewer$horizontalScrollBarVisibility: "Auto", 
+            scrollViewer$verticalScrollBarVisibility: "Auto", 
+            acceptsReturn: true, 
+            horizontalAlignment: "Stretch", 
+            verticalAlignment: "Stretch"})
+    }
+
     function render() {
 
         return (
             React.createElement(Xaml.Grid, {
+                horizontalAlignment: "Stretch", 
+                verticalAlignment: "Stretch", 
                 rows: ['auto', '*'], 
                 columns: ['*']}, 
                 
                 React.createElement(Xaml.TextBlock, {name: "label1", grid$row: "0"}, "count:" + host.getState().text.length), 
-                React.createElement(Xaml.TextBox, {
+                React.createElement(MultiLineTextBox, {
                     grid$row: "1", 
                     grid$column: "0", 
                     fontFamily: "Consolas", 

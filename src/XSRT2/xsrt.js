@@ -87,6 +87,9 @@ var Xaml;
     function ProgressBar() { return { type: 'ProgressBar' }; }
     Xaml.ProgressBar = ProgressBar;
     ;
+    function RichEditBox() { return { type: 'RichEditBox' }; }
+    Xaml.RichEditBox = RichEditBox;
+    ;
     function TextBox() { return { type: 'TextBox' }; }
     Xaml.TextBox = TextBox;
     ;
