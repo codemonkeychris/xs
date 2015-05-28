@@ -16,6 +16,7 @@ var App;
             scrollViewer$horizontalScrollBarVisibility: "Auto", 
             scrollViewer$verticalScrollBarVisibility: "Auto", 
             acceptsReturn: true, 
+            textWrapping: "Wrap", 
             horizontalAlignment: "Stretch", 
             verticalAlignment: "Stretch"})
     }
@@ -34,7 +35,7 @@ var App;
                     grid$row: "1", 
                     grid$column: "0", 
                     fontFamily: "Consolas", 
-                    fontSize: "20", 
+                    fontSize: "14", 
                     onTextChanged: textChanged, 
                     text: host.getState().text})
             )
