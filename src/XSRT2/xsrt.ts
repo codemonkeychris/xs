@@ -23,11 +23,11 @@ module Xsrt {
             // UNDONE: add exception pipe
         }
     }
-    host.state.addEventListener('render', render);
-    host.state.addEventListener('command', command);
+    host.eventMarshaller.addEventListener('render', render);
+    host.eventMarshaller.addEventListener('command', command);
     if (App && App.setInitialState) {
-        if (!host.state.isInitialized) {
-            host.state.isInitialized = true;
+        if (!host.eventMarshaller.isInitialized) {
+            host.eventMarshaller.isInitialized = true;
             App.setInitialState();
         }
     }

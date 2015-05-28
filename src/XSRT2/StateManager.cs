@@ -22,7 +22,6 @@ namespace XSRT2
         private EventRegistrationTokenTable<EventHandler<RenderEventArgs>> render = new EventRegistrationTokenTable<EventHandler<RenderEventArgs>>();
         private EventRegistrationTokenTable<EventHandler<CommandEventArgs>> command = new EventRegistrationTokenTable<EventHandler<CommandEventArgs>>();
         bool isDirty = true;
-        Dictionary<string, object> state = new Dictionary<string, object>();
 
         public bool IsInitialized { get; set; }
 

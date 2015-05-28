@@ -49,7 +49,7 @@ var App;
 
         public bool StressReload { get; set; }
 
-        public StateManager State { get { return state; } }
+        public StateManager EventMarshaller { get { return state; } }
 
         public bool AutoCheckUpdates
         {
@@ -227,7 +227,7 @@ var App;
             //
             jsrt.AddWinRTNamespace("Windows");
             jsrt.AddWinRTNamespace("XSRT2");
-            jsrt.AddHostObject("state", state);
+            jsrt.AddHostObject("eventMarshaller", state);
             jsrt.AddHostObject("helpers", new Helpers());
             jsrt.Eval(program + "\r\n" + runtime);
             if (lastState != null)
