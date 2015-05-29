@@ -23,7 +23,7 @@ var App;
     }
 
     function checked(sender, e) {
-        host.setState({ filter: host.helpers.getIsChecked(sender) });
+        host.setState({ filter: xsrt.getIsChecked(sender) });
     }
 
     function render() {

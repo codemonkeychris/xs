@@ -118,7 +118,7 @@
     <Compile Include="Diff.cs" />
     <Compile Include="Host.cs" />
     <Compile Include="RuntimeHelpers.cs" />
-    <Compile Include="StateManager.cs" />
+    <Compile Include="JScriptHostProjection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

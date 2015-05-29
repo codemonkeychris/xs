@@ -1,6 +1,7 @@
 ﻿declare var host: any;
+declare var xsrt: any;
 
-module Xsrt {
+module XsrtJS {
     // UNDONE: a bit of a hack... I want the "App" to see what we define here, but we 
     // also call into random things defined on "App"... noodle on this more
     //
@@ -23,11 +24,11 @@ module Xsrt {
             // UNDONE: add exception pipe
         }
     }
-    host.eventMarshaller.addEventListener('render', render);
-    host.eventMarshaller.addEventListener('command', command);
+    xsrt.addEventListener('render', render);
+    xsrt.addEventListener('command', command);
     if (App && App.setInitialState) {
-        if (!host.eventMarshaller.isInitialized) {
-            host.eventMarshaller.isInitialized = true;
+        if (!xsrt.isInitialized) {
+            xsrt.isInitialized = true;
             App.setInitialState();
         }
     }

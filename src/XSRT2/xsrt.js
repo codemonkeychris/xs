@@ -1,5 +1,5 @@
-var Xsrt;
-(function (Xsrt) {
+var XsrtJS;
+(function (XsrtJS) {
     function render(ev) {
         try {
             ev.view = JSON.stringify((App && App.render) ? App.render() : { type: 'TextBlock', text: 'Error: App.render not found!' });
@@ -18,15 +18,15 @@ var Xsrt;
         catch (e) {
         }
     }
-    host.eventMarshaller.addEventListener('render', render);
-    host.eventMarshaller.addEventListener('command', command);
+    xsrt.addEventListener('render', render);
+    xsrt.addEventListener('command', command);
     if (App && App.setInitialState) {
-        if (!host.eventMarshaller.isInitialized) {
-            host.eventMarshaller.isInitialized = true;
+        if (!xsrt.isInitialized) {
+            xsrt.isInitialized = true;
             App.setInitialState();
         }
     }
-})(Xsrt || (Xsrt = {}));
+})(XsrtJS || (XsrtJS = {}));
 var React;
 (function (React) {
     var funcCount = 1;

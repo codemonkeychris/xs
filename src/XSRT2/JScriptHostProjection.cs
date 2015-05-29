@@ -4,6 +4,8 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 
 namespace XSRT2
 {
@@ -17,11 +19,17 @@ namespace XSRT2
         public object Sender { get; set; }
         public object EventArgs { get; set; }
     }
-    public sealed class StateManager
+    public sealed class JScriptHostProjection
     {
         private EventRegistrationTokenTable<EventHandler<RenderEventArgs>> render = new EventRegistrationTokenTable<EventHandler<RenderEventArgs>>();
         private EventRegistrationTokenTable<EventHandler<CommandEventArgs>> command = new EventRegistrationTokenTable<EventHandler<CommandEventArgs>>();
         bool isDirty = true;
+        Host realHost;
+
+        internal JScriptHostProjection(Host realHost)
+        {
+            this.realHost = realHost;
+        }
 
         public bool IsInitialized { get; set; }
 
@@ -47,6 +55,15 @@ namespace XSRT2
             remove { command.RemoveEventHandler(value); }
         }
 
+        // hacky helpers to work around JSProjection issues... 
+        //
+        public bool? GetIsChecked(object v) { return ((ToggleButton)v).IsChecked; }
+        public string GetText(object v)
+        {
+            string s;
+            ((RichEditBox)v).Document.GetText(Windows.UI.Text.TextGetOptions.UseCrlf, out s);
+            return s;
+        }
 
         public RenderEventArgs RenderIfNeeded()
         {

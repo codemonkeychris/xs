@@ -13,7 +13,7 @@ namespace XSRT2
     public sealed class Host
     {
         XSRT.JScriptRuntime jsrt = null;
-        XSRT2.StateManager state = new XSRT2.StateManager();
+        XSRT2.JScriptHostProjection hostProjection;
         Diff diff;
         string lastProgram = "";
         bool autoCheckUpdates = false;
@@ -37,10 +37,11 @@ var App;
         {
             this.appType = appType;
             this.programFileName = programFileName;
-            diff = new Diff(state, displayControl);
+            hostProjection = new XSRT2.JScriptHostProjection(this);
+            diff = new Diff(displayControl);
             Handler.Command += delegate (object sender, CommandEventArgs e)
             {
-                state.NotifyCommand(e);
+                hostProjection.NotifyCommand(e);
                 RenderIfNeeded();
             };
         }
@@ -48,8 +49,6 @@ var App;
         public event EventHandler<DiffStats> Rendered;
 
         public bool StressReload { get; set; }
-
-        public StateManager EventMarshaller { get { return state; } }
 
         public bool AutoCheckUpdates
         {
@@ -65,7 +64,6 @@ var App;
 
         public object SaveState() { return jsrt.SaveState(); }
         public void LoadState(object value) { jsrt.LoadState(value); }
-
 
         void UpdateAutoTimer()
         {
@@ -112,10 +110,10 @@ var App;
                 // UNDONE: temporary, sync version between StateManager and host "state"
                 //
                 var lastVer = jsrt.GetStateVersion();
-                if (lastVer != lastSeenVersion) { state.NotifyChanged(); }
+                if (lastVer != lastSeenVersion) { hostProjection.NotifyChanged(); }
                 lastSeenVersion = lastVer;
 
-                Display(state.RenderIfNeeded());
+                Display(hostProjection.RenderIfNeeded());
             }
             catch (Exception x)
             {
@@ -213,12 +211,12 @@ var App;
             if (jsrt != null)
             {
                 lastState = jsrt.SaveState();
-                state.ReleaseEventHandlers();
+                hostProjection.ReleaseEventHandlers();
                 jsrt.ClearActive();
                 jsrt.ClearTimers();
                 jsrt = null;
             }
-            state.NotifyChanged();
+            hostProjection.NotifyChanged();
 
             jsrt = new XSRT.JScriptRuntime();
             jsrt.SetActive();
@@ -227,8 +225,7 @@ var App;
             //
             jsrt.AddWinRTNamespace("Windows");
             jsrt.AddWinRTNamespace("XSRT2");
-            jsrt.AddHostObject("eventMarshaller", state);
-            jsrt.AddHostObject("helpers", new Helpers());
+            jsrt.AddGlobalObject("xsrt", hostProjection);
             jsrt.Eval(program + "\r\n" + runtime);
             if (lastState != null)
             {
@@ -246,17 +243,6 @@ var App;
                     Rendered(this, stats);
                 }
             }
-        }
-    }
-
-    public sealed class Helpers
-    {
-        public bool? GetIsChecked(object v) { return ((ToggleButton)v).IsChecked; }
-        public string GetText(object v)
-        {
-            string s;
-            ((RichEditBox)v).Document.GetText(Windows.UI.Text.TextGetOptions.UseCrlf, out s);
-            return s;
         }
     }
 }

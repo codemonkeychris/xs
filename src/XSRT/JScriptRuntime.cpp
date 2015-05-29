@@ -234,6 +234,13 @@ void JScriptRuntime::AddHostObject(Platform::String^ name, Platform::Object^ val
     JsErrorCode c;
     IfFailThrowNoRet(c = DefineHostInspectable(m_hostObject, name->Data(), reinterpret_cast<IInspectable*>(value)), L"failed to add object");
 }
+void JScriptRuntime::AddGlobalObject(Platform::String^ name, Platform::Object^ value)
+{
+    JsErrorCode c;
+    JsValueRef globalObject;
+    IfFailThrowNoRet(c = JsGetGlobalObject(&globalObject), L"can't get global");
+    IfFailThrowNoRet(c = DefineHostInspectable(globalObject, name->Data(), reinterpret_cast<IInspectable*>(value)), L"failed to add object");
+}
 void JScriptRuntime::AddWinRTNamespace(Platform::String^ name)
 {
     JsErrorCode c;

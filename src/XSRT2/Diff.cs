@@ -25,13 +25,11 @@ namespace XSRT2
     public sealed class Diff
     {
         ContentControl control;
-        StateManager stateManager;
         JObject lastUI;
         Dictionary<string, object> namedObjectMap = new Dictionary<string, object>();
 
-        public Diff(StateManager state, ContentControl control)
+        public Diff(ContentControl control)
         {
-            this.stateManager = state;
             this.control = control;
         }
         public DiffStats Process(string ui)
