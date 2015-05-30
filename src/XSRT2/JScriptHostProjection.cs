@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 
@@ -19,10 +20,21 @@ namespace XSRT2
         public object Sender { get; set; }
         public object EventArgs { get; set; }
     }
+    public sealed class TestReadyEventArgs
+    {
+        public string Name { get; set; }
+        public FrameworkElement Root { get; set; }
+    }
+    public sealed class TestSetupEventArgs
+    {
+        public string Name { get; set; }
+    }
     public sealed class JScriptHostProjection
     {
         private EventRegistrationTokenTable<EventHandler<RenderEventArgs>> render = new EventRegistrationTokenTable<EventHandler<RenderEventArgs>>();
         private EventRegistrationTokenTable<EventHandler<CommandEventArgs>> command = new EventRegistrationTokenTable<EventHandler<CommandEventArgs>>();
+        private EventRegistrationTokenTable<EventHandler<TestReadyEventArgs>> testReady = new EventRegistrationTokenTable<EventHandler<TestReadyEventArgs>>();
+        private EventRegistrationTokenTable<EventHandler<TestSetupEventArgs>> testSetup = new EventRegistrationTokenTable<EventHandler<TestSetupEventArgs>>();
         Host realHost;
 
         internal JScriptHostProjection(Host realHost)
@@ -48,6 +60,16 @@ namespace XSRT2
             add { return command.AddEventHandler(value); }
             remove { command.RemoveEventHandler(value); }
         }
+        public event EventHandler<TestReadyEventArgs> TestReady
+        {
+            add { return testReady.AddEventHandler(value); }
+            remove { testReady.RemoveEventHandler(value); }
+        }
+        public event EventHandler<TestSetupEventArgs> TestSetup
+        {
+            add { return testSetup.AddEventHandler(value); }
+            remove { testSetup.RemoveEventHandler(value); }
+        }
 
         // hacky helpers to work around JSProjection issues... 
         //
@@ -57,6 +79,32 @@ namespace XSRT2
             string s;
             ((RichEditBox)v).Document.GetText(Windows.UI.Text.TextGetOptions.UseCrlf, out s);
             return s;
+        }
+
+        public void RegisterTests([ReadOnlyArray] string[] names)
+        {
+            realHost.RegisterTests(names);
+        }
+
+        public void Assert(bool condition, string message)
+        {
+            // UNDONE: log asserts :)
+        }
+
+        internal void RaiseTestSetup(string name)
+        {
+            if (testSetup.InvocationList != null)
+            {
+                testSetup.InvocationList(null, new TestSetupEventArgs() { Name = name });
+            }
+        }
+        internal void RaiseTestReady(string name)
+        { 
+            if (testReady.InvocationList != null)
+            {
+                testReady.InvocationList(null, 
+                    new TestReadyEventArgs() { Name = name, Root = realHost.LastGeneratedView as FrameworkElement });
+            }
         }
 
         internal RenderEventArgs CallRender()

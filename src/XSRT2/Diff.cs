@@ -27,10 +27,15 @@ namespace XSRT2
         ContentControl control;
         JObject lastUI;
         Dictionary<string, object> namedObjectMap = new Dictionary<string, object>();
+        DependencyObject lastGeneratedView;
 
         public Diff(ContentControl control)
         {
             this.control = control;
+        }
+        public DependencyObject LastGeneratedView
+        {
+            get { return lastGeneratedView;  }
         }
         public DiffStats Process(string ui)
         {
@@ -43,7 +48,7 @@ namespace XSRT2
                 EventSetCount = 0,
                 HostElement = control
             };
-            control.Content = Handler.CreateFromState(newUI, lastUI, context);
+            control.Content = lastGeneratedView = Handler.CreateFromState(newUI, lastUI, context);
             foreach (var d in context.Defer)
             {
                 d.Do();

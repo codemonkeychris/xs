@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -22,6 +23,7 @@ namespace XSRT2
         Type appType;
         string programFileName;
         UInt64 lastSeenVersion = UInt64.MaxValue;
+        List<string> tests = new List<string>();
         const string defaultPath = "xs-program.js";
         const string defaultProgram = @"
 var App;
@@ -50,6 +52,8 @@ var App;
 
         public bool StressReload { get; set; }
 
+        internal DependencyObject LastGeneratedView { get { return diff.LastGeneratedView; } }
+
         public bool AutoCheckUpdates
         {
             get { return autoCheckUpdates; }
@@ -61,7 +65,11 @@ var App;
             get { return overwriteIfExists; }
             set { overwriteIfExists = value; }
         }
-
+        
+        public void RegisterTests([ReadOnlyArray] string[] names)
+        {
+            tests.AddRange(names);
+        }
         public object SaveState() { return jsrt.SaveState(); }
         public void LoadState(object value) { jsrt.LoadState(value); }
 
@@ -86,7 +94,12 @@ var App;
         {
             CheckForUpdates();
         }
-
+        public void RunTest(string test)
+        {
+            hostProjection.RaiseTestSetup(test);
+            RenderIfNeeded();
+            hostProjection.RaiseTestReady(test);
+        }
         public async void Startup()
         {
             await InitFile();
