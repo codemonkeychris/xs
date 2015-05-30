@@ -23,7 +23,6 @@ namespace XSRT2
     {
         private EventRegistrationTokenTable<EventHandler<RenderEventArgs>> render = new EventRegistrationTokenTable<EventHandler<RenderEventArgs>>();
         private EventRegistrationTokenTable<EventHandler<CommandEventArgs>> command = new EventRegistrationTokenTable<EventHandler<CommandEventArgs>>();
-        bool isDirty = true;
         Host realHost;
 
         internal JScriptHostProjection(Host realHost)
@@ -37,11 +36,6 @@ namespace XSRT2
         {
             render = new EventRegistrationTokenTable<EventHandler<RenderEventArgs>>();
             command = new EventRegistrationTokenTable<EventHandler<CommandEventArgs>>();
-        }
-
-        public void NotifyChanged()
-        {
-            isDirty = true;
         }
 
         public event EventHandler<RenderEventArgs> Render
@@ -65,22 +59,18 @@ namespace XSRT2
             return s;
         }
 
-        public RenderEventArgs RenderIfNeeded()
+        internal RenderEventArgs CallRender()
         {
             RenderEventArgs e = null;
-            if (isDirty)
+            if (render.InvocationList != null)
             {
-                if (render.InvocationList != null)
-                {
-                    e = new RenderEventArgs();
-                    render.InvocationList(null, e);
-                }
-                isDirty = false;
+                e = new RenderEventArgs();
+                render.InvocationList(null, e);
             }
             return e;
         }
 
-        public void NotifyCommand(CommandEventArgs e)
+        internal void CallCommand(CommandEventArgs e)
         {
             if (command.InvocationList != null)
             {

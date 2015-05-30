@@ -41,7 +41,7 @@ var App;
             diff = new Diff(displayControl);
             Handler.Command += delegate (object sender, CommandEventArgs e)
             {
-                hostProjection.NotifyCommand(e);
+                hostProjection.CallCommand(e);
                 RenderIfNeeded();
             };
         }
@@ -107,13 +107,13 @@ var App;
         {
             try
             {
-                // UNDONE: temporary, sync version between StateManager and host "state"
-                //
                 var lastVer = jsrt.GetStateVersion();
-                if (lastVer != lastSeenVersion) { hostProjection.NotifyChanged(); }
-                lastSeenVersion = lastVer;
+                if (lastVer != lastSeenVersion)
+                {
+                    lastSeenVersion = lastVer;
 
-                Display(hostProjection.RenderIfNeeded());
+                    Display(hostProjection.CallRender());
+                }
             }
             catch (Exception x)
             {
@@ -216,7 +216,7 @@ var App;
                 jsrt.ClearTimers();
                 jsrt = null;
             }
-            hostProjection.NotifyChanged();
+            lastSeenVersion = ulong.MinValue;
 
             jsrt = new XSRT.JScriptRuntime();
             jsrt.SetActive();
