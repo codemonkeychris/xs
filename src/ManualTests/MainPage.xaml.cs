@@ -45,13 +45,22 @@ namespace ManualTests
                 OverwriteIfExists = true // will embedded app.js always be overwriten on program start?
             };
             host.Startup();
-            Dispatcher.RunIdleAsync((IdleDispatchedHandler)delegate (IdleDispatchedHandlerArgs e)
+            Init();
+        }
+
+        async void Init()
+        {
+            await Dispatcher.RunIdleAsync((IdleDispatchedHandler)delegate (IdleDispatchedHandlerArgs e)
             {
                 host.RunTest("simple_test_1");
+                host.RunTest("simple_test_2");
+                var state = (IDictionary <string, object>)(host.SaveState());
+                state["mode"] = "results";
+                host.LoadState(state);
+                host.RenderIfNeeded();
                 ApplicationView.GetForCurrentView().Title = "{succeeded:" + host.GetTestSummary() + "}";
             });
         }
-
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {

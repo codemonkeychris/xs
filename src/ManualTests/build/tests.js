@@ -3,6 +3,7 @@ var App;
 (function (App) {
     App.setInitialState = function() {
         host.setState({ 
+            mode: "loading",
             text: "test"
         });
     };
@@ -14,12 +15,66 @@ var App;
             },
             ready: function(ev) {
                 var label1 = ev.root.findName("label1");
-                xsrt.assert(label1.text === "1", "should have number '1' in label");
+                xsrt.assert(label1, "label1 should exist");
+                xsrt.assert(label1 && label1.text === "1", "should have number '1' in label");
+            },
+            render: function() {
+                return (
+                    React.createElement(Xaml.Grid, {
+                        horizontalAlignment: "Stretch", 
+                        verticalAlignment: "Stretch", 
+                        rows: ['auto', '*'], 
+                        columns: ['*']}, 
+                
+                        React.createElement(Xaml.TextBlock, {name: "label1", grid$row: "0"}, host.getState().text.length), 
+                        React.createElement(MultiLineTextBox, {
+                            name: "textBox1", 
+                            grid$row: "1", 
+                            grid$column: "0", 
+                            fontFamily: "Consolas", 
+                            fontSize: "14", 
+                            onTextChanged: textChanged, 
+                            text: host.getState().text})
+                    )
+                );
+            }
+        },
+        simple_test_2: {
+            state: {
+                text: "ab"
+            },
+            ready: function(ev) {
+                var label1 = ev.root.findName("label1");
+                xsrt.assert(label1, "label1 should exist");
+                xsrt.assert(label1 && label1.text === "2", "should have number '2' in label");
+            },
+            render: function() {
+                return (
+                    React.createElement(Xaml.Grid, {
+                        horizontalAlignment: "Stretch", 
+                        verticalAlignment: "Stretch", 
+                        rows: ['auto', '*'], 
+                        columns: ['*']}, 
+                
+                        React.createElement(Xaml.TextBlock, {name: "label1", grid$row: "0"}, host.getState().text.length), 
+                        React.createElement(MultiLineTextBox, {
+                            name: "textBox1", 
+                            grid$row: "1", 
+                            grid$column: "0", 
+                            fontFamily: "Consolas", 
+                            fontSize: "14", 
+                            onTextChanged: textChanged, 
+                            text: host.getState().text})
+                    )
+                );
             }
         }
     }
     function testSetup(ev) {
-        host.setState(testHandlers[ev.name].state);
+        var s = testHandlers[ev.name].state;
+        s.mode = "running";
+        s.activeTest = ev.name;
+        host.setState(s);
     }
     function testReady(ev) {
         testHandlers[ev.name].ready(ev);
@@ -39,29 +94,32 @@ var App;
             acceptsReturn: true, 
             textWrapping: "Wrap", 
             horizontalAlignment: "Stretch", 
-            verticalAlignment: "Stretch"})
+            verticalAlignment: "Stretch"});
+    }
+
+    function renderResults() {
+        var logs = xsrt.getLogs();
+
+        return (
+            React.createElement(Xaml.Grid, null, 
+                React.createElement(Xaml.StackPanel, null, 
+                    Array.prototype.map.call(logs, function (entry) {
+                        return React.createElement(Xaml.TextBlock, {fontFamily: "Consolas", text: (entry.result ? "       " : "failed:") + entry.message});
+                    })
+                )
+            )
+        );
     }
 
     function render() {
-
-        return (
-            React.createElement(Xaml.Grid, {
-                horizontalAlignment: "Stretch", 
-                verticalAlignment: "Stretch", 
-                rows: ['auto', '*'], 
-                columns: ['*']}, 
-                
-                React.createElement(Xaml.TextBlock, {name: "label1", grid$row: "0"}, host.getState().text.length), 
-                React.createElement(MultiLineTextBox, {
-                    name: "textBox1", 
-                    grid$row: "1", 
-                    grid$column: "0", 
-                    fontFamily: "Consolas", 
-                    fontSize: "14", 
-                    onTextChanged: textChanged, 
-                    text: host.getState().text})
-            )
-        );
+        switch (host.getState().mode) {
+            case "running":
+                return testHandlers[host.getState().activeTest].render();
+            case "results":
+                return renderResults();
+            default:
+                return React.createElement(Xaml.TextBlock, {text: "loading..."})
+        }
     }
     App.render = render;
 })(App || (App = {}));

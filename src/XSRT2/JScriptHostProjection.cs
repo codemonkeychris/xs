@@ -92,7 +92,11 @@ namespace XSRT2
         {
             realHost.LogAssert(condition, message);
         }
-
+        public LogEntry[] GetLogs()
+        {
+            var logs = realHost.GetLogs();
+            return logs;
+        }
         internal void RaiseTestSetup(string name)
         {
             if (testSetup.InvocationList != null)

@@ -23,6 +23,7 @@ namespace XSRT2
         Type appType;
         string programFileName;
         UInt64 lastSeenVersion = UInt64.MaxValue;
+        string runningTest = "n/a";
         List<string> tests = new List<string>();
         List<LogEntry> testLogs = new List<LogEntry>();
         const string defaultPath = "xs-program.js";
@@ -97,7 +98,11 @@ var App;
         }
         public void LogAssert(bool result, string message)
         {
-            testLogs.Add(new LogEntry() { Result = result, Message = message });
+            testLogs.Add(new LogEntry() { Result = result, Message = message, Test = runningTest });
+        }
+        public LogEntry[] GetLogs()
+        {
+            return testLogs.ToArray();
         }
         public bool GetTestSummary()
         {
@@ -105,9 +110,11 @@ var App;
         }
         public void RunTest(string test)
         {
+            runningTest = test;
             hostProjection.RaiseTestSetup(test);
             RenderIfNeeded();
             hostProjection.RaiseTestReady(test);
+            runningTest = "n/a";
         }
         public async void Startup()
         {
@@ -272,5 +279,6 @@ var App;
     {
         public bool Result;
         public string Message;
+        public string Test;
     }
 }
