@@ -44,18 +44,14 @@ namespace ManualTests
                 AutoCheckUpdates = true, // will future changes to app.js in RoaminState directory will be shown?
                 OverwriteIfExists = true // will embedded app.js always be overwriten on program start?
             };
-            host.Rendered += Host_Rendered;
             host.Startup();
             Dispatcher.RunIdleAsync((IdleDispatchedHandler)delegate (IdleDispatchedHandlerArgs e)
             {
                 host.RunTest("simple_test_1");
+                ApplicationView.GetForCurrentView().Title = "{succeeded:" + host.GetTestSummary() + "}";
             });
         }
 
-        private void Host_Rendered(object sender, DiffStats e)
-        {
-            ApplicationView.GetForCurrentView().Title = "{props:" + e.PropertySetCount + ", objs:" + e.ObjectCreateCount + ", elapsed:" + e.ElapsedMilliseconds.ToString("#") + "ms }";
-        }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {

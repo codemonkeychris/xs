@@ -1023,7 +1023,6 @@ namespace XSRT2 {
         {
             Dictionary<string, object> lastNamedObjectMap;
             Dictionary<string, object> currentNamedObjectMap = new Dictionary<string, object>();
-            // UNDONE: get smarter about surrogate key generation
             Dictionary<string, int> surrogateKeys = new Dictionary<string, int>();
             List<string> nameStack = new List<string>();
 

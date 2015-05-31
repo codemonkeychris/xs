@@ -24,6 +24,7 @@ namespace XSRT2
         string programFileName;
         UInt64 lastSeenVersion = UInt64.MaxValue;
         List<string> tests = new List<string>();
+        List<LogEntry> testLogs = new List<LogEntry>();
         const string defaultPath = "xs-program.js";
         const string defaultProgram = @"
 var App;
@@ -93,6 +94,14 @@ var App;
         void autoTimer_Tick(object sender, object e)
         {
             CheckForUpdates();
+        }
+        public void LogAssert(bool result, string message)
+        {
+            testLogs.Add(new LogEntry() { Result = result, Message = message });
+        }
+        public bool GetTestSummary()
+        {
+            return testLogs.All(e => e.Result);
         }
         public void RunTest(string test)
         {
@@ -257,5 +266,11 @@ var App;
                 }
             }
         }
+    }
+
+    public struct LogEntry
+    {
+        public bool Result;
+        public string Message;
     }
 }

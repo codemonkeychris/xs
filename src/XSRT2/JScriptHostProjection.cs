@@ -48,6 +48,8 @@ namespace XSRT2
         {
             render = new EventRegistrationTokenTable<EventHandler<RenderEventArgs>>();
             command = new EventRegistrationTokenTable<EventHandler<CommandEventArgs>>();
+            testReady = new EventRegistrationTokenTable<EventHandler<TestReadyEventArgs>>();
+            testSetup = new EventRegistrationTokenTable<EventHandler<TestSetupEventArgs>>();
         }
 
         public event EventHandler<RenderEventArgs> Render
@@ -88,7 +90,7 @@ namespace XSRT2
 
         public void Assert(bool condition, string message)
         {
-            // UNDONE: log asserts :)
+            realHost.LogAssert(condition, message);
         }
 
         internal void RaiseTestSetup(string name)
