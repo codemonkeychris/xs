@@ -9,7 +9,8 @@ programming techniques (insipred by ReactNative)
 
 1. Install Windows 10 Insider Preview (10074 or later - //build/ version)
 2. Install Visual Studio 2015 RC - https://www.visualstudio.com/products/visual-studio-2015-downloads-vs
-3. Install JSX (react-tools) and TypeScript - required to `F5` in VS, as there is a custom build step that invokes JSX and TSC
+3. Install JSX (react-tools) and TypeScript - required to `F5` in VS, as there is a custom build 
+step that invokes JSX and TSC
 ```
 npm install -g react-tools
 npm install -g typescript
@@ -18,15 +19,16 @@ npm install -g typescript
 ### Project structure
 
 #### XSRT
-This is a basic Chakra host, currently with as little policy as possible. The ValueMarshaller infrastructure is probably
-the most out there thing, but it needs to be integrated with the host.
+This is a basic Chakra host, currently with as little policy as possible. The ValueMarshaller 
+infrastructure is probably the most out there thing, but it needs to be integrated with the host.
 
 #### XSRT2
-This is the logic for the bulk of the XS project. Currently written in C# for expediency, but should be migrated to 
-C++ to avoid the second GC in the process.
+This is the logic for the bulk of the XS project. Currently written in C# for expediency, but should 
+be migrated to C++ to avoid the second GC in the process.
 
 #### XSTest
-Simple test host, ideally this should be replaced by a Yomen generator or something, this is really just file->new project.
+Simple test host, ideally this should be replaced by a Yomen generator or something, this is really 
+just file->new project.
 
 ## Running
 
