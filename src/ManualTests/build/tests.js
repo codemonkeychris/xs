@@ -44,9 +44,9 @@ var App;
                 text: "ab"
             },
             ready: function(ev) {
-                var label1 = ev.root.findName("label1");
-                xsrt.assert(label1, "label1 should exist");
-                xsrt.assert(label1 && label1.text === "2", "should have number '2' in label");
+                var label2 = ev.root.findName("label2");
+                xsrt.assert(label2, "label2 should exist");
+                xsrt.assert(label2 && label2.text === "2", "should have number '2' in label");
             },
             render: function() {
                 return (
@@ -56,7 +56,7 @@ var App;
                         rows: ['auto', '*'], 
                         columns: ['*']}, 
                 
-                        React.createElement(Xaml.TextBlock, {name: "label1", grid$row: "0"}, host.getState().text.length), 
+                        React.createElement(Xaml.TextBlock, {name: "label2", grid$row: "0"}, host.getState().text.length), 
                         React.createElement(MultiLineTextBox, {
                             name: "textBox1", 
                             grid$row: "1", 
@@ -99,14 +99,19 @@ var App;
 
     function renderResults() {
         var logs = xsrt.getLogs();
+        var lastTest = "";
+        var testIndex = -1;
 
         return (
             React.createElement(Xaml.Grid, null, 
                 React.createElement(Xaml.StackPanel, null, 
-                    Array.prototype.map.call(logs, function (entry) {
+                    Array.prototype.map.call(logs, function (entry, index) {
+                        if (lastTest !== entry.test) { testIndex++; }
+                        lastTest = entry.test;
+
                         return (
-                            React.createElement(Xaml.StackPanel, {orientation: "Horizontal"}, 
-                                React.createElement(Xaml.TextBlock, {fontFamily: "Consolas", text: entry.name}), 
+                            React.createElement(Xaml.StackPanel, {orientation: "Horizontal", background: testIndex % 2 == 0 ? "#EEE" : "#00FFFFFF"}, 
+                                React.createElement(Xaml.TextBlock, {fontFamily: "Consolas", text:  entry.test}), 
                                 React.createElement(Xaml.TextBlock, {fontFamily: "Consolas", text: (entry.result ? "       " : "failed:") + entry.message})
                             )
                         );    

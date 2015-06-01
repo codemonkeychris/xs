@@ -44,9 +44,9 @@ var App;
                 text: "ab"
             },
             ready: function(ev) {
-                var label1 = ev.root.findName("label1");
-                xsrt.assert(label1, "label1 should exist");
-                xsrt.assert(label1 && label1.text === "2", "should have number '2' in label");
+                var label2 = ev.root.findName("label2");
+                xsrt.assert(label2, "label2 should exist");
+                xsrt.assert(label2 && label2.text === "2", "should have number '2' in label");
             },
             render: function() {
                 return (
@@ -56,7 +56,7 @@ var App;
                         rows={['auto', '*']}
                         columns={['*']} >
                 
-                        <Xaml.TextBlock name='label1' grid$row='0'>{host.getState().text.length}</Xaml.TextBlock>
+                        <Xaml.TextBlock name='label2' grid$row='0'>{host.getState().text.length}</Xaml.TextBlock>
                         <MultiLineTextBox
                             name='textBox1'
                             grid$row='1'
@@ -99,13 +99,18 @@ var App;
 
     function renderResults() {
         var logs = xsrt.getLogs();
+        var lastTest = "";
+        var testIndex = -1;
 
         return (
             <Xaml.Grid>
                 <Xaml.StackPanel>{
-                    Array.prototype.map.call(logs, function (entry) {
+                    Array.prototype.map.call(logs, function (entry, index) {
+                        if (lastTest !== entry.test) { testIndex++; }
+                        lastTest = entry.test;
+
                         return (
-                            <Xaml.StackPanel orientation='Horizontal' >
+                            <Xaml.StackPanel orientation='Horizontal' background={testIndex % 2 == 0 ? "#EEE" : "#00FFFFFF" } >
                                 <Xaml.TextBlock fontFamily='Consolas' text={ entry.test } />
                                 <Xaml.TextBlock fontFamily='Consolas' text={(entry.result ? "       " : "failed:") + entry.message } />
                             </Xaml.StackPanel>
