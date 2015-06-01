@@ -47,6 +47,10 @@ var App;
                 var label2 = ev.root.findName("label2");
                 xsrt.assert(label2, "label2 should exist");
                 xsrt.assert(label2 && label2.text === "2", "should have number '2' in label");
+
+                var textBox1 = ev.root.findName("textBox1");
+                xsrt.assert(textBox1, "textBox1 should exist");
+                xsrt.assert(textBox1 && textBox1.text === "ab", "should have number 'ab' in textBox1");
             },
             render: function() {
                 return (
@@ -111,7 +115,7 @@ var App;
 
                         return (
                             React.createElement(Xaml.StackPanel, {orientation: "Horizontal", background: testIndex % 2 == 0 ? "#EEE" : "#00FFFFFF"}, 
-                                React.createElement(Xaml.TextBlock, {fontFamily: "Consolas", text:  entry.test}), 
+                                React.createElement(Xaml.TextBlock, {margin: "0,0,10,0", fontFamily: "Consolas", text:  entry.test}), 
                                 React.createElement(Xaml.TextBlock, {fontFamily: "Consolas", text: (entry.result ? "       " : "failed:") + entry.message})
                             )
                         );    

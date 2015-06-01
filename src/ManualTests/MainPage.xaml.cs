@@ -41,16 +41,17 @@ namespace ManualTests
             };
             host = new Host((ContentControl)this.Content, typeof(MainPage), "tests.js")
             {
-                AutoCheckUpdates = true, // will future changes to app.js in RoaminState directory will be shown?
-                OverwriteIfExists = true // will embedded app.js always be overwriten on program start?
+                AutoCheckUpdates = true,        // will future changes to app.js in RoaminState directory will be shown?
+                OverwriteIfExists = true,       // will embedded app.js always be overwriten on program start?
+                PreserveStateOnReload = false   // will state be kept alive between program reloads
             };
+            host.Initialized += Host_Initialized;
             host.Startup();
-            Init();
         }
 
-        async void Init()
+        async void Host_Initialized(object sender, InitializedEventArgs e)
         {
-            await Dispatcher.RunIdleAsync((IdleDispatchedHandler)delegate (IdleDispatchedHandlerArgs e)
+            await Dispatcher.RunIdleAsync((IdleDispatchedHandler)delegate (IdleDispatchedHandlerArgs ignore)
             {
                 host.RunTest("simple_test_1");
                 host.RunTest("simple_test_2");

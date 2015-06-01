@@ -39,6 +39,7 @@ var App;
 
         public Host(ContentControl displayControl, Type appType, string programFileName)
         {
+            PreserveStateOnReload = true;
             this.appType = appType;
             this.programFileName = programFileName;
             hostProjection = new XSRT2.JScriptHostProjection(this);
@@ -51,6 +52,7 @@ var App;
         }
 
         public event EventHandler<DiffStats> Rendered;
+        public event EventHandler<InitializedEventArgs> Initialized; 
 
         public bool StressReload { get; set; }
 
@@ -61,7 +63,7 @@ var App;
             get { return autoCheckUpdates; }
             set { autoCheckUpdates = value; UpdateAutoTimer(); }
         }
-
+        public bool PreserveStateOnReload { get; set; }
         public bool OverwriteIfExists
         {
             get { return overwriteIfExists; }
@@ -255,10 +257,22 @@ var App;
             jsrt.AddWinRTNamespace("Windows");
             jsrt.AddWinRTNamespace("XSRT2");
             jsrt.AddGlobalObject("xsrt", hostProjection);
+            if (!PreserveStateOnReload)
+            {
+                hostProjection.IsInitialized = false;
+            }
             jsrt.Eval(program + "\r\n" + runtime);
-            if (lastState != null)
+            if (PreserveStateOnReload && lastState != null)
             {
                 jsrt.LoadState(lastState);
+            }
+            if (!PreserveStateOnReload)
+            {
+                testLogs.Clear();
+            }
+            if (Initialized != null)
+            {
+                Initialized(this, new InitializedEventArgs() { RestoredState = PreserveStateOnReload && lastState != null });
             }
         }
 
@@ -273,6 +287,11 @@ var App;
                 }
             }
         }
+    }
+
+    public sealed class InitializedEventArgs
+    {
+        public bool RestoredState { get; set; }
     }
 
     public struct LogEntry
