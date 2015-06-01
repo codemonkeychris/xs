@@ -321,7 +321,15 @@ namespace XSRT2 {
         );
         #>
 
-        <# ClassDef("StackPanel", true, "Panel", null, null); #>
+        <# ClassDef(
+            "StackPanel", 
+            true, 
+            "Panel", 
+            new PropEntry[] { 
+                EnumProp("Orientation")
+            }, 
+            null); #>
+
         <# 
         ClassDef(
             "Grid", 
@@ -330,8 +338,8 @@ namespace XSRT2 {
             new PropEntry[] {
                     new PropEntry() { Name="rows", SetBody="{ PanelHandler.SetGridRowDefinitions(target, (JArray)x); }" },
                     new PropEntry() { Name="columns", SetBody="{ PanelHandler.SetGridColumnDefinitions(target, (JArray)x); }" }
-                },
-                null
+            },
+            null
         ); 
         #>
 

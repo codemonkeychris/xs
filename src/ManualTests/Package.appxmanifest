@@ -7,7 +7,7 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="a9f1f653-688b-4d63-9797-729c35fbe671"
+    Name="XSManualTests"
     Publisher="CN=chrisan"
     Version="1.0.0.0" />
 

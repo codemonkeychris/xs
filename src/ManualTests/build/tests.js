@@ -104,7 +104,12 @@ var App;
             React.createElement(Xaml.Grid, null, 
                 React.createElement(Xaml.StackPanel, null, 
                     Array.prototype.map.call(logs, function (entry) {
-                        return React.createElement(Xaml.TextBlock, {fontFamily: "Consolas", text: (entry.result ? "       " : "failed:") + entry.message});
+                        return (
+                            React.createElement(Xaml.StackPanel, {orientation: "Horizontal"}, 
+                                React.createElement(Xaml.TextBlock, {fontFamily: "Consolas", text: entry.name}), 
+                                React.createElement(Xaml.TextBlock, {fontFamily: "Consolas", text: (entry.result ? "       " : "failed:") + entry.message})
+                            )
+                        );    
                     })
                 )
             )

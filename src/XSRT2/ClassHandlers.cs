@@ -535,8 +535,10 @@ namespace XSRT2 {
             internal static void SetProperties(StackPanel t, JObject obj, JObject lastObj, DiffContext context)
             {
                 PanelHandler.SetProperties(t, obj, lastObj, context);
+                TrySet(context, obj, lastObj, "orientation", false, t, (target, x, lastX) => target.Orientation = ParseEnum<Orientation>(x));
             }
         }
+
         internal static class GridHandler
         {
             internal static Grid Create(JObject obj, JObject lastObj, DiffContext context)

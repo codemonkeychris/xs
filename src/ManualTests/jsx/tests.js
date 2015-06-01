@@ -104,7 +104,12 @@ var App;
             <Xaml.Grid>
                 <Xaml.StackPanel>{
                     Array.prototype.map.call(logs, function (entry) {
-                        return <Xaml.TextBlock fontFamily='Consolas' text={(entry.result ? "       " : "failed:") + entry.message } />;
+                        return (
+                            <Xaml.StackPanel orientation='Horizontal' >
+                                <Xaml.TextBlock fontFamily='Consolas' text={ entry.test } />
+                                <Xaml.TextBlock fontFamily='Consolas' text={(entry.result ? "       " : "failed:") + entry.message } />
+                            </Xaml.StackPanel>
+                        );    
                     })
                 }</Xaml.StackPanel>
             </Xaml.Grid>
