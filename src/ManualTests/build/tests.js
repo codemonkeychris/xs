@@ -107,7 +107,7 @@ var App;
         var testIndex = -1;
 
         return (
-            React.createElement(Xaml.Grid, null, 
+            React.createElement(Xaml.ScrollViewer, null, 
                 React.createElement(Xaml.StackPanel, null, 
                     Array.prototype.map.call(logs, function (entry, index) {
                         if (lastTest !== entry.test) { testIndex++; }

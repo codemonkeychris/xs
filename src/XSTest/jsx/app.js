@@ -1,46 +1,27 @@
 ﻿/// <reference path='c:\repos\xs\src\xsrt2\xsrt.ts' />
 var App;
 (function (App) {
-    App.setInitialState = function() {
-        host.setState({ 
-            text: "test"
-        });
-    };
-
-    function textChanged(sender, e) {
-        host.setState({ text: sender.text });
-    }
-
-    function MultiLineTextBox() {
-        return <Xaml.TextBox
-            scrollViewer$horizontalScrollBarVisibility='Auto'
-            scrollViewer$verticalScrollBarVisibility='Auto'
-            acceptsReturn={true}
-            textWrapping='Wrap'
-            horizontalAlignment='Stretch'
-            verticalAlignment='Stretch' />
+    function MyButton() {
+        return <Xaml.Button margin='5,5,5,5' />;
     }
 
     function render() {
-
         return (
-            <Xaml.Grid 
-                horizontalAlignment='Stretch'
-                verticalAlignment='Stretch'
-                rows={['auto', '*']}
-                columns={['*']} >
-                
-                <Xaml.TextBlock name='label1' grid$row='0'>{"count:" + host.getState().text.length }</Xaml.TextBlock>
-                <MultiLineTextBox
-                    grid$row='1'
-                    grid$column='0'
-                    fontFamily='Consolas'
-                    fontSize='14'
-                    onTextChanged={textChanged}
-                    text={host.getState().text}  />
-            </Xaml.Grid>
+            <Xaml.RelativePanel name='rel1' childrenTransitions={[<Xaml.RepositionThemeTransition />]}>
+                <MyButton name='b1'>
+                    One
+                </MyButton>
+                <MyButton name='b2' relative$below='b1'>
+                    Two
+                </MyButton>
+                <MyButton name='b3' relative$below='b1' relative$rightOf='b2'>
+                    Three
+                </MyButton>
+                <MyButton name='b4' relative$below='b3' relative$rightOf='b3'>
+                    Four this is fun
+                </MyButton>
+            </Xaml.RelativePanel>
         );
     }
     App.render = render;
 })(App || (App = {}));
-

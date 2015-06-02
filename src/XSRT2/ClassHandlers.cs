@@ -25,36 +25,156 @@ namespace XSRT2 {
         {
             internal static void SetProperties(FrameworkElement t, JObject obj, JObject lastObj, DiffContext context)
             {
-                TrySet(context, obj, lastObj, "scrollViewer$verticalScrollBarVisibility", false, t, (target, x, lastX) => { target.SetValue(ScrollViewer.VerticalScrollBarVisibilityProperty, XamlStringParse<ScrollBarVisibility>(x)); });
-                TrySet(context, obj, lastObj, "scrollViewer$horizontalScrollBarVisibility", false, t, (target, x, lastX) => { target.SetValue(ScrollViewer.HorizontalScrollBarVisibilityProperty, XamlStringParse<ScrollBarVisibility>(x)); });
-                TrySet(context, obj, lastObj, "grid$row", false, t, (target, x, lastX) => { target.SetValue(Grid.RowProperty, Convert.ToInt32(x.Value<double>())); });
-                TrySet(context, obj, lastObj, "grid$rowSpan", false, t, (target, x, lastX) => { target.SetValue(Grid.RowSpanProperty, Convert.ToInt32(x.Value<double>())); });
-                TrySet(context, obj, lastObj, "grid$column", false, t, (target, x, lastX) => { target.SetValue(Grid.ColumnProperty, Convert.ToInt32(x.Value<double>())); });
-                TrySet(context, obj, lastObj, "grid$columnSpan", false, t, (target, x, lastX) => { target.SetValue(Grid.ColumnSpanProperty, Convert.ToInt32(x.Value<double>())); });
-                TrySet(context, obj, lastObj, "automationId", false, t, (target, x, lastX) => { AutomationProperties.SetAutomationId(target, x.ToString()); });
-                TrySet(context, obj, lastObj, "acc$helpText", false, t, (target, x, lastX) => { AutomationProperties.SetHelpText(target, x.ToString()); });
-                TrySet(context, obj, lastObj, "acc$labeledBy", false, t, (target, x, lastX) => target.SetValue(AutomationProperties.LabeledByProperty, context.ReferenceObject(x.ToString())), context.Defer);
-                TrySet(context, obj, lastObj, "acc$liveSetting", false, t, (target, x, lastX) => target.SetValue(AutomationProperties.LiveSettingProperty, ParseEnum<AutomationLiveSetting>(x)));
-                TrySet(context, obj, lastObj, "acc$name", false, t, (target, x, lastX) => { AutomationProperties.SetName(target, x.ToString()); });
-                TrySet(context, obj, lastObj, "relative$above", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AboveProperty, context.ReferenceObject(x.ToString())), context.Defer);
-                TrySet(context, obj, lastObj, "relative$alignBottomWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignBottomWithProperty, context.ReferenceObject(x.ToString())), context.Defer);
-                TrySet(context, obj, lastObj, "relative$alignBottomWithPanel", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignBottomWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value))));
-                TrySet(context, obj, lastObj, "relative$alignHorizontalCenterWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignHorizontalCenterWithProperty, context.ReferenceObject(x.ToString())), context.Defer);
-                TrySet(context, obj, lastObj, "relative$alignLeftWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignLeftWithProperty, context.ReferenceObject(x.ToString())), context.Defer);
-                TrySet(context, obj, lastObj, "relative$alignLeftWithPanel", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignLeftWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value))));
-                TrySet(context, obj, lastObj, "relative$alignRightWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignRightWithProperty, context.ReferenceObject(x.ToString())), context.Defer);
-                TrySet(context, obj, lastObj, "relative$alignRightWithPanel", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignRightWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value))));
-                TrySet(context, obj, lastObj, "relative$alignTopWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignTopWithProperty, context.ReferenceObject(x.ToString())), context.Defer);
-                TrySet(context, obj, lastObj, "relative$alignTopWithPanel", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignTopWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value))));
-                TrySet(context, obj, lastObj, "relative$alignVerticalCenterWith", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignVerticalCenterWithProperty, context.ReferenceObject(x.ToString())), context.Defer);
-                TrySet(context, obj, lastObj, "relative$alignVerticalCenterWithPanel", false, t, (target, x, lastX) => target.SetValue(RelativePanel.AlignVerticalCenterWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value))));
-                TrySet(context, obj, lastObj, "relative$below", false, t, (target, x, lastX) => target.SetValue(RelativePanel.BelowProperty, context.ReferenceObject(x.ToString())), context.Defer);
-                TrySet(context, obj, lastObj, "relative$leftOf", false, t, (target, x, lastX) => target.SetValue(RelativePanel.LeftOfProperty, context.ReferenceObject(x.ToString())), context.Defer);
-                TrySet(context, obj, lastObj, "relative$rightOf", false, t, (target, x, lastX) => target.SetValue(RelativePanel.RightOfProperty, context.ReferenceObject(x.ToString())), context.Defer);
-                TrySet(context, obj, lastObj, "horizontalAlignment", false, t, (target, x, lastX) => target.HorizontalAlignment = ParseEnum<HorizontalAlignment>(x));
-                TrySet(context, obj, lastObj, "verticalAlignment", false, t, (target, x, lastX) => target.VerticalAlignment = ParseEnum<VerticalAlignment>(x));
-                TrySet(context, obj, lastObj, "margin", false, t, (target, x, lastX) => target.Margin = XamlStringParse<Thickness>(x));
-                TrySet(context, obj, lastObj, "name", false, t, (target, x, lastX) => { target.Name = x.ToString(); });
+                TrySet(context, obj, lastObj,
+                    "scrollViewer$verticalScrollBarVisibility", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => { target.SetValue(ScrollViewer.VerticalScrollBarVisibilityProperty, XamlStringParse<ScrollBarVisibility>(valueToken)); });
+                TrySet(context, obj, lastObj,
+                    "scrollViewer$horizontalScrollBarVisibility", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => { target.SetValue(ScrollViewer.HorizontalScrollBarVisibilityProperty, XamlStringParse<ScrollBarVisibility>(valueToken)); });
+                TrySet(context, obj, lastObj,
+                    "grid$row", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => { target.SetValue(Grid.RowProperty, Convert.ToInt32(valueToken.Value<double>())); });
+                TrySet(context, obj, lastObj,
+                    "grid$rowSpan", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => { target.SetValue(Grid.RowSpanProperty, Convert.ToInt32(valueToken.Value<double>())); });
+                TrySet(context, obj, lastObj,
+                    "grid$column", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => { target.SetValue(Grid.ColumnProperty, Convert.ToInt32(valueToken.Value<double>())); });
+                TrySet(context, obj, lastObj,
+                    "grid$columnSpan", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => { target.SetValue(Grid.ColumnSpanProperty, Convert.ToInt32(valueToken.Value<double>())); });
+                TrySet(context, obj, lastObj,
+                    "automationId", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => { AutomationProperties.SetAutomationId(target, valueToken.ToString()); });
+                TrySet(context, obj, lastObj,
+                    "acc$helpText", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => { AutomationProperties.SetHelpText(target, valueToken.ToString()); });
+                TrySet(context, obj, lastObj,
+                    "acc$labeledBy", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.SetValue(AutomationProperties.LabeledByProperty, context.ReferenceObject(valueToken.ToString())), context.Defer);
+                TrySet(context, obj, lastObj,
+                    "acc$liveSetting", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.SetValue(AutomationProperties.LiveSettingProperty, ParseEnum<AutomationLiveSetting>(valueToken)));
+                TrySet(context, obj, lastObj,
+                    "acc$name", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => { AutomationProperties.SetName(target, valueToken.ToString()); });
+                TrySet(context, obj, lastObj,
+                    "relative$above", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.SetValue(RelativePanel.AboveProperty, context.ReferenceObject(valueToken.ToString())), context.Defer);
+                TrySet(context, obj, lastObj,
+                    "relative$alignBottomWith", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.SetValue(RelativePanel.AlignBottomWithProperty, context.ReferenceObject(valueToken.ToString())), context.Defer);
+                TrySet(context, obj, lastObj,
+                    "relative$alignBottomWithPanel", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.SetValue(RelativePanel.AlignBottomWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)valueToken).Value))));
+                TrySet(context, obj, lastObj,
+                    "relative$alignHorizontalCenterWith", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.SetValue(RelativePanel.AlignHorizontalCenterWithProperty, context.ReferenceObject(valueToken.ToString())), context.Defer);
+                TrySet(context, obj, lastObj,
+                    "relative$alignLeftWith", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.SetValue(RelativePanel.AlignLeftWithProperty, context.ReferenceObject(valueToken.ToString())), context.Defer);
+                TrySet(context, obj, lastObj,
+                    "relative$alignLeftWithPanel", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.SetValue(RelativePanel.AlignLeftWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)valueToken).Value))));
+                TrySet(context, obj, lastObj,
+                    "relative$alignRightWith", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.SetValue(RelativePanel.AlignRightWithProperty, context.ReferenceObject(valueToken.ToString())), context.Defer);
+                TrySet(context, obj, lastObj,
+                    "relative$alignRightWithPanel", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.SetValue(RelativePanel.AlignRightWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)valueToken).Value))));
+                TrySet(context, obj, lastObj,
+                    "relative$alignTopWith", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.SetValue(RelativePanel.AlignTopWithProperty, context.ReferenceObject(valueToken.ToString())), context.Defer);
+                TrySet(context, obj, lastObj,
+                    "relative$alignTopWithPanel", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.SetValue(RelativePanel.AlignTopWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)valueToken).Value))));
+                TrySet(context, obj, lastObj,
+                    "relative$alignVerticalCenterWith", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.SetValue(RelativePanel.AlignVerticalCenterWithProperty, context.ReferenceObject(valueToken.ToString())), context.Defer);
+                TrySet(context, obj, lastObj,
+                    "relative$alignVerticalCenterWithPanel", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.SetValue(RelativePanel.AlignVerticalCenterWithPanelProperty, Convert.ToBoolean(Convert.ToBoolean(((JValue)valueToken).Value))));
+                TrySet(context, obj, lastObj,
+                    "relative$below", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.SetValue(RelativePanel.BelowProperty, context.ReferenceObject(valueToken.ToString())), context.Defer);
+                TrySet(context, obj, lastObj,
+                    "relative$leftOf", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.SetValue(RelativePanel.LeftOfProperty, context.ReferenceObject(valueToken.ToString())), context.Defer);
+                TrySet(context, obj, lastObj,
+                    "relative$rightOf", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.SetValue(RelativePanel.RightOfProperty, context.ReferenceObject(valueToken.ToString())), context.Defer);
+                TrySet(context, obj, lastObj,
+                    "horizontalAlignment", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.HorizontalAlignment = ParseEnum<HorizontalAlignment>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "verticalAlignment", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.VerticalAlignment = ParseEnum<VerticalAlignment>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "margin", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.Margin = XamlStringParse<Thickness>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "name", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => { target.Name = valueToken.ToString(); });
             }
         }
 
@@ -71,10 +191,26 @@ namespace XSRT2 {
             internal static void SetProperties(TextBlock t, JObject obj, JObject lastObj, DiffContext context)
             {
                 FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
-                TrySet(context, obj, lastObj, "text", true, t, (target, x, lastX) => target.Text = x.ToString());
-                TrySet(context, obj, lastObj, "fontFamily", false, t, (target, x, lastX) => target.FontFamily = new FontFamily(x.ToString()));
-                TrySet(context, obj, lastObj, "fontSize", false, t, (target, x, lastX) => target.FontSize = x.Value<double>());
-                TrySet(context, obj, lastObj, "fontWeight", false, t, (target, x, lastX) => target.FontWeight = XamlStringParse<FontWeight>(x));
+                TrySet(context, obj, lastObj,
+                    "text", 
+                    true,
+                    t,
+                    (target, valueToken, lastValueToken) => target.Text = valueToken.ToString());
+                TrySet(context, obj, lastObj,
+                    "fontFamily", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.FontFamily = new FontFamily(valueToken.ToString()));
+                TrySet(context, obj, lastObj,
+                    "fontSize", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.FontSize = valueToken.Value<double>());
+                TrySet(context, obj, lastObj,
+                    "fontWeight", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.FontWeight = XamlStringParse<FontWeight>(valueToken));
             }
         }
 
@@ -91,7 +227,11 @@ namespace XSRT2 {
             internal static void SetProperties(Image t, JObject obj, JObject lastObj, DiffContext context)
             {
                 FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
-                TrySet(context, obj, lastObj, "source", false, t, (target, x, lastX) => target.Source = new BitmapImage(FromRelativeUri(target, x.ToString(), context)), context.Defer);
+                TrySet(context, obj, lastObj,
+                    "source", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.Source = new BitmapImage(FromRelativeUri(target, valueToken.ToString(), context)), context.Defer);
             }
         }
         
@@ -108,18 +248,62 @@ namespace XSRT2 {
             internal static void SetProperties(RichEditBox t, JObject obj, JObject lastObj, DiffContext context)
             {
                 ControlHandler.SetProperties(t, obj, lastObj, context);
-                TrySet(context, obj, lastObj, "acceptsReturn", false, t, (target, x, lastX) => target.AcceptsReturn = Convert.ToBoolean(((JValue)x).Value));
-                TrySet(context, obj, lastObj, "text", false, t, (target, x, lastX) => target.Document.SetText(TextSetOptions.None, x.ToString()));
-                TrySet(context, obj, lastObj, "isColorFontEnabled", false, t, (target, x, lastX) => target.IsColorFontEnabled = Convert.ToBoolean(((JValue)x).Value));
-                TrySet(context, obj, lastObj, "isReadOnly", false, t, (target, x, lastX) => target.IsReadOnly = Convert.ToBoolean(((JValue)x).Value));
-                TrySet(context, obj, lastObj, "isSpellCheckEnabled", false, t, (target, x, lastX) => target.IsSpellCheckEnabled = Convert.ToBoolean(((JValue)x).Value));
-                TrySet(context, obj, lastObj, "isTextPredictionEnabled", false, t, (target, x, lastX) => target.IsTextPredictionEnabled = Convert.ToBoolean(((JValue)x).Value));
-                TrySet(context, obj, lastObj, "placeholderText", false, t, (target, x, lastX) => target.PlaceholderText = x.ToString());
-                TrySet(context, obj, lastObj, "preventKeyboardDisplayOnProgrammaticFocus", false, t, (target, x, lastX) => target.PreventKeyboardDisplayOnProgrammaticFocus = Convert.ToBoolean(((JValue)x).Value));
-                TrySet(context, obj, lastObj, "textAlignment", false, t, (target, x, lastX) => target.TextAlignment = ParseEnum<TextAlignment>(x));
-                TrySet(context, obj, lastObj, "textReadingOrder", false, t, (target, x, lastX) => target.TextReadingOrder = ParseEnum<TextReadingOrder>(x));
-                TrySet(context, obj, lastObj, "textWrapping", false, t, (target, x, lastX) => target.TextWrapping = ParseEnum<TextWrapping>(x));
-                TrySetEvent(context, obj, lastObj, "TextChanged", t, (target, x, lastX) => SetTextChangedEventHandler(x.ToString(), target));
+                TrySet(context, obj, lastObj,
+                    "acceptsReturn", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.AcceptsReturn = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "text", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.Document.SetText(TextSetOptions.None, valueToken.ToString()));
+                TrySet(context, obj, lastObj,
+                    "isColorFontEnabled", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.IsColorFontEnabled = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "isReadOnly", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.IsReadOnly = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "isSpellCheckEnabled", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.IsSpellCheckEnabled = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "isTextPredictionEnabled", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.IsTextPredictionEnabled = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "placeholderText", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.PlaceholderText = valueToken.ToString());
+                TrySet(context, obj, lastObj,
+                    "preventKeyboardDisplayOnProgrammaticFocus", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.PreventKeyboardDisplayOnProgrammaticFocus = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "textAlignment", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.TextAlignment = ParseEnum<TextAlignment>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "textReadingOrder", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.TextReadingOrder = ParseEnum<TextReadingOrder>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "textWrapping", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.TextWrapping = ParseEnum<TextWrapping>(valueToken));
+                TrySetEvent(context, obj, lastObj, "TextChanged", t, (target, valueToken, lastValueToken) => SetTextChangedEventHandler(valueToken.ToString(), target));
             }
             static void TextChangedRouter(object sender, RoutedEventArgs e)
             {
@@ -155,21 +339,77 @@ namespace XSRT2 {
             internal static void SetProperties(TextBox t, JObject obj, JObject lastObj, DiffContext context)
             {
                 ControlHandler.SetProperties(t, obj, lastObj, context);
-                TrySet(context, obj, lastObj, "acceptsReturn", false, t, (target, x, lastX) => target.AcceptsReturn = Convert.ToBoolean(((JValue)x).Value));
-                TrySet(context, obj, lastObj, "text", true, t, (target, x, lastX) => target.Text = x.ToString());
-                TrySet(context, obj, lastObj, "isColorFontEnabled", false, t, (target, x, lastX) => target.IsColorFontEnabled = Convert.ToBoolean(((JValue)x).Value));
-                TrySet(context, obj, lastObj, "isReadOnly", false, t, (target, x, lastX) => target.IsReadOnly = Convert.ToBoolean(((JValue)x).Value));
-                TrySet(context, obj, lastObj, "isSpellCheckEnabled", false, t, (target, x, lastX) => target.IsSpellCheckEnabled = Convert.ToBoolean(((JValue)x).Value));
-                TrySet(context, obj, lastObj, "isTextPredictionEnabled", false, t, (target, x, lastX) => target.IsTextPredictionEnabled = Convert.ToBoolean(((JValue)x).Value));
-                TrySet(context, obj, lastObj, "maxLength", false, t, (target, x, lastX) => target.MaxLength = x.Value<int>());
-                TrySet(context, obj, lastObj, "placeholderText", false, t, (target, x, lastX) => target.PlaceholderText = x.ToString());
-                TrySet(context, obj, lastObj, "preventKeyboardDisplayOnProgrammaticFocus", false, t, (target, x, lastX) => target.PreventKeyboardDisplayOnProgrammaticFocus = Convert.ToBoolean(((JValue)x).Value));
-                TrySet(context, obj, lastObj, "selectionLength", false, t, (target, x, lastX) => target.SelectionLength = x.Value<int>());
-                TrySet(context, obj, lastObj, "selectionStart", false, t, (target, x, lastX) => target.SelectionStart = x.Value<int>());
-                TrySet(context, obj, lastObj, "textAlignment", false, t, (target, x, lastX) => target.TextAlignment = ParseEnum<TextAlignment>(x));
-                TrySet(context, obj, lastObj, "textReadingOrder", false, t, (target, x, lastX) => target.TextReadingOrder = ParseEnum<TextReadingOrder>(x));
-                TrySet(context, obj, lastObj, "textWrapping", false, t, (target, x, lastX) => target.TextWrapping = ParseEnum<TextWrapping>(x));
-                TrySetEvent(context, obj, lastObj, "TextChanged", t, (target, x, lastX) => SetTextChangedEventHandler(x.ToString(), target));
+                TrySet(context, obj, lastObj,
+                    "acceptsReturn", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.AcceptsReturn = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "text", 
+                    true,
+                    t,
+                    (target, valueToken, lastValueToken) => target.Text = valueToken.ToString());
+                TrySet(context, obj, lastObj,
+                    "isColorFontEnabled", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.IsColorFontEnabled = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "isReadOnly", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.IsReadOnly = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "isSpellCheckEnabled", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.IsSpellCheckEnabled = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "isTextPredictionEnabled", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.IsTextPredictionEnabled = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "maxLength", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.MaxLength = valueToken.Value<int>());
+                TrySet(context, obj, lastObj,
+                    "placeholderText", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.PlaceholderText = valueToken.ToString());
+                TrySet(context, obj, lastObj,
+                    "preventKeyboardDisplayOnProgrammaticFocus", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.PreventKeyboardDisplayOnProgrammaticFocus = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "selectionLength", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.SelectionLength = valueToken.Value<int>());
+                TrySet(context, obj, lastObj,
+                    "selectionStart", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.SelectionStart = valueToken.Value<int>());
+                TrySet(context, obj, lastObj,
+                    "textAlignment", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.TextAlignment = ParseEnum<TextAlignment>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "textReadingOrder", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.TextReadingOrder = ParseEnum<TextReadingOrder>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "textWrapping", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.TextWrapping = ParseEnum<TextWrapping>(valueToken));
+                TrySetEvent(context, obj, lastObj, "TextChanged", t, (target, valueToken, lastValueToken) => SetTextChangedEventHandler(valueToken.ToString(), target));
             }
             static void TextChangedRouter(object sender, RoutedEventArgs e)
             {
@@ -269,8 +509,12 @@ namespace XSRT2 {
             internal static void SetProperties(Selector t, JObject obj, JObject lastObj, DiffContext context)
             {
                 ItemsControlHandler.SetProperties(t, obj, lastObj, context);
-                TrySet(context, obj, lastObj, "selectedItem", false, t, (target, x, lastX) => { target.SelectedItem = CreateForObjectType(x, lastX, context); });
-                TrySetEvent(context, obj, lastObj, "SelectionChanged", t, (target, x, lastX) => SetSelectionChangedEventHandler(x.ToString(), target));
+                TrySet(context, obj, lastObj,
+                    "selectedItem", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => { target.SelectedItem = CreateForObjectType(valueToken, lastValueToken, context); });
+                TrySetEvent(context, obj, lastObj, "SelectionChanged", t, (target, valueToken, lastValueToken) => SetSelectionChangedEventHandler(valueToken.ToString(), target));
             }
             static void SelectionChangedRouter(object sender, SelectionChangedEventArgs e)
             {
@@ -298,8 +542,16 @@ namespace XSRT2 {
             internal static void SetProperties(ItemsControl t, JObject obj, JObject lastObj, DiffContext context)
             {
                 ControlHandler.SetProperties(t, obj, lastObj, context);
-                TrySet(context, obj, lastObj, "itemsSource", false, t, (target, x, lastX) => { SetItemsSource(target, x, lastX, context); });
-                TrySet(context, obj, lastObj, "itemContainerTransitions", false, t, (target, x, lastX) => { SetItemContainerTransitions(target, x, lastX, context); });
+                TrySet(context, obj, lastObj,
+                    "itemsSource", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => { SetItemsSource(target, valueToken, lastValueToken, context); });
+                TrySet(context, obj, lastObj,
+                    "itemContainerTransitions", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => { SetItemContainerTransitions(target, valueToken, lastValueToken, context); });
             }
         }
 
@@ -308,10 +560,22 @@ namespace XSRT2 {
             internal static void SetProperties(RangeBase t, JObject obj, JObject lastObj, DiffContext context)
             {
                 ControlHandler.SetProperties(t, obj, lastObj, context);
-                TrySet(context, obj, lastObj, "minimum", false, t, (target, x, lastX) => target.Minimum = x.Value<double>());
-                TrySet(context, obj, lastObj, "maximum", false, t, (target, x, lastX) => target.Maximum = x.Value<double>());
-                TrySet(context, obj, lastObj, "value", false, t, (target, x, lastX) => target.Value = x.Value<double>());
-                TrySetEvent(context, obj, lastObj, "ValueChanged", t, (target, x, lastX) => SetValueChangedEventHandler(x.ToString(), target));
+                TrySet(context, obj, lastObj,
+                    "minimum", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.Minimum = valueToken.Value<double>());
+                TrySet(context, obj, lastObj,
+                    "maximum", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.Maximum = valueToken.Value<double>());
+                TrySet(context, obj, lastObj,
+                    "value", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.Value = valueToken.Value<double>());
+                TrySetEvent(context, obj, lastObj, "ValueChanged", t, (target, valueToken, lastValueToken) => SetValueChangedEventHandler(valueToken.ToString(), target));
             }
             static void ValueChangedRouter(object sender, RangeBaseValueChangedEventArgs e)
             {
@@ -456,8 +720,12 @@ namespace XSRT2 {
             internal static void SetProperties(CheckBox t, JObject obj, JObject lastObj, DiffContext context)
             {
                 ButtonBaseHandler.SetProperties(t, obj, lastObj, context);
-                TrySet(context, obj, lastObj, "isChecked", false, t, (target, x, lastX) => target.IsChecked = Convert.ToBoolean(((JValue)x).Value));
-                TrySetEvent(context, obj, lastObj, "Checked", t, (target, x, lastX) => SetCheckedEventHandler(x.ToString(), target));
+                TrySet(context, obj, lastObj,
+                    "isChecked", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.IsChecked = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySetEvent(context, obj, lastObj, "Checked", t, (target, valueToken, lastValueToken) => SetCheckedEventHandler(valueToken.ToString(), target));
             }
             static void CheckedRouter(object sender, RoutedEventArgs e)
             {
@@ -480,13 +748,143 @@ namespace XSRT2 {
             }
         }
 
+        internal static class ScrollViewerHandler
+        {
+            internal static ScrollViewer Create(JObject obj, JObject lastObj, DiffContext context)
+            {
+                var createResult = CreateOrGetLast<ScrollViewer>(obj, context);
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
+            }
+            internal static void SetProperties(ScrollViewer t, JObject obj, JObject lastObj, DiffContext context)
+            {
+                ContentControlHandler.SetProperties(t, obj, lastObj, context);
+                TrySet(context, obj, lastObj,
+                    "horizontalScrollBarVisibility", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.HorizontalScrollBarVisibility = XamlStringParse<ScrollBarVisibility>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "horizontalScrollMode", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.HorizontalScrollMode = XamlStringParse<ScrollMode>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "horizontalSnapPointsAlignment", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.HorizontalSnapPointsAlignment = XamlStringParse<SnapPointsAlignment>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "horizontalSnapPointsType", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.HorizontalSnapPointsType = XamlStringParse<SnapPointsType>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "isDeferredScrollingEnabled", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.IsDeferredScrollingEnabled = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "isHorizontalRailEnabled", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.IsHorizontalRailEnabled = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "isHorizontalScrollChainingEnabled", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.IsHorizontalScrollChainingEnabled = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "isScrollInertiaEnabled", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.IsScrollInertiaEnabled = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "isVerticalRailEnabled", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.IsVerticalRailEnabled = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "isVerticalScrollChainingEnabled", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.IsVerticalScrollChainingEnabled = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "isZoomChainingEnabled", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.IsZoomChainingEnabled = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "isZoomInertiaEnabled", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.IsZoomInertiaEnabled = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "maxZoomFactor", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.MaxZoomFactor = valueToken.Value<float>());
+                TrySet(context, obj, lastObj,
+                    "minZoomFactor", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.MinZoomFactor = valueToken.Value<float>());
+                TrySet(context, obj, lastObj,
+                    "leftHeader", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.LeftHeader = CreateFromState(valueToken, lastValueToken, context) as UIElement);
+                TrySet(context, obj, lastObj,
+                    "topHeader", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.TopHeader = CreateFromState(valueToken, lastValueToken, context) as UIElement);
+                TrySet(context, obj, lastObj,
+                    "topLeftHeader", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.TopLeftHeader = CreateFromState(valueToken, lastValueToken, context) as UIElement);
+                TrySet(context, obj, lastObj,
+                    "verticalScrollBarVisibility", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.VerticalScrollBarVisibility = XamlStringParse<ScrollBarVisibility>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "verticalScrollMode", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.VerticalScrollMode = XamlStringParse<ScrollMode>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "verticalSnapPointsAlignment", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.VerticalSnapPointsAlignment = XamlStringParse<SnapPointsAlignment>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "verticalSnapPointsType", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.VerticalSnapPointsType = XamlStringParse<SnapPointsType>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "zoomMode", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.ZoomMode = XamlStringParse<ZoomMode>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "zoomSnapPointsType", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.ZoomSnapPointsType = XamlStringParse<SnapPointsType>(valueToken));
+            }
+        }
+
         internal static class ButtonBaseHandler
         {
             internal static void SetProperties(ButtonBase t, JObject obj, JObject lastObj, DiffContext context)
             {
-                ControlHandler.SetProperties(t, obj, lastObj, context);
-                TrySet(context, obj, lastObj, "content", true, t, (target, x, lastX) => target.Content = CreateFromState(x, lastX, context));
-                TrySetEvent(context, obj, lastObj, "Click", t, (target, x, lastX) => SetClickEventHandler(x.ToString(), target));
+                ContentControlHandler.SetProperties(t, obj, lastObj, context);
+                TrySetEvent(context, obj, lastObj, "Click", t, (target, valueToken, lastValueToken) => SetClickEventHandler(valueToken.ToString(), target));
             }
             static void ClickRouter(object sender, RoutedEventArgs e)
             {
@@ -508,17 +906,50 @@ namespace XSRT2 {
                 element.Click += ClickRouter;
             }
         }
+        
+        internal static class ContentControlHandler
+        {
+            internal static void SetProperties(ContentControl t, JObject obj, JObject lastObj, DiffContext context)
+            {
+                ControlHandler.SetProperties(t, obj, lastObj, context);
+                TrySet(context, obj, lastObj,
+                    "content", 
+                    true,
+                    t,
+                    (target, valueToken, lastValueToken) => target.Content = CreateFromState(valueToken, lastValueToken, context));
+            }
+        }
 
         internal static class ControlHandler
         {
             internal static void SetProperties(Control t, JObject obj, JObject lastObj, DiffContext context)
             {
                 FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
-                TrySet(context, obj, lastObj, "background", false, t, (target, x, lastX) => target.Background = XamlStringParse<Brush>(x));
-                TrySet(context, obj, lastObj, "foreground", false, t, (target, x, lastX) => target.Foreground = XamlStringParse<Brush>(x));
-                TrySet(context, obj, lastObj, "fontFamily", false, t, (target, x, lastX) => target.FontFamily = new FontFamily(x.ToString()));
-                TrySet(context, obj, lastObj, "fontSize", false, t, (target, x, lastX) => target.FontSize = x.Value<double>());
-                TrySet(context, obj, lastObj, "fontWeight", false, t, (target, x, lastX) => target.FontWeight = ParseEnum<FontWeight>(x));
+                TrySet(context, obj, lastObj,
+                    "background", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.Background = XamlStringParse<Brush>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "foreground", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.Foreground = XamlStringParse<Brush>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "fontFamily", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.FontFamily = new FontFamily(valueToken.ToString()));
+                TrySet(context, obj, lastObj,
+                    "fontSize", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.FontSize = valueToken.Value<double>());
+                TrySet(context, obj, lastObj,
+                    "fontWeight", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.FontWeight = ParseEnum<FontWeight>(valueToken));
             }
         }
 
@@ -535,7 +966,11 @@ namespace XSRT2 {
             internal static void SetProperties(StackPanel t, JObject obj, JObject lastObj, DiffContext context)
             {
                 PanelHandler.SetProperties(t, obj, lastObj, context);
-                TrySet(context, obj, lastObj, "orientation", false, t, (target, x, lastX) => target.Orientation = ParseEnum<Orientation>(x));
+                TrySet(context, obj, lastObj,
+                    "orientation", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.Orientation = ParseEnum<Orientation>(valueToken));
             }
         }
 
@@ -552,8 +987,16 @@ namespace XSRT2 {
             internal static void SetProperties(Grid t, JObject obj, JObject lastObj, DiffContext context)
             {
                 PanelHandler.SetProperties(t, obj, lastObj, context);
-                TrySet(context, obj, lastObj, "rows", false, t, (target, x, lastX) => { PanelHandler.SetGridRowDefinitions(target, (JArray)x); });
-                TrySet(context, obj, lastObj, "columns", false, t, (target, x, lastX) => { PanelHandler.SetGridColumnDefinitions(target, (JArray)x); });
+                TrySet(context, obj, lastObj,
+                    "rows", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => { PanelHandler.SetGridRowDefinitions(target, (JArray)valueToken); });
+                TrySet(context, obj, lastObj,
+                    "columns", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => { PanelHandler.SetGridColumnDefinitions(target, (JArray)valueToken); });
             }
         }
 
@@ -683,8 +1126,8 @@ namespace XSRT2 {
             {
                 FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
                 SetPanelChildren(t, obj, lastObj, context);
-                TrySet(context, obj, lastObj, "background", false, t, (target, x, lastX) => target.Background = XamlStringParse<Brush>(x));
-                TrySet(context, obj, lastObj, "childrenTransitions", false, t, (target, x, lastX) => { SetChildrenTransitions(target, x, lastX, context); });
+                TrySet(context, obj, lastObj, "background", false, t, (target, valueToken, lastValueToken) => target.Background = XamlStringParse<Brush>(valueToken));
+                TrySet(context, obj, lastObj, "childrenTransitions", false, t, (target, valueToken, lastValueToken) => { SetChildrenTransitions(target, valueToken, lastValueToken, context); });
             }
 
         }
@@ -959,6 +1402,7 @@ namespace XSRT2 {
                 handlers["ProgressBar"] = ProgressBarHandler.Create;
                 handlers["Slider"] = SliderHandler.Create;
                 handlers["CheckBox"] = CheckBoxHandler.Create;
+                handlers["ScrollViewer"] = ScrollViewerHandler.Create;
                 handlers["StackPanel"] = StackPanelHandler.Create;
                 handlers["Grid"] = GridHandler.Create;
             }

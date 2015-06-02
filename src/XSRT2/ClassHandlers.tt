@@ -35,24 +35,24 @@ namespace XSRT2 {
             // UNDONE: what is the scalable story for attached properties?
             //
             new PropEntry[] { 
-                new PropEntry() { Name="scrollViewer$verticalScrollBarVisibility", SetBody="{ target.SetValue(ScrollViewer.VerticalScrollBarVisibilityProperty, XamlStringParse<ScrollBarVisibility>(x)); }" },
-                new PropEntry() { Name="scrollViewer$horizontalScrollBarVisibility", SetBody="{ target.SetValue(ScrollViewer.HorizontalScrollBarVisibilityProperty, XamlStringParse<ScrollBarVisibility>(x)); }" },
+                new PropEntry() { Name="scrollViewer$verticalScrollBarVisibility", SetBody="{ target.SetValue(ScrollViewer.VerticalScrollBarVisibilityProperty, XamlStringParse<ScrollBarVisibility>(valueToken)); }" },
+                new PropEntry() { Name="scrollViewer$horizontalScrollBarVisibility", SetBody="{ target.SetValue(ScrollViewer.HorizontalScrollBarVisibilityProperty, XamlStringParse<ScrollBarVisibility>(valueToken)); }" },
 
 
                 // UNDONE: rest of grid
                 //
-                new PropEntry() { Name="grid$row", SetBody="{ target.SetValue(Grid.RowProperty, Convert.ToInt32(x.Value<double>())); }" },
-                new PropEntry() { Name="grid$rowSpan", SetBody="{ target.SetValue(Grid.RowSpanProperty, Convert.ToInt32(x.Value<double>())); }" },
-                new PropEntry() { Name="grid$column", SetBody="{ target.SetValue(Grid.ColumnProperty, Convert.ToInt32(x.Value<double>())); }" },
-                new PropEntry() { Name="grid$columnSpan", SetBody="{ target.SetValue(Grid.ColumnSpanProperty, Convert.ToInt32(x.Value<double>())); }" },
+                new PropEntry() { Name="grid$row", SetBody="{ target.SetValue(Grid.RowProperty, Convert.ToInt32(valueToken.Value<double>())); }" },
+                new PropEntry() { Name="grid$rowSpan", SetBody="{ target.SetValue(Grid.RowSpanProperty, Convert.ToInt32(valueToken.Value<double>())); }" },
+                new PropEntry() { Name="grid$column", SetBody="{ target.SetValue(Grid.ColumnProperty, Convert.ToInt32(valueToken.Value<double>())); }" },
+                new PropEntry() { Name="grid$columnSpan", SetBody="{ target.SetValue(Grid.ColumnSpanProperty, Convert.ToInt32(valueToken.Value<double>())); }" },
 
                 // UNDONE: rest of accessibility
                 //
-                new PropEntry() { Name="automationId", SetBody="{ AutomationProperties.SetAutomationId(target, x.ToString()); }" },
-                new PropEntry() { Name="acc$helpText", SetBody="{ AutomationProperties.SetHelpText(target, x.ToString()); }" },
+                new PropEntry() { Name="automationId", SetBody="{ AutomationProperties.SetAutomationId(target, valueToken.ToString()); }" },
+                new PropEntry() { Name="acc$helpText", SetBody="{ AutomationProperties.SetHelpText(target, valueToken.ToString()); }" },
                 RefAttachedProp("LabeledBy", "acc", "AutomationProperties"),
                 EnumAttachedProperty("LiveSetting", "acc", "AutomationProperties", "AutomationLiveSetting"),
-                new PropEntry() { Name="acc$name", SetBody="{ AutomationProperties.SetName(target, x.ToString()); }" },
+                new PropEntry() { Name="acc$name", SetBody="{ AutomationProperties.SetName(target, valueToken.ToString()); }" },
 
                 // This is all of relativePanel
                 //
@@ -76,8 +76,8 @@ namespace XSRT2 {
                 //
                 EnumProp("HorizontalAlignment"),
                 EnumProp("VerticalAlignment"),
-                XamlProperty("Margin", "Thickness"),
-                new PropEntry() { Name="name", SetBody="{ target.Name = x.ToString(); }" }
+                XamlProp("Margin", "Thickness"),
+                new PropEntry() { Name="name", SetBody="{ target.Name = valueToken.ToString(); }" }
             },
             null
         ); 
@@ -90,9 +90,9 @@ namespace XSRT2 {
             "FrameworkElement",
             new PropEntry[] {
                 DefaultStringProp("Text"),
-                BasicProp("FontFamily", "new FontFamily(x.ToString())"),
+                BasicProp("FontFamily", "new FontFamily(valueToken.ToString())"),
                 DoubleProp("FontSize"),
-                XamlProperty("FontWeight", "FontWeight")
+                XamlProp("FontWeight", "FontWeight")
             },
             null
         );
@@ -104,7 +104,7 @@ namespace XSRT2 {
             true,
             "FrameworkElement",
             new PropEntry[] {
-                DeferBasicProp("Source", "new BitmapImage(FromRelativeUri(target, x.ToString(), context))")
+                DeferBasicProp("Source", "new BitmapImage(FromRelativeUri(target, valueToken.ToString(), context))")
             },
             null
         );
@@ -117,7 +117,7 @@ namespace XSRT2 {
             "Control",
             new PropEntry[] {
                 BooleanProp("AcceptsReturn"),
-                new PropEntry() { Name="text", SetBody="target.Document.SetText(TextSetOptions.None, x.ToString())" },
+                new PropEntry() { Name="text", SetBody="target.Document.SetText(TextSetOptions.None, valueToken.ToString())" },
                 BooleanProp("IsColorFontEnabled"),
                 BooleanProp("IsReadOnly"),
                 BooleanProp("IsSpellCheckEnabled"),
@@ -227,7 +227,7 @@ namespace XSRT2 {
             false,
             "ItemsControl",
             new PropEntry[] {
-                new PropEntry() { Name="selectedItem", SetBody="{ target.SelectedItem = CreateForObjectType(x, lastX, context); }" }
+                new PropEntry() { Name="selectedItem", SetBody="{ target.SelectedItem = CreateForObjectType(valueToken, lastValueToken, context); }" }
             },
             new EventEntry[] {
                 new EventEntry() { Name="SelectionChanged", WinRTName="SelectionChanged", EventType="SelectionChangedEventArgs" }
@@ -241,8 +241,8 @@ namespace XSRT2 {
             false,
             "Control",
             new PropEntry[] {
-                new PropEntry() { Name="itemsSource", SetBody="{ SetItemsSource(target, x, lastX, context); }" },
-                new PropEntry() { Name="itemContainerTransitions", SetBody="{ SetItemContainerTransitions(target, x, lastX, context); }" }
+                new PropEntry() { Name="itemsSource", SetBody="{ SetItemsSource(target, valueToken, lastValueToken, context); }" },
+                new PropEntry() { Name="itemContainerTransitions", SetBody="{ SetItemContainerTransitions(target, valueToken, lastValueToken, context); }" }
             },
             new EventEntry[] {
             }
@@ -293,15 +293,62 @@ namespace XSRT2 {
 
         <#
         ClassDef(
+            "ScrollViewer",
+            true,
+            "ContentControl",
+            new PropEntry[] {
+                XamlProp("HorizontalScrollBarVisibility", "ScrollBarVisibility"),
+                XamlProp("HorizontalScrollMode", "ScrollMode"),
+                XamlProp("HorizontalSnapPointsAlignment", "SnapPointsAlignment"),
+                XamlProp("HorizontalSnapPointsType", "SnapPointsType"),
+                BooleanProp("IsDeferredScrollingEnabled"),
+                BooleanProp("IsHorizontalRailEnabled"),
+                BooleanProp("IsHorizontalScrollChainingEnabled"),
+                BooleanProp("IsScrollInertiaEnabled"),
+                BooleanProp("IsVerticalRailEnabled"),
+                BooleanProp("IsVerticalScrollChainingEnabled"),
+                BooleanProp("IsZoomChainingEnabled"),
+                BooleanProp("IsZoomInertiaEnabled"),
+                FloatProp("MaxZoomFactor"),
+                FloatProp("MinZoomFactor"),
+                BasicProp("LeftHeader", "CreateFromState(valueToken, lastValueToken, context) as UIElement"),
+                BasicProp("TopHeader", "CreateFromState(valueToken, lastValueToken, context) as UIElement"),
+                BasicProp("TopLeftHeader", "CreateFromState(valueToken, lastValueToken, context) as UIElement"),
+                XamlProp("VerticalScrollBarVisibility", "ScrollBarVisibility"),
+                XamlProp("VerticalScrollMode", "ScrollMode"),
+                XamlProp("VerticalSnapPointsAlignment", "SnapPointsAlignment"),
+                XamlProp("VerticalSnapPointsType", "SnapPointsType"),
+                XamlProp("ZoomMode", "ZoomMode"),
+                // UNDONE: public IList<System.Single> ZoomSnapPoints { get; }
+                XamlProp("ZoomSnapPointsType", "SnapPointsType")
+
+            },
+            null
+        );
+        #>
+
+        <#
+        ClassDef(
             "ButtonBase",
             false,
-            "Control",
+            "ContentControl",
             new PropEntry[] {
-                DefaultBasicProp("Content", "CreateFromState(x, lastX, context)")
             },
             new EventEntry[] {
                 new EventEntry() { Name="Click", WinRTName="Click", EventType="RoutedEventArgs" }
             }
+        );
+        #>
+        
+        <#
+        ClassDef(
+            "ContentControl",
+            false,
+            "Control",
+            new PropEntry[] {
+                DefaultBasicProp("Content", "CreateFromState(valueToken, lastValueToken, context)")
+            },
+            null
         );
         #>
 
@@ -311,9 +358,9 @@ namespace XSRT2 {
             false,
             "FrameworkElement",
             new PropEntry[] {
-                XamlProperty("Background", "Brush"),
-                XamlProperty("Foreground", "Brush"),
-                BasicProp("FontFamily", "new FontFamily(x.ToString())"),
+                XamlProp("Background", "Brush"),
+                XamlProp("Foreground", "Brush"),
+                BasicProp("FontFamily", "new FontFamily(valueToken.ToString())"),
                 DoubleProp("FontSize"),
                 EnumProp("FontWeight")
             },
@@ -336,8 +383,8 @@ namespace XSRT2 {
             true, 
             "Panel", 
             new PropEntry[] {
-                    new PropEntry() { Name="rows", SetBody="{ PanelHandler.SetGridRowDefinitions(target, (JArray)x); }" },
-                    new PropEntry() { Name="columns", SetBody="{ PanelHandler.SetGridColumnDefinitions(target, (JArray)x); }" }
+                    new PropEntry() { Name="rows", SetBody="{ PanelHandler.SetGridRowDefinitions(target, (JArray)valueToken); }" },
+                    new PropEntry() { Name="columns", SetBody="{ PanelHandler.SetGridColumnDefinitions(target, (JArray)valueToken); }" }
             },
             null
         ); 
@@ -469,8 +516,8 @@ namespace XSRT2 {
             {
                 FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
                 SetPanelChildren(t, obj, lastObj, context);
-                TrySet(context, obj, lastObj, "background", false, t, (target, x, lastX) => target.Background = XamlStringParse<Brush>(x));
-                TrySet(context, obj, lastObj, "childrenTransitions", false, t, (target, x, lastX) => { SetChildrenTransitions(target, x, lastX, context); });
+                TrySet(context, obj, lastObj, "background", false, t, (target, valueToken, lastValueToken) => target.Background = XamlStringParse<Brush>(valueToken));
+                TrySet(context, obj, lastObj, "childrenTransitions", false, t, (target, valueToken, lastValueToken) => { SetChildrenTransitions(target, valueToken, lastValueToken, context); });
             }
 
         }
@@ -886,22 +933,25 @@ string CamelCase(string name) {
     return Char.ToLowerInvariant(name[0]) + name.Substring(1);
 }
 PropEntry EnumProp(string name) {
-    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = ParseEnum<" + name + ">(x)" };
+    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = ParseEnum<" + name + ">(valueToken)" };
 }
 PropEntry EnumProp(string name, string winRTTypeName) {
-    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = ParseEnum<" + winRTTypeName + ">(x)" };
+    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = ParseEnum<" + winRTTypeName + ">(valueToken)" };
 }
-PropEntry XamlProperty(string name, string typeName) {
-    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = XamlStringParse<" + typeName + ">(x)" };
+PropEntry XamlProp(string name, string typeName) {
+    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = XamlStringParse<" + typeName + ">(valueToken)" };
 }
 PropEntry IntProp(string name) {
-    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = x.Value<int>()" };
+    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = valueToken.Value<int>()" };
+}
+PropEntry FloatProp(string name) {
+    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = valueToken.Value<float>()" };
 }
 PropEntry StringProp(string name) {
-    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = x.ToString()" };
+    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = valueToken.ToString()" };
 }
 PropEntry DefaultStringProp(string name) {
-    return new PropEntry() { Name=CamelCase(name), AliasFirstChild=true, SetBody="target." + name + " = x.ToString()" };
+    return new PropEntry() { Name=CamelCase(name), AliasFirstChild=true, SetBody="target." + name + " = valueToken.ToString()" };
 }
 PropEntry BasicProp(string name, string setter) {
     return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = " + setter };
@@ -913,21 +963,21 @@ PropEntry DefaultBasicProp(string name, string setter) {
     return new PropEntry() { Name=CamelCase(name), AliasFirstChild=true, SetBody="target." + name + " = " + setter };
 }
 PropEntry DoubleProp(string name) {
-    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = x.Value<double>()" };
+    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = valueToken.Value<double>()" };
 }
 PropEntry BooleanProp(string name) {
-    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = Convert.ToBoolean(((JValue)x).Value)" };
+    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = Convert.ToBoolean(((JValue)valueToken).Value)" };
 }
 PropEntry EnumAttachedProperty(string winRTPropName, string shortProvider, string winRTProvider, string winRTEnumType) {
-    return new PropEntry() { Name=shortProvider + "$" + CamelCase(winRTPropName), SetBody="target.SetValue("+winRTProvider+"."+winRTPropName+"Property, ParseEnum<" + winRTEnumType + ">(x))" };
+    return new PropEntry() { Name=shortProvider + "$" + CamelCase(winRTPropName), SetBody="target.SetValue("+winRTProvider+"."+winRTPropName+"Property, ParseEnum<" + winRTEnumType + ">(valueToken))" };
 }
 PropEntry BooleanAttachedProp(string winRTPropName, string shortProvider, string winRTProvider) {
-    return new PropEntry() { Name=shortProvider + "$" + CamelCase(winRTPropName), SetBody="target.SetValue("+winRTProvider+"."+winRTPropName+"Property, Convert.ToBoolean(Convert.ToBoolean(((JValue)x).Value)))" };
+    return new PropEntry() { Name=shortProvider + "$" + CamelCase(winRTPropName), SetBody="target.SetValue("+winRTProvider+"."+winRTPropName+"Property, Convert.ToBoolean(Convert.ToBoolean(((JValue)valueToken).Value)))" };
 }
 PropEntry RefAttachedProp(string winRTPropName, string shortProvider, string winRTProvider) {
     return new PropEntry() { 
         Name=shortProvider + "$" + CamelCase(winRTPropName), 
-        SetBody="target.SetValue("+winRTProvider+"."+winRTPropName+"Property, context.ReferenceObject(x.ToString()))",
+        SetBody="target.SetValue("+winRTProvider+"."+winRTPropName+"Property, context.ReferenceObject(valueToken.ToString()))",
         Defer = true
     };
 }
@@ -978,17 +1028,17 @@ void PropSetter(string name, string baseTypeName, PropEntry[] props, EventEntry[
             if (prop.Defer) {
                 deferArg = ", context.Defer";
             }
-            if (prop.AliasFirstChild) {
-                WriteLine("TrySet(context, obj, lastObj, \"" + prop.Name + "\", true, t, (target, x, lastX) => " + prop.SetBody + deferArg + ");");
-            }
-            else {
-                WriteLine("TrySet(context, obj, lastObj, \"" + prop.Name + "\", false, t, (target, x, lastX) => " + prop.SetBody + deferArg + ");");
-            }
+            string alias = prop.AliasFirstChild ? "true" : "false";
+            WriteLine("TrySet(context, obj, lastObj,");
+            WriteLine("    \"" + prop.Name + "\", ");
+            WriteLine("    " + alias + ",");
+            WriteLine("    t,");
+            WriteLine("    (target, valueToken, lastValueToken) => " + prop.SetBody + deferArg + ");");
         }
     }
     if (events != null) {
         foreach (var e in events) {
-            WriteLine("TrySetEvent(context, obj, lastObj, \"" + e.Name + "\", t, (target, x, lastX) => Set"+e.WinRTName+"EventHandler(x.ToString(), target));");
+            WriteLine("TrySetEvent(context, obj, lastObj, \"" + e.Name + "\", t, (target, valueToken, lastValueToken) => Set"+e.WinRTName+"EventHandler(valueToken.ToString(), target));");
         }
     }
                 

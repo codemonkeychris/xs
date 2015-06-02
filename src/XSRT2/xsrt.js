@@ -57,6 +57,9 @@ var React;
 })(React || (React = {}));
 var Xaml;
 (function (Xaml) {
+    function ScrollViewer() { return { type: 'ScrollViewer' }; }
+    Xaml.ScrollViewer = ScrollViewer;
+    ;
     function GridView() { return { type: 'GridView' }; }
     Xaml.GridView = GridView;
     ;

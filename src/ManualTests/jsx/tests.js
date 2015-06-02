@@ -107,7 +107,7 @@ var App;
         var testIndex = -1;
 
         return (
-            <Xaml.Grid>
+            <Xaml.ScrollViewer>
                 <Xaml.StackPanel>{
                     Array.prototype.map.call(logs, function (entry, index) {
                         if (lastTest !== entry.test) { testIndex++; }
@@ -121,7 +121,7 @@ var App;
                         );    
                     })
                 }</Xaml.StackPanel>
-            </Xaml.Grid>
+            </Xaml.ScrollViewer>
         );
     }
 

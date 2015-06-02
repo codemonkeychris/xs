@@ -1,46 +1,27 @@
 /// <reference path='c:\repos\xs\src\xsrt2\xsrt.ts' />
 var App;
 (function (App) {
-    App.setInitialState = function() {
-        host.setState({ 
-            text: "test"
-        });
-    };
-
-    function textChanged(sender, e) {
-        host.setState({ text: sender.text });
-    }
-
-    function MultiLineTextBox() {
-        return React.createElement(Xaml.TextBox, {
-            scrollViewer$horizontalScrollBarVisibility: "Auto", 
-            scrollViewer$verticalScrollBarVisibility: "Auto", 
-            acceptsReturn: true, 
-            textWrapping: "Wrap", 
-            horizontalAlignment: "Stretch", 
-            verticalAlignment: "Stretch"})
+    function MyButton() {
+        return React.createElement(Xaml.Button, {margin: "5,5,5,5"});
     }
 
     function render() {
-
         return (
-            React.createElement(Xaml.Grid, {
-                horizontalAlignment: "Stretch", 
-                verticalAlignment: "Stretch", 
-                rows: ['auto', '*'], 
-                columns: ['*']}, 
-                
-                React.createElement(Xaml.TextBlock, {name: "label1", grid$row: "0"}, "count:" + host.getState().text.length), 
-                React.createElement(MultiLineTextBox, {
-                    grid$row: "1", 
-                    grid$column: "0", 
-                    fontFamily: "Consolas", 
-                    fontSize: "14", 
-                    onTextChanged: textChanged, 
-                    text: host.getState().text})
+            React.createElement(Xaml.RelativePanel, {name: "rel1", childrenTransitions: [React.createElement(Xaml.RepositionThemeTransition, null)]}, 
+                React.createElement(MyButton, {name: "b1"}, 
+                    "One"
+                ), 
+                React.createElement(MyButton, {name: "b2", relative$below: "b1"}, 
+                    "Two"
+                ), 
+                React.createElement(MyButton, {name: "b3", relative$below: "b1", relative$rightOf: "b2"}, 
+                    "Three"
+                ), 
+                React.createElement(MyButton, {name: "b4", relative$below: "b3", relative$rightOf: "b3"}, 
+                    "Four this is fun"
+                )
             )
         );
     }
     App.render = render;
 })(App || (App = {}));
-
