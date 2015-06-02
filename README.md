@@ -30,6 +30,10 @@ be migrated to C++ to avoid the second GC in the process.
 Simple test host, ideally this should be replaced by a Yomen generator or something, this is really 
 just file->new project.
 
+#### ManualTests
+Unit test project. Running this will produce a display that shows pass/fail status for each tests.
+Tests are defined in `manualtests\jsx\tests.js`.
+
 ## Running
 
 `F5` from Visual Studio 2015 should work. 
