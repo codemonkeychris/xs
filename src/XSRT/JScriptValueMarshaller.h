@@ -1,5 +1,5 @@
 #pragma once
-namespace XSRT
+namespace JSRT
 {
     public ref class JScriptValueMarshaller sealed
     {

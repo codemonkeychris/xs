@@ -2,7 +2,7 @@
 #include "JScriptValueMarshaller.h"
 #include "JScriptRuntime.h"
 
-using namespace XSRT;
+using namespace JSRT;
 using namespace Platform;
 using namespace Windows::UI::Xaml;
 

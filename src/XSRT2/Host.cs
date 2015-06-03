@@ -13,7 +13,7 @@ namespace XSRT2
 {
     public sealed class Host
     {
-        XSRT.JScriptRuntime jsrt = null;
+        JSRT.JScriptRuntime jsrt = null;
         XSRT2.JScriptHostProjection hostProjection;
         Diff diff;
         string lastProgram = "";
@@ -249,7 +249,7 @@ var App;
             }
             lastSeenVersion = ulong.MinValue;
 
-            jsrt = new XSRT.JScriptRuntime();
+            jsrt = new JSRT.JScriptRuntime();
             jsrt.SetActive();
             jsrt.StartDebugging();
             // must call AddWinRTNamespace before AddHostObject

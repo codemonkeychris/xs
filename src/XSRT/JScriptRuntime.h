@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-namespace XSRT
+namespace JSRT
 {
     ref class JScriptRuntime;
 

@@ -6,7 +6,7 @@
 #define DEBUG_WRITE(x) ;
 #define DEBUG_WRITELN(x) ;
 
-using namespace XSRT;
+using namespace JSRT;
 
 JScriptValueMarshaller::JScriptValueMarshaller()
 {
@@ -100,22 +100,22 @@ void JScriptValueMarshaller::AssignJsValue(JsValueRef& value)
     this->FromJsValue(newValue);
 }
 
-Platform::Object^ XSRT::HandleAny(JsValueRef value)
+Platform::Object^ JSRT::HandleAny(JsValueRef value)
 {
     JsValueType vt;
     JsGetValueType(value, &vt);
     switch (vt)
     {
     case JsValueType::JsArray:
-        return XSRT::HandleArray(value);
+        return JSRT::HandleArray(value);
     case JsValueType::JsObject:
-        return XSRT::HandleRecord(value);
+        return JSRT::HandleRecord(value);
     default:
-        return XSRT::HandlePrimitive(value);
+        return JSRT::HandlePrimitive(value);
     }
 }
 
-Windows::Foundation::Collections::IMap<Platform::String^, Platform::Object^>^ XSRT::HandleRecord(JsValueRef value)
+Windows::Foundation::Collections::IMap<Platform::String^, Platform::Object^>^ JSRT::HandleRecord(JsValueRef value)
 {
     auto map = ref new Platform::Collections::Map<Platform::String^, Platform::Object^>();
 
@@ -149,14 +149,14 @@ Windows::Foundation::Collections::IMap<Platform::String^, Platform::Object^>^ XS
         JsValueRef v;
         JsGetProperty(obj, nameId, &v);
 
-        auto child = XSRT::HandleAny(v);
+        auto child = JSRT::HandleAny(v);
 
         map->Insert(ref new Platform::String(strName), child);
     }
 
     return map;
 }
-Windows::Foundation::Collections::IVector<Platform::Object^>^ XSRT::HandleArray(JsValueRef value)
+Windows::Foundation::Collections::IVector<Platform::Object^>^ JSRT::HandleArray(JsValueRef value)
 {
     auto a = ref new Platform::Collections::Vector<Platform::Object^>();
 
@@ -173,14 +173,14 @@ Windows::Foundation::Collections::IVector<Platform::Object^>^ XSRT::HandleArray(
         JsIntToNumber(i, &index);
         JsGetIndexedProperty(value, index, &v);
 
-        auto child = XSRT::HandleAny(v);
+        auto child = JSRT::HandleAny(v);
 
         a->Append(child);
     }
 
     return a;
 }
-Platform::Object^ XSRT::HandlePrimitive(JsValueRef value)
+Platform::Object^ JSRT::HandlePrimitive(JsValueRef value)
 {
     JsValueType vt;
     JsGetValueType(value, &vt);
@@ -224,25 +224,25 @@ Platform::Object^ JScriptValueMarshaller::ToObject()
     }
 }
 
-JsValueRef XSRT::InvertHandleAny(Platform::Object^ value)
+JsValueRef JSRT::InvertHandleAny(Platform::Object^ value)
 {
     auto map = dynamic_cast<Windows::Foundation::Collections::IMap<Platform::String^, Platform::Object^>^>(value);
     auto a = dynamic_cast<Windows::Foundation::Collections::IVector<Platform::Object^>^>(value);
     if (map != nullptr)
     {
-        return XSRT::InvertHandleRecord(map);
+        return JSRT::InvertHandleRecord(map);
     }
     else if (a != nullptr)
     {
-        return XSRT::InvertHandleArray(a);
+        return JSRT::InvertHandleArray(a);
     }
     else
     {
-        return XSRT::InvertHandlePrimitive(value);
+        return JSRT::InvertHandlePrimitive(value);
     }
     return JS_INVALID_REFERENCE;
 }
-JsValueRef XSRT::InvertHandleRecord(Windows::Foundation::Collections::IMap<Platform::String^, Platform::Object^>^ value)
+JsValueRef JSRT::InvertHandleRecord(Windows::Foundation::Collections::IMap<Platform::String^, Platform::Object^>^ value)
 {
     JsValueRef result;
     JsCreateObject(&result);
@@ -251,7 +251,7 @@ JsValueRef XSRT::InvertHandleRecord(Windows::Foundation::Collections::IMap<Platf
     while (it->HasCurrent)
     {
         auto key = it->Current->Key;
-        auto v = XSRT::InvertHandleAny(it->Current->Value);
+        auto v = JSRT::InvertHandleAny(it->Current->Value);
         DEBUG_WRITE(L"prop:");
         DEBUG_WRITELN(key->Data());
 
@@ -264,11 +264,11 @@ JsValueRef XSRT::InvertHandleRecord(Windows::Foundation::Collections::IMap<Platf
 
     return result;
 }
-JsValueRef XSRT::InvertHandleArray(Windows::Foundation::Collections::IVector<Platform::Object^>^ value)
+JsValueRef JSRT::InvertHandleArray(Windows::Foundation::Collections::IVector<Platform::Object^>^ value)
 {
     return JS_INVALID_REFERENCE;
 }
-JsValueRef XSRT::InvertHandlePrimitive(Platform::Object^ value)
+JsValueRef JSRT::InvertHandlePrimitive(Platform::Object^ value)
 {
     JsValueRef v = JS_INVALID_REFERENCE;
     DEBUG_WRITE(L"value:");
@@ -301,6 +301,6 @@ void JScriptValueMarshaller::FromObject(Platform::Object^ value)
 {
     m_version++;
 
-    JsValueRef newValue = XSRT::InvertHandleAny(value);
+    JsValueRef newValue = JSRT::InvertHandleAny(value);
     this->FromJsValue(newValue);
 }

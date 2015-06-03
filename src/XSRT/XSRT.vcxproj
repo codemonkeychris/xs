@@ -29,13 +29,15 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{41c3a8dc-b669-40c9-a4e3-d48f36016668}</ProjectGuid>
     <Keyword>WindowsRuntimeComponent</Keyword>
-    <ProjectName>XSRT</ProjectName>
-    <RootNamespace>XSRT</RootNamespace>
+    <ProjectName>JSRT</ProjectName>
+    <RootNamespace>JSRT</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
     <ApplicationType>Windows Store</ApplicationType>
     <ApplicationTypeRevision>8.2</ApplicationTypeRevision>
+    <TargetPlatformVersion>10.0.10134.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10134.0</TargetPlatformMinVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
