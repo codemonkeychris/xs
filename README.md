@@ -7,7 +7,7 @@ programming techniques (insipred by ReactNative)
 
 ## Building
 
-1. Install Windows 10 Insider Preview (10074 or later - //build/ version)
+1. Install Windows 10 Insider Preview (10134 required temporarily)
 2. Install Visual Studio 2015 RC - https://www.visualstudio.com/products/visual-studio-2015-downloads-vs
 3. Install JSX (react-tools) and TypeScript - required to `F5` in VS, as there is a custom build 
 step that invokes JSX and TSC
