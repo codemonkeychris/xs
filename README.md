@@ -18,7 +18,7 @@ npm install -g typescript
 
 ### Project structure
 
-#### XSRT
+#### JSRT
 This is a basic Chakra host, currently with as little policy as possible. The ValueMarshaller 
 infrastructure is probably the most out there thing, but it needs to be integrated with the host.
 
