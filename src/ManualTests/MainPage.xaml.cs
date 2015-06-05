@@ -51,10 +51,9 @@ namespace ManualTests
 
         async void Host_Initialized(object sender, InitializedEventArgs e)
         {
-            await Dispatcher.RunIdleAsync((IdleDispatchedHandler)delegate (IdleDispatchedHandlerArgs ignore)
+            await Dispatcher.RunIdleAsync((IdleDispatchedHandler)async delegate (IdleDispatchedHandlerArgs ignore)
             {
-                host.RunTest("simple_test_1");
-                host.RunTest("simple_test_2");
+                await host.RunAllTests();
                 var state = (IDictionary <string, object>)(host.SaveState());
                 state["mode"] = "results";
                 host.LoadState(state);

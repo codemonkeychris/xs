@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -110,13 +111,27 @@ var App;
         {
             return testLogs.All(e => e.Result);
         }
-        public void RunTest(string test)
+        public IAsyncOperation<int> RunTest(string test)
         {
             runningTest = test;
             hostProjection.RaiseTestSetup(test);
             RenderIfNeeded();
             hostProjection.RaiseTestReady(test);
             runningTest = "n/a";
+            return Task<int>.FromResult(0).AsAsyncOperation();
+        }
+        public IAsyncOperation<int> RunAllTests()
+        {
+            return RunAllTestsWorker().AsAsyncOperation();
+        }
+        async Task<int> RunAllTestsWorker()
+        {
+            int r = 0;
+            foreach (var t in tests)
+            {
+                r += await RunTest(t);
+            }
+            return r;
         }
         public async void Startup()
         {

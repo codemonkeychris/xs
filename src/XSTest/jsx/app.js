@@ -14,10 +14,7 @@ var App;
                 <MyButton name='b2' relative$below='b1'>
                     Two
                 </MyButton>
-                <MyButton name='b3' relative$below='b1' relative$rightOf='b2'>
-                    Three
-                </MyButton>
-                <MyButton name='b4' relative$below='b3' relative$rightOf='b3'>
+                <MyButton name='b4' relative$below='b2' relative$rightOf='b2'>
                     Four this is fun
                 </MyButton>
             </Xaml.RelativePanel>
