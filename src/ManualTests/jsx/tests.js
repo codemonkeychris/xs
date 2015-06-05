@@ -9,6 +9,28 @@ var App;
     };
 
     var testHandlers = {
+        couple_controls: {
+            state: {
+                text: "a"
+            },
+            ready: function(ev) {
+                var b1 = ev.root.findName("b1");
+                xsrt.assert(b1, "b1 should exist");
+                var p1 = ev.root.findName("p1");
+                xsrt.assert(p1, "p1 should exist");
+                var s1 = ev.root.findName("s1");
+                xsrt.assert(s1, "s1 should exist");
+            },
+            render: function() {
+                return (
+                    <Xaml.StackPanel horizontalAlignment='Stretch' verticalAlignment='Stretch'>
+                        <Xaml.Button name='b1' content='hello' />
+                        <Xaml.ProgressBar name='p1' minimum='0' maximum='10' value='5' />
+                        <Xaml.Slider name='s1' minimum='0' maximum='10' value='5' />
+                    </Xaml.StackPanel>
+                );
+            }
+        },
         fg_color: {
             state: {
                 text: "a"
