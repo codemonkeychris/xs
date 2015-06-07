@@ -7,17 +7,11 @@ var App;
 
     function render() {
         return (
-            <Xaml.RelativePanel name='rel1' childrenTransitions={[<Xaml.RepositionThemeTransition />]}>
-                <MyButton name='b1'>
-                    One
-                </MyButton>
-                <MyButton name='b2' relative$below='b1'>
-                    Two
-                </MyButton>
-                <MyButton name='b4' relative$below='b2' relative$rightOf='b2'>
-                    Four this is fun
-                </MyButton>
-            </Xaml.RelativePanel>
+            <Xaml.StackPanel horizontalAlignment='Stretch' verticalAlignment='Stretch'>
+                <Xaml.Button name='b1' content='hello' />
+                <Xaml.ProgressBar name='p1' minimum='0' maximum='10' value='5' />
+                <Xaml.Slider name='s1' minimum='0' maximum='10' value='5' />
+            </Xaml.StackPanel>
         );
     }
     App.render = render;

@@ -7,16 +7,10 @@ var App;
 
     function render() {
         return (
-            React.createElement(Xaml.RelativePanel, {name: "rel1", childrenTransitions: [React.createElement(Xaml.RepositionThemeTransition, null)]}, 
-                React.createElement(MyButton, {name: "b1"}, 
-                    "One"
-                ), 
-                React.createElement(MyButton, {name: "b2", relative$below: "b1"}, 
-                    "Two"
-                ), 
-                React.createElement(MyButton, {name: "b4", relative$below: "b2", relative$rightOf: "b2"}, 
-                    "Four this is fun"
-                )
+            React.createElement(Xaml.StackPanel, {horizontalAlignment: "Stretch", verticalAlignment: "Stretch"}, 
+                React.createElement(Xaml.Button, {name: "b1", content: "hello"}), 
+                React.createElement(Xaml.ProgressBar, {name: "p1", minimum: "0", maximum: "10", value: "5"}), 
+                React.createElement(Xaml.Slider, {name: "s1", minimum: "0", maximum: "10", value: "5"})
             )
         );
     }

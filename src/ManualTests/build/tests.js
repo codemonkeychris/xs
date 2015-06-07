@@ -11,22 +11,25 @@ var App;
     var testHandlers = {
         couple_controls: {
             state: {
-                text: "a"
+                text: "a",
+                n: 5
             },
             ready: function(ev) {
                 var b1 = ev.root.findName("b1");
                 xsrt.assert(b1, "b1 should exist");
                 var p1 = ev.root.findName("p1");
                 xsrt.assert(p1, "p1 should exist");
+                xsrt.assert(xsrt.getRangeValue(p1) == 5, "p1.value should be set to 5 is '" + xsrt.getRangeValue(p1) + "'");
                 var s1 = ev.root.findName("s1");
                 xsrt.assert(s1, "s1 should exist");
+                xsrt.assert(xsrt.getRangeValue(s1) == 5, "s1.value should be set to 5");
             },
             render: function() {
                 return (
                     React.createElement(Xaml.StackPanel, {horizontalAlignment: "Stretch", verticalAlignment: "Stretch"}, 
                         React.createElement(Xaml.Button, {name: "b1", content: "hello"}), 
-                        React.createElement(Xaml.ProgressBar, {name: "p1", minimum: "0", maximum: "10", value: "5"}), 
-                        React.createElement(Xaml.Slider, {name: "s1", minimum: "0", maximum: "10", value: "5"})
+                        React.createElement(Xaml.ProgressBar, {name: "p1", minimum: "0", maximum: "10", value: host.getState().n}), 
+                        React.createElement(Xaml.Slider, {name: "s1", minimum: "0", maximum: "10", value: host.getState().n})
                     )
                 );
             }
