@@ -9,6 +9,23 @@ var App;
     };
 
     var testHandlers = {
+        calendarview: {
+            state: {
+            },
+            ready: function(ev) {
+                var c1 = ev.root.findName("c1");
+                xsrt.assert(c1, "c1 should exist");
+                xsrt.assert(c1.minDate, "minDate should be set");
+                xsrt.assert(c1.maxDate, "maxDate should be set");
+            },
+            render: function() {
+                return (
+                    React.createElement(Xaml.StackPanel, {horizontalAlignment: "Stretch", verticalAlignment: "Stretch"}, 
+                        React.createElement(Xaml.CalendarView, {name: "c1", minDate: "6/5/2015", maxDate: "6/7/2015"})
+                    )
+                );
+            }
+        },
         couple_controls: {
             state: {
                 text: "a",

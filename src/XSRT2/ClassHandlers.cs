@@ -644,6 +644,16 @@ namespace XSRT2 {
             internal static void SetProperties(CalendarView t, JObject obj, JObject lastObj, DiffContext context)
             {
                 ControlHandler.SetProperties(t, obj, lastObj, context);
+                TrySet(context, obj, lastObj,
+                    "minDate", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.MinDate = DateTimeOffset.Parse(valueToken.ToString()));
+                TrySet(context, obj, lastObj,
+                    "maxDate", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.MaxDate = DateTimeOffset.Parse(valueToken.ToString()));
             }
         }
         internal static class RelativePanelHandler

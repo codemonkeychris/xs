@@ -8,9 +8,7 @@ var App;
     function render() {
         return (
             <Xaml.StackPanel horizontalAlignment='Stretch' verticalAlignment='Stretch'>
-                <Xaml.Button name='b1' content='hello' />
-                <Xaml.ProgressBar name='p1' minimum='0' maximum='10' value='5' />
-                <Xaml.Slider name='s1' minimum='0' maximum='10' value='5' />
+                <Xaml.CalendarView name='cal1' minDate='6/5/2015 12:00am' />
             </Xaml.StackPanel>
         );
     }

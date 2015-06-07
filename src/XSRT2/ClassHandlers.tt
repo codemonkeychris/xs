@@ -270,7 +270,11 @@ namespace XSRT2 {
         // 
         <# ClassDef("Button", true, "ButtonBase", null, null); #>
         <# ClassDef("CalendarDatePicker", true, "Control", null, null); #>
-        <# ClassDef("CalendarView", true, "Control", null, null); #>
+        <# ClassDef("CalendarView", true, "Control", 
+            new PropEntry[] {
+                DateTimeOffsetProp("MinDate"),
+                DateTimeOffsetProp("MaxDate")
+            }, null); #>
         <# ClassDef("RelativePanel", true, "Panel", null, null); #>
         <# ClassDef("RepositionThemeTransition", true, null, null, null); #>
         <# ClassDef("ProgressBar", true, "RangeBase", null, null); #>
@@ -964,6 +968,9 @@ PropEntry DefaultBasicProp(string name, string setter) {
 }
 PropEntry DoubleProp(string name) {
     return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = valueToken.Value<double>()" };
+}
+PropEntry DateTimeOffsetProp(string name) {
+    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = DateTimeOffset.Parse(valueToken.ToString())" };
 }
 PropEntry BooleanProp(string name) {
     return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = Convert.ToBoolean(((JValue)valueToken).Value)" };
