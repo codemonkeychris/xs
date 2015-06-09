@@ -255,9 +255,9 @@ namespace XSRT2 {
             false,
             "Control",
             new PropEntry[] {
-            DoubleProp("Minimum"),
-            DoubleProp("Maximum"),
-            DoubleProp("Value")
+                DoubleProp("Minimum"),
+                DoubleProp("Maximum"),
+                DoubleProp("Value")
             },
             new EventEntry[] {
                 new EventEntry() { Name="ValueChanged", WinRTName="ValueChanged", EventType="RangeBaseValueChangedEventArgs" }
@@ -269,7 +269,10 @@ namespace XSRT2 {
         // update now that we drop "lastNamedObjectMap" on the floor and track references... 
         // 
         <# ClassDef("Button", true, "ButtonBase", null, null); #>
-        <# ClassDef("CalendarDatePicker", true, "Control", null, null); #>
+        <# ClassDef("CalendarDatePicker", true, "Control", 
+            new PropEntry[] {
+                DateTimeOffsetProp("Date")
+            }, null); #>
         <# ClassDef("CalendarView", true, "Control", 
             new PropEntry[] {
                 DateTimeOffsetProp("MinDate"),

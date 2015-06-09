@@ -629,6 +629,11 @@ namespace XSRT2 {
             internal static void SetProperties(CalendarDatePicker t, JObject obj, JObject lastObj, DiffContext context)
             {
                 ControlHandler.SetProperties(t, obj, lastObj, context);
+                TrySet(context, obj, lastObj,
+                    "date", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.Date = DateTimeOffset.Parse(valueToken.ToString()));
             }
         }
         internal static class CalendarViewHandler

@@ -17,11 +17,16 @@ var App;
                 xsrt.assert(c1, "c1 should exist");
                 xsrt.assert(c1.minDate, "minDate should be set");
                 xsrt.assert(c1.maxDate, "maxDate should be set");
+
+                var c2 = ev.root.findName("c2");
+                xsrt.assert(c2, "c2 should exist");
+                xsrt.assert(c2.date, "minDate should be set");
             },
             render: function() {
                 return (
                     React.createElement(Xaml.StackPanel, {horizontalAlignment: "Stretch", verticalAlignment: "Stretch"}, 
-                        React.createElement(Xaml.CalendarView, {name: "c1", minDate: "6/5/2015", maxDate: "6/7/2015"})
+                        React.createElement(Xaml.CalendarView, {name: "c1", minDate: "6/5/2015", maxDate: "6/7/2015"}), 
+                        React.createElement(Xaml.CalendarDatePicker, {name: "c2", date: "6/5/2015"})
                     )
                 );
             }

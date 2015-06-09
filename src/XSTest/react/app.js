@@ -8,7 +8,8 @@ var App;
     function render() {
         return (
             React.createElement(Xaml.StackPanel, {horizontalAlignment: "Stretch", verticalAlignment: "Stretch"}, 
-                React.createElement(Xaml.CalendarView, {name: "cal1", minDate: "6/5/2015 12:00am"})
+                React.createElement(Xaml.CalendarView, {name: "cal1", minDate: "6/5/2015 12:00am"}), 
+                React.createElement(Xaml.CalendarDatePicker, null)
             )
         );
     }
