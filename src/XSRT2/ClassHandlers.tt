@@ -272,12 +272,22 @@ namespace XSRT2 {
         <# ClassDef("CalendarDatePicker", true, "Control", 
             new PropEntry[] {
                 DateTimeOffsetProp("Date")
-            }, null); #>
+            }, 
+            new EventEntry[] {
+                new EventEntry() { Name="CalendarViewDayItemChanging", WinRTName="CalendarViewDayItemChanging", EventType="CalendarViewDayItemChangingEventArgs" },
+                new EventEntry() { Name="Closed", WinRTName="Closed", EventType="Object" },
+                new EventEntry() { Name="DateChanged", WinRTName="DateChanged", EventType="CalendarDatePickerDateChangedEventArgs" },
+                new EventEntry() { Name="Opened", WinRTName="Opened", EventType="Object" }
+            }); #>
         <# ClassDef("CalendarView", true, "Control", 
             new PropEntry[] {
                 DateTimeOffsetProp("MinDate"),
                 DateTimeOffsetProp("MaxDate")
-            }, null); #>
+            }, 
+            new EventEntry[] {
+                new EventEntry() { Name="CalendarViewDayItemChanging", WinRTName="CalendarViewDayItemChanging", EventType="CalendarViewDayItemChangingEventArgs" },
+                new EventEntry() { Name="SelectedDatesChanged", WinRTName="SelectedDatesChanged", EventType="CalendarViewSelectedDatesChangedEventArgs" }
+            }); #>
         <# ClassDef("RelativePanel", true, "Panel", null, null); #>
         <# ClassDef("RepositionThemeTransition", true, null, null, null); #>
         <# ClassDef("ProgressBar", true, "RangeBase", null, null); #>

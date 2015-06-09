@@ -634,6 +634,86 @@ namespace XSRT2 {
                     false,
                     t,
                     (target, valueToken, lastValueToken) => target.Date = DateTimeOffset.Parse(valueToken.ToString()));
+                TrySetEvent(context, obj, lastObj, "CalendarViewDayItemChanging", t, (target, valueToken, lastValueToken) => SetCalendarViewDayItemChangingEventHandler(valueToken.ToString(), target));
+                TrySetEvent(context, obj, lastObj, "Closed", t, (target, valueToken, lastValueToken) => SetClosedEventHandler(valueToken.ToString(), target));
+                TrySetEvent(context, obj, lastObj, "DateChanged", t, (target, valueToken, lastValueToken) => SetDateChangedEventHandler(valueToken.ToString(), target));
+                TrySetEvent(context, obj, lastObj, "Opened", t, (target, valueToken, lastValueToken) => SetOpenedEventHandler(valueToken.ToString(), target));
+            }
+            static void CalendarViewDayItemChangingRouter(object sender, CalendarViewDayItemChangingEventArgs e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["CalendarViewDayItemChanging"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetCalendarViewDayItemChangingEventHandler(string handlerName, CalendarDatePicker element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["CalendarViewDayItemChanging"] = handlerName;
+                element.CalendarViewDayItemChanging -= CalendarViewDayItemChangingRouter;
+                element.CalendarViewDayItemChanging += CalendarViewDayItemChangingRouter;
+            }
+            static void ClosedRouter(object sender, Object e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["Closed"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetClosedEventHandler(string handlerName, CalendarDatePicker element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["Closed"] = handlerName;
+                element.Closed -= ClosedRouter;
+                element.Closed += ClosedRouter;
+            }
+            static void DateChangedRouter(object sender, CalendarDatePickerDateChangedEventArgs e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["DateChanged"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetDateChangedEventHandler(string handlerName, CalendarDatePicker element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["DateChanged"] = handlerName;
+                element.DateChanged -= DateChangedRouter;
+                element.DateChanged += DateChangedRouter;
+            }
+            static void OpenedRouter(object sender, Object e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["Opened"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetOpenedEventHandler(string handlerName, CalendarDatePicker element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["Opened"] = handlerName;
+                element.Opened -= OpenedRouter;
+                element.Opened += OpenedRouter;
             }
         }
         internal static class CalendarViewHandler
@@ -659,6 +739,46 @@ namespace XSRT2 {
                     false,
                     t,
                     (target, valueToken, lastValueToken) => target.MaxDate = DateTimeOffset.Parse(valueToken.ToString()));
+                TrySetEvent(context, obj, lastObj, "CalendarViewDayItemChanging", t, (target, valueToken, lastValueToken) => SetCalendarViewDayItemChangingEventHandler(valueToken.ToString(), target));
+                TrySetEvent(context, obj, lastObj, "SelectedDatesChanged", t, (target, valueToken, lastValueToken) => SetSelectedDatesChangedEventHandler(valueToken.ToString(), target));
+            }
+            static void CalendarViewDayItemChangingRouter(object sender, CalendarViewDayItemChangingEventArgs e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["CalendarViewDayItemChanging"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetCalendarViewDayItemChangingEventHandler(string handlerName, CalendarView element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["CalendarViewDayItemChanging"] = handlerName;
+                element.CalendarViewDayItemChanging -= CalendarViewDayItemChangingRouter;
+                element.CalendarViewDayItemChanging += CalendarViewDayItemChangingRouter;
+            }
+            static void SelectedDatesChangedRouter(object sender, CalendarViewSelectedDatesChangedEventArgs e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["SelectedDatesChanged"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetSelectedDatesChangedEventHandler(string handlerName, CalendarView element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["SelectedDatesChanged"] = handlerName;
+                element.SelectedDatesChanged -= SelectedDatesChangedRouter;
+                element.SelectedDatesChanged += SelectedDatesChangedRouter;
             }
         }
         internal static class RelativePanelHandler

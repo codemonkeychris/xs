@@ -20,7 +20,7 @@ var App;
 
                 var c2 = ev.root.findName("c2");
                 xsrt.assert(c2, "c2 should exist");
-                xsrt.assert(c2.date, "minDate should be set");
+                xsrt.assert(c2.date, "date should be set: " + c2.date);
             },
             render: function() {
                 return (
