@@ -633,7 +633,11 @@ namespace XSRT2 {
                     "date", 
                     false,
                     t,
-                    (target, valueToken, lastValueToken) => target.Date = DateTimeOffset.Parse(valueToken.ToString()));
+                    (target, valueToken, lastValueToken) => { 
+                    var curValue = target.Date; 
+                    var newValue = DateTimeOffset.Parse(valueToken.ToString()); 
+                    if (curValue != newValue) { target.Date = newValue; } 
+                });
                 TrySetEvent(context, obj, lastObj, "CalendarViewDayItemChanging", t, (target, valueToken, lastValueToken) => SetCalendarViewDayItemChangingEventHandler(valueToken.ToString(), target));
                 TrySetEvent(context, obj, lastObj, "Closed", t, (target, valueToken, lastValueToken) => SetClosedEventHandler(valueToken.ToString(), target));
                 TrySetEvent(context, obj, lastObj, "DateChanged", t, (target, valueToken, lastValueToken) => SetDateChangedEventHandler(valueToken.ToString(), target));
@@ -733,12 +737,20 @@ namespace XSRT2 {
                     "minDate", 
                     false,
                     t,
-                    (target, valueToken, lastValueToken) => target.MinDate = DateTimeOffset.Parse(valueToken.ToString()));
+                    (target, valueToken, lastValueToken) => { 
+                    var curValue = target.MinDate; 
+                    var newValue = DateTimeOffset.Parse(valueToken.ToString()); 
+                    if (curValue != newValue) { target.MinDate = newValue; } 
+                });
                 TrySet(context, obj, lastObj,
                     "maxDate", 
                     false,
                     t,
-                    (target, valueToken, lastValueToken) => target.MaxDate = DateTimeOffset.Parse(valueToken.ToString()));
+                    (target, valueToken, lastValueToken) => { 
+                    var curValue = target.MaxDate; 
+                    var newValue = DateTimeOffset.Parse(valueToken.ToString()); 
+                    if (curValue != newValue) { target.MaxDate = newValue; } 
+                });
                 TrySetEvent(context, obj, lastObj, "CalendarViewDayItemChanging", t, (target, valueToken, lastValueToken) => SetCalendarViewDayItemChangingEventHandler(valueToken.ToString(), target));
                 TrySetEvent(context, obj, lastObj, "SelectedDatesChanged", t, (target, valueToken, lastValueToken) => SetSelectedDatesChangedEventHandler(valueToken.ToString(), target));
             }

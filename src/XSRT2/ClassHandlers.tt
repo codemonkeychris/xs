@@ -983,7 +983,15 @@ PropEntry DoubleProp(string name) {
     return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = valueToken.Value<double>()" };
 }
 PropEntry DateTimeOffsetProp(string name) {
-    return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = DateTimeOffset.Parse(valueToken.ToString())" };
+    return new PropEntry() { 
+        Name=CamelCase(name), 
+
+        SetBody=@"{ 
+    var curValue = target." + name + @"; 
+    var newValue = DateTimeOffset.Parse(valueToken.ToString()); 
+    if (curValue != newValue) { target." + name + @" = newValue; } 
+}"
+};
 }
 PropEntry BooleanProp(string name) {
     return new PropEntry() { Name=CamelCase(name), SetBody="target." + name + " = Convert.ToBoolean(((JValue)valueToken).Value)" };
