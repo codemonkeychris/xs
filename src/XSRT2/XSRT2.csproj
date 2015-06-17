@@ -145,7 +145,7 @@
     <TypeScriptCompile Include="xsrt.ts" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\XSRT\XSRT.vcxproj">
+    <ProjectReference Include="..\JSRT\JSRT.vcxproj">
       <Project>{41c3a8dc-b669-40c9-a4e3-d48f36016668}</Project>
       <Name>XSRT</Name>
     </ProjectReference>
