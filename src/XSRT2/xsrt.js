@@ -29,9 +29,7 @@ var XsrtJS;
 })(XsrtJS || (XsrtJS = {}));
 var React;
 (function (React) {
-    var funcCount = 1;
-    function createElement(ctor, members) {
-        var result = ctor();
+    function applyMembers(result, members) {
         if (members) {
             var keys = Object.keys(members);
             for (var i = 0; i < keys.length; i++) {
@@ -43,11 +41,19 @@ var React;
                     App.eventHandlers[funName] = value;
                     result[key] = funName;
                 }
+                else if (key == "style") {
+                    applyMembers(result, value);
+                }
                 else {
                     result[key] = members[key];
                 }
             }
         }
+    }
+    var funcCount = 1;
+    function createElement(ctor, members) {
+        var result = ctor();
+        applyMembers(result, members);
         if (arguments.length > 2) {
             result.children = Array.prototype.slice.call(arguments, 2);
         }

@@ -2,19 +2,45 @@
 var App;
 (function (App) {
     App.setInitialState = function() {
-        host.setState({ date: '6/5/2015' });
+        host.setState({ 
+            text: "test"
+        });
+    };
+
+    function textChanged(sender, e) {
+        host.setState({ text: sender.text });
     }
-    function datePicked(sender, e) {
-        host.setState({ date:sender.date.toDateString() });
+
+    function MultiLineTextBox() {
+        return <Xaml.TextBox
+            scrollViewer$horizontalScrollBarVisibility='Auto'
+            scrollViewer$verticalScrollBarVisibility='Auto'
+            acceptsReturn={true}
+            textWrapping='Wrap'
+            horizontalAlignment='Stretch'
+            verticalAlignment='Stretch' />
     }
 
     function render() {
+
         return (
-            <Xaml.StackPanel horizontalAlignment='Stretch' verticalAlignment='Stretch'>
-                <Xaml.CalendarView name='cal1' minDate='6/5/2015 12:00am' />
-                <Xaml.CalendarDatePicker name='cal2' date={host.getState().date} onDateChanged={datePicked} />
-            </Xaml.StackPanel>
+            <Xaml.Grid 
+                horizontalAlignment='Stretch'
+                verticalAlignment='Stretch'
+                rows={['auto', '*']}
+                columns={['*']} >
+                
+                <Xaml.TextBlock name='label1' grid$row='0'>{"count:" + (host.getState().text && host.getState().text.length) }</Xaml.TextBlock>
+                <MultiLineTextBox
+                    grid$row='1'
+                    grid$column='0'
+                    style={{fontFamily: 'Consolas', fontSize:16}}
+                    onTextChanged={textChanged}
+                    text={host.getState().text}  />
+            </Xaml.Grid>
         );
     }
     App.render = render;
 })(App || (App = {}));
+
+ 

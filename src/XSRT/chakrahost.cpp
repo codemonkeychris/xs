@@ -232,7 +232,7 @@ int JScriptEval(
 
     parseError = JsParseScript(script.c_str(), currentSourceContext++, L"." /*source URL*/, &parsed);
     IfFailThrowNoRet(parseError, L"failed to parse code")
-        errorCode = JsRunScript(script.c_str(), currentSourceContext++, L"." /*source URL*/, &result);
+    errorCode = JsRunScript(script.c_str(), currentSourceContext++, L"." /*source URL*/, &result);
 
     if (errorCode == JsErrorScriptException)
     {

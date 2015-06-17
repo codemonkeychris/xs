@@ -229,6 +229,17 @@ var App;
             }
         }
 
+        string ProgramWithException(Exception x)
+        {
+            return @"var App;
+                (function(App) {
+                    App.render = function() {
+                        return { type:'TextBlock', text:'"+x.ToString().Replace('\'', '\"')+@"' };
+                    }
+
+                })(App || (App = { }));";
+        }
+
         async Task<string> CheckFile()
         {
             var file = await Windows.Storage.ApplicationData.Current.RoamingFolder.CreateFileAsync(programFileName, Windows.Storage.CreationCollisionOption.OpenIfExists);
@@ -276,7 +287,14 @@ var App;
             {
                 hostProjection.IsInitialized = false;
             }
-            jsrt.Eval(program + "\r\n" + runtime);
+            try
+            {
+                jsrt.Eval(program + "\r\n" + runtime);
+            }
+            catch (Exception x)
+            {
+                jsrt.Eval(ProgramWithException(x) + "\r\n" + runtime);
+            }
             if (PreserveStateOnReload && lastState != null)
             {
                 jsrt.LoadState(lastState);
