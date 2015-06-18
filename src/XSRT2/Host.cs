@@ -283,9 +283,12 @@ var App;
             jsrt.AddWinRTNamespace("Windows");
             jsrt.AddWinRTNamespace("XSRT2");
             jsrt.AddGlobalObject("xsrt", hostProjection);
+            tests.Clear(); // always clear tests, they get re-registered
+
             if (!PreserveStateOnReload)
             {
                 hostProjection.IsInitialized = false;
+                testLogs.Clear(); // only clear logs if we want to start fresh
             }
             try
             {
@@ -298,10 +301,6 @@ var App;
             if (PreserveStateOnReload && lastState != null)
             {
                 jsrt.LoadState(lastState);
-            }
-            if (!PreserveStateOnReload)
-            {
-                testLogs.Clear();
             }
             if (Initialized != null)
             {

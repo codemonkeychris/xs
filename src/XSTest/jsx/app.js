@@ -3,41 +3,44 @@ var App;
 (function (App) {
     App.setInitialState = function() {
         host.setState({ 
-            text: "test"
+            items: [1,2,3],
+            state: 0
         });
     };
 
-    function textChanged(sender, e) {
-        host.setState({ text: sender.text });
-    }
-
-    function MultiLineTextBox() {
-        return <Xaml.TextBox
-            scrollViewer$horizontalScrollBarVisibility='Auto'
-            scrollViewer$verticalScrollBarVisibility='Auto'
-            acceptsReturn={true}
-            textWrapping='Wrap'
-            horizontalAlignment='Stretch'
-            verticalAlignment='Stretch' />
+    function clicked(sender, e) {
+        switch (host.getState().state) {
+            case 0:
+                host.setState({ items: [2,4] });
+                host.setState({state: 1});
+                break;
+            case 1:
+                host.setState({ items: [4,5,6,7] });
+                host.setState({state: 2});
+                break;
+            case 2:
+                host.setState({ items: [1,2] });
+                host.setState({state: 3});
+                break;
+            case 3:
+                host.setState({ items: [1,2,3] });
+                host.setState({state: 0});
+                break;
+        }
     }
 
     function render() {
 
         return (
-            <Xaml.Grid 
+            <Xaml.StackPanel
                 horizontalAlignment='Stretch'
-                verticalAlignment='Stretch'
-                rows={['auto', '*']}
-                columns={['*']} >
+                verticalAlignment='Stretch'>
                 
-                <Xaml.TextBlock name='label1' grid$row='0'>{"count:" + (host.getState().text && host.getState().text.length) }</Xaml.TextBlock>
-                <MultiLineTextBox
-                    grid$row='1'
-                    grid$column='0'
-                    style={{fontFamily: 'Consolas', fontSize:16}}
-                    onTextChanged={textChanged}
-                    text={host.getState().text}  />
-            </Xaml.Grid>
+                <Xaml.Button onClick={clicked}>Click Me</Xaml.Button>
+                <Xaml.StackPanel>{
+                    host.getState().items.map(function (i) { return <Xaml.TextBlock text={i.toString()} />; })
+                }</Xaml.StackPanel>
+            </Xaml.StackPanel>
         );
     }
     App.render = render;
