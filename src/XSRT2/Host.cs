@@ -282,7 +282,13 @@ namespace XSRT2
             }
             try
             {
-                jsrt.Eval(program + "\r\n" + runtime);
+                jsrt.Eval(program);
+#if DEBUG
+                // force active transition to make sure every survives across sessions
+                jsrt.ClearActive();
+                jsrt.SetActive();
+#endif
+                jsrt.Eval(runtime);
             }
             catch (Exception x)
             {

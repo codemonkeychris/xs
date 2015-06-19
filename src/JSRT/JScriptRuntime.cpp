@@ -58,6 +58,7 @@ JsErrorCode JScriptRuntime::CreateHostContext(JsRuntimeHandle runtime, JsContext
     //
 
     IfFailRet(JsCreateObject(&m_hostObject));
+    JsAddRef(m_hostObject, nullptr);
 
     //
     // Get the global object
@@ -285,6 +286,12 @@ int JScriptRuntime::Eval(String^ script)
 
 JScriptRuntime::~JScriptRuntime()
 {
+    if (m_hostObject != nullptr)
+    {
+        JsRelease(m_hostObject, nullptr);
+        m_hostObject = nullptr;
+    }
+    ClearTimers();
     IfFailError(JsDisposeRuntime(m_runtime), L"failed to cleanup runtime.");
     m_holders.clear();
 error:
