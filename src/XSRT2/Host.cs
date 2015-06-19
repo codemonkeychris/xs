@@ -20,7 +20,7 @@ namespace XSRT2
         string lastProgram = "";
         bool autoCheckUpdates = false;
         bool overwriteIfExists = true;
-        DispatcherTimer dt;
+        DispatcherTimer fileWatcherUpdateTimer;
         Type appType;
         string programFileName;
         UInt64 lastSeenVersion = UInt64.MaxValue;
@@ -28,15 +28,6 @@ namespace XSRT2
         List<string> tests = new List<string>();
         List<LogEntry> testLogs = new List<LogEntry>();
         const string defaultPath = "xs-program.js";
-        const string defaultProgram = @"
-var App;
-(function (App) {
-    App.render = function() {
-        return { type:'TextBlock', text:'Hello from JS!' };
-    }
-    
-})(App || (App = {}));
-";
 
         public Host(ContentControl displayControl, Type appType, string programFileName)
         {
@@ -80,18 +71,18 @@ var App;
 
         void UpdateAutoTimer()
         {
-            if (dt != null)
+            if (fileWatcherUpdateTimer != null)
             {
-                dt.Stop();
-                dt = null;
+                fileWatcherUpdateTimer.Stop();
+                fileWatcherUpdateTimer = null;
             }
 
             if (autoCheckUpdates)
             {
-                dt = new DispatcherTimer();
-                dt.Interval = TimeSpan.FromMilliseconds(250);
-                dt.Tick += autoTimer_Tick;
-                dt.Start();
+                fileWatcherUpdateTimer = new DispatcherTimer();
+                fileWatcherUpdateTimer.Interval = TimeSpan.FromMilliseconds(250);
+                fileWatcherUpdateTimer.Tick += autoTimer_Tick;
+                fileWatcherUpdateTimer.Start();
             }
         }
 
@@ -209,7 +200,7 @@ var App;
         // This is here purely as a debugging aid for hard coding content of the file in cases
         // where there is a problem
         // 
-        async Task<string> ReadText(StorageFile file)
+        static async Task<string> ReadText(StorageFile file)
         {
             try
             {
@@ -219,25 +210,24 @@ var App;
             catch (UnauthorizedAccessException)
             {
                 // need wait
-                return @"var App;
-                (function(App) {
-                    App.render = function() {
-                        return { type:'TextBlock', text:'Failed to load file (access denied)' };
-                    }
-
-                })(App || (App = { }));";
+                return ProgramWithMessaage("Failed to load file (access denied)");
             }
         }
 
-        string ProgramWithException(Exception x)
+        static string ProgramWithMessaage(string message)
         {
             return @"var App;
                 (function(App) {
                     App.render = function() {
-                        return { type:'TextBlock', text:'"+x.ToString().Replace('\'', '\"')+@"' };
+                        return { type:'TextBlock', text:'" + message.Replace('\'', '\"') + @"' };
                     }
 
                 })(App || (App = { }));";
+        }
+
+        static string ProgramWithException(Exception x)
+        {
+            return ProgramWithMessaage(x.ToString());
         }
 
         async Task<string> CheckFile()
