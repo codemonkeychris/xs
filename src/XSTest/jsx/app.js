@@ -3,7 +3,7 @@ var App;
 (function (App) {
     App.setInitialState = function() {
         host.setState({ 
-            items: [1,2,3],
+            items: [1,2,3,4,5,6,7,8,9,10],
             state: 0
         });
     };
@@ -23,7 +23,7 @@ var App;
                 host.setState({state: 3});
                 break;
             case 3:
-                host.setState({ items: [1,2,3] });
+                host.setState({ items: [1,2,3,4,5,6,7,8,9,10] });
                 host.setState({state: 0});
                 break;
         }
@@ -37,8 +37,11 @@ var App;
                 verticalAlignment='Stretch'>
                 
                 <Xaml.Button onClick={clicked}>Click Me</Xaml.Button>
-                <Xaml.StackPanel>{
-                    host.getState().items.map(function (i) { return <Xaml.TextBlock text={i.toString()} />; })
+                <Xaml.StackPanel 
+                    orientation={host.getState().clientWidth > host.getState().clientHeight ? "Horizontal" : "Vertical" }  
+                    childrenTransitions={[<Xaml.RepositionThemeTransition />]} 
+                    >{
+                    host.getState().items.map(function (i) { return <Xaml.TextBlock margin='5,5,5,5' text={i.toString()} />; })
                 }</Xaml.StackPanel>
             </Xaml.StackPanel>
         );

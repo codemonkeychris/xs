@@ -266,7 +266,18 @@ JsValueRef JSRT::InvertHandleRecord(Windows::Foundation::Collections::IMap<Platf
 }
 JsValueRef JSRT::InvertHandleArray(Windows::Foundation::Collections::IVector<Platform::Object^>^ value)
 {
-    return JS_INVALID_REFERENCE;
+    JsValueRef result;
+    JsCreateArray(value->Size, &result);
+
+    for (unsigned int i = 0; i < value->Size; i++)
+    {
+        auto v = JSRT::InvertHandleAny(value->GetAt(i));
+        JsValueRef index;
+        JsIntToNumber(i, &index);
+        JsSetIndexedProperty(result, index, v);
+    }
+
+    return result;
 }
 JsValueRef JSRT::InvertHandlePrimitive(Platform::Object^ value)
 {

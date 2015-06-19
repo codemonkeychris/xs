@@ -3,7 +3,7 @@ var App;
 (function (App) {
     App.setInitialState = function() {
         host.setState({ 
-            items: [1,2,3],
+            items: [1,2,3,4,5,6,7,8,9,10],
             state: 0
         });
     };
@@ -23,7 +23,7 @@ var App;
                 host.setState({state: 3});
                 break;
             case 3:
-                host.setState({ items: [1,2,3] });
+                host.setState({ items: [1,2,3,4,5,6,7,8,9,10] });
                 host.setState({state: 0});
                 break;
         }
@@ -37,8 +37,11 @@ var App;
                 verticalAlignment: "Stretch"}, 
                 
                 React.createElement(Xaml.Button, {onClick: clicked}, "Click Me"), 
-                React.createElement(Xaml.StackPanel, null, 
-                    host.getState().items.map(function (i) { return React.createElement(Xaml.TextBlock, {text: i.toString()}); })
+                React.createElement(Xaml.StackPanel, {
+                    orientation: host.getState().clientWidth > host.getState().clientHeight ? "Horizontal" : "Vertical", 
+                    childrenTransitions: [React.createElement(Xaml.RepositionThemeTransition, null)]
+                    }, 
+                    host.getState().items.map(function (i) { return React.createElement(Xaml.TextBlock, {margin: "5,5,5,5", text: i.toString()}); })
                 )
             )
         );

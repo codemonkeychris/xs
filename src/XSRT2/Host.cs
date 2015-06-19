@@ -32,6 +32,7 @@ namespace XSRT2
         public Host(ContentControl displayControl, Type appType, string programFileName)
         {
             PreserveStateOnReload = true;
+            displayControl.SizeChanged += DisplayControl_SizeChanged;
             this.appType = appType;
             this.programFileName = programFileName;
             hostProjection = new XSRT2.JScriptHostProjection(this);
@@ -41,6 +42,21 @@ namespace XSRT2
                 hostProjection.CallCommand(e);
                 RenderIfNeeded();
             };
+        }
+
+        private void DisplayControl_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // UNDONE: design question - should resize force a recalc? Here we push in some
+            // new state which will force a re-render... hmm... 
+            //
+            if (jsrt != null)
+            {
+                var state = (IDictionary<string, object>)jsrt.SaveState();
+                state["clientHeight"] = e.NewSize.Height;
+                state["clientWidth"] = e.NewSize.Width;
+                jsrt.LoadState(state);
+                RenderIfNeeded();
+            }
         }
 
         public event EventHandler<DiffStats> Rendered;

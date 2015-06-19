@@ -47,8 +47,8 @@ namespace XSTest
             };
             host.Rendered += Host_Rendered;
             host.Startup();
-        }
 
+        }
         private void Host_Rendered(object sender, DiffStats e)
         {
             ApplicationView.GetForCurrentView().Title = "{props:" + e.PropertySetCount + ", objs:" + e.ObjectCreateCount + ", elapsed:" + e.ElapsedMilliseconds.ToString("#")+ "ms }";
