@@ -63,6 +63,9 @@ var React;
 })(React || (React = {}));
 var Xaml;
 (function (Xaml) {
+    function Viewbox() { return { type: 'Viewbox' }; }
+    Xaml.Viewbox = Viewbox;
+    ;
     function ScrollViewer() { return { type: 'ScrollViewer' }; }
     Xaml.ScrollViewer = ScrollViewer;
     ;

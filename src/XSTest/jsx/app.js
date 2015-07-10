@@ -29,6 +29,16 @@ var App;
         }
     }
 
+    function force(child, scale) {
+        // UNDONE: this setting of width/height breaks animations... but it works :)
+        //
+        if (host.getState().clientWidth && host.getState().clientHeight) {
+            child.width = host.getState().clientWidth / scale;
+            child.height = host.getState().clientHeight / scale;
+        }
+        return <Xaml.Viewbox>{child}</Xaml.Viewbox>;
+    }
+
     function render() {
 
         return (

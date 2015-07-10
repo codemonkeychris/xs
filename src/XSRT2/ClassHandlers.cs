@@ -171,6 +171,16 @@ namespace XSRT2 {
                     t,
                     (target, valueToken, lastValueToken) => target.Margin = XamlStringParse<Thickness>(valueToken));
                 TrySet(context, obj, lastObj,
+                    "width", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.Width = valueToken.Value<double>());
+                TrySet(context, obj, lastObj,
+                    "height", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.Height = valueToken.Value<double>());
+                TrySet(context, obj, lastObj,
                     "name", 
                     false,
                     t,
@@ -178,6 +188,36 @@ namespace XSRT2 {
             }
         }
 
+        internal static class ViewboxHandler
+        {
+            internal static Viewbox Create(JObject obj, JObject lastObj, DiffContext context)
+            {
+                var createResult = CreateOrGetLast<Viewbox>(obj, context);
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
+            }
+            internal static void SetProperties(Viewbox t, JObject obj, JObject lastObj, DiffContext context)
+            {
+                FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
+                TrySet(context, obj, lastObj,
+                    "child", 
+                    true,
+                    t,
+                    (target, valueToken, lastValueToken) => target.Child = (UIElement)CreateFromState(valueToken, lastValueToken, context));
+                TrySet(context, obj, lastObj,
+                    "stretch", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.Stretch = XamlStringParse<Stretch>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "stretchDirection", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.StretchDirection = XamlStringParse<StretchDirection>(valueToken));
+            }
+        }
         internal static class TextBlockHandler
         {
             internal static TextBlock Create(JObject obj, JObject lastObj, DiffContext context)
@@ -1533,6 +1573,7 @@ namespace XSRT2 {
             if (handlers == null)
             {
                 handlers = new Dictionary<string, CreateCallback>();
+                handlers["Viewbox"] = ViewboxHandler.Create;
                 handlers["TextBlock"] = TextBlockHandler.Create;
                 handlers["Image"] = ImageHandler.Create;
                 handlers["RichEditBox"] = RichEditBoxHandler.Create;

@@ -9,6 +9,30 @@ var App;
     };
 
     var testHandlers = {
+        viewbox: {
+            state: {
+            },
+            ready: function(ev) {
+                var c1 = ev.root.findName("vc1");
+                xsrt.assert(c1, "vc1 should exist");
+                xsrt.assert(c1.minDate, "minDate should be set");
+                xsrt.assert(c1.maxDate, "maxDate should be set");
+
+                var c2 = ev.root.findName("vc2");
+                xsrt.assert(c2, "vc2 should exist");
+                xsrt.assert(c2.date, "date should be set: " + c2.date);
+            },
+            render: function() {
+                return (
+                    <Xaml.Viewbox>
+                        <Xaml.StackPanel horizontalAlignment='Stretch' verticalAlignment='Stretch'>
+                            <Xaml.CalendarView name='vc1' minDate='6/5/2015' maxDate='6/7/2015' />
+                            <Xaml.CalendarDatePicker name='vc2' date='6/5/2015' />
+                        </Xaml.StackPanel>
+                    </Xaml.Viewbox>
+                );
+            }
+        },
         calendarview: {
             state: {
             },

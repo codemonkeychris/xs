@@ -77,12 +77,27 @@ namespace XSRT2 {
                 EnumProp("HorizontalAlignment"),
                 EnumProp("VerticalAlignment"),
                 XamlProp("Margin", "Thickness"),
+                DoubleProp("Width"),
+                DoubleProp("Height"),
                 new PropEntry() { Name="name", SetBody="{ target.Name = valueToken.ToString(); }" }
             },
             null
         ); 
         #>
 
+        <#
+        ClassDef(
+            "Viewbox",
+            true,
+            "FrameworkElement",
+            new PropEntry[] {
+                DefaultBasicProp("Child", "(UIElement)CreateFromState(valueToken, lastValueToken, context)"),
+                XamlProp("Stretch", "Stretch"),
+                XamlProp("StretchDirection", "StretchDirection")
+            },
+            null
+        );
+        #>
         <#
         ClassDef(
             "TextBlock",

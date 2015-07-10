@@ -187,4 +187,6 @@ The set of available classes today are:
 * CheckBox
 * StackPanel
 * Grid
+* ScrollViewer
+* Viewbox
 

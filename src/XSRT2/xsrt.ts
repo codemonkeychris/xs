@@ -71,6 +71,7 @@ module React {
 }
 
 module Xaml {
+    export function Viewbox() { return { type: 'Viewbox' } };
     export function ScrollViewer() { return { type: 'ScrollViewer' } };
     export function GridView() { return { type: 'GridView' } };
     export function ListView() { return { type: 'ListView' } };

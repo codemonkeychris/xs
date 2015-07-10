@@ -29,10 +29,19 @@ var App;
         }
     }
 
+    function force(child, scale) {
+        if (host.getState().clientWidth && host.getState().clientHeight) {
+            child.width = host.getState().clientWidth / scale;
+            child.height = host.getState().clientHeight / scale;
+        }
+        return React.createElement(Xaml.Viewbox, {name: "vb1"}, child);
+    }
+
     function render() {
 
         return (
             React.createElement(Xaml.StackPanel, {
+                 name: "sp1", 
                 horizontalAlignment: "Stretch", 
                 verticalAlignment: "Stretch"}, 
                 
