@@ -7,7 +7,7 @@ programming techniques (insipred by ReactNative)
 
 ## Building
 
-1. Install Windows 10 Insider Preview (10134 required temporarily)
+1. Install Latest Windows 10 Insider Preview (10134 required temporarily)
 2. Install Visual Studio 2015 RC - https://www.visualstudio.com/products/visual-studio-2015-downloads-vs
 3. Install JSX (react-tools) and TypeScript - required to `F5` in VS, as there is a custom build 
 step that invokes JSX and TSC
@@ -46,12 +46,21 @@ When the program is running, you can edit the JavaScript file
 ## Using React
 
 The recommended usage is to integrate using JSX syntax. The hacky React namespace provided handles
-eventHandlers and creates the right object shape.
+eventHandlers and creates the right object shape. JSX provides a nice XML syntax over object
+construction - basically the `<Xaml.StackPanel>` instead of `React.createElement(Xaml.StackPanel)`
 
 My recommended steps to edit using JSX is:
 
-1. Edit `watch.ps1` to point to your user directory
-4. Edit `app.js` from the root of XSTest, when you save the program will update
+1. Edit `src\watch.ps1` to point to your user directory
+> Note: `watch.ps1` only accepts relative paths because of limitations of JSX the node.js 
+> JSX compilter. 
+
+2. Enable powershell scripts - easiest way is to run `set-executionpolicy unrestricted` from 
+an admin powershell window
+
+3. Run `watch.ps1` from the `src` directory
+
+4. Edit `src\xstest\jsx\app.js` from the XSTest, when you save the program will update
 
 ## Basic design
 
