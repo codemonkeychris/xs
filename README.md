@@ -9,11 +9,10 @@ programming techniques (insipred by ReactNative)
 
 1. Install Windows 10 RTM build
 2. Install Visual Studio 2015 RTM - https://www.visualstudio.com/products/visual-studio-2015-downloads-vs
-3. Install JSX (react-tools) and TypeScript - required to `F5` in VS, as there is a custom build 
-step that invokes JSX and TSC
+3. Install TypeScript - required to `F5` in VS, as there is a custom build 
+step that invokes TSC
 ```
-npm install -g react-tools
-npm install -g typescript
+npm install -g typescript@next
 ```
 
 ### Project structure
@@ -52,8 +51,8 @@ construction - basically the `<Xaml.StackPanel>` instead of `React.createElement
 My recommended steps to edit using JSX is:
 
 1. Edit `src\watch.ps1` to point to your user directory
-> Note: `watch.ps1` only accepts relative paths because of limitations of JSX the node.js 
-> JSX compilter. 
+> Note: `watch.ps1` only accepts relative paths because of limitations of TSC the node.js 
+> TSC compilter. 
 
 2. Enable powershell scripts - easiest way is to run `set-executionpolicy unrestricted` from 
 an admin powershell window

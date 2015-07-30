@@ -1,3 +1,4 @@
+/// <reference path='../../xsrt2/xsrt.d.ts' />
 var App;
 (function (App) {
 

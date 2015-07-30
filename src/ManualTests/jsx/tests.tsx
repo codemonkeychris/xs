@@ -1,4 +1,4 @@
-﻿/// <reference path='c:\repos\xs\src\xsrt2\xsrt.ts' />
+﻿/// <reference path='../../xsrt2/xsrt.d.ts' />
 var App;
 (function (App) {
     App.setInitialState = function() {
