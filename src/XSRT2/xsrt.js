@@ -52,7 +52,7 @@ var React;
     }
     var funcCount = 1;
     function createElement(ctor, members) {
-        var result = ctor();
+        var result = new ctor();
         applyMembers(result, members);
         if (arguments.length > 2) {
             result.children = Array.prototype.slice.call(arguments, 2);
@@ -63,64 +63,164 @@ var React;
 })(React || (React = {}));
 var Xaml;
 (function (Xaml) {
-    function Viewbox() { return { type: 'Viewbox' }; }
+    var Viewbox = (function () {
+        function Viewbox() {
+            this.type = 'Viewbox';
+        }
+        return Viewbox;
+    })();
     Xaml.Viewbox = Viewbox;
     ;
-    function ScrollViewer() { return { type: 'ScrollViewer' }; }
+    var ScrollViewer = (function () {
+        function ScrollViewer() {
+            this.type = 'ScrollViewer';
+        }
+        return ScrollViewer;
+    })();
     Xaml.ScrollViewer = ScrollViewer;
     ;
-    function GridView() { return { type: 'GridView' }; }
+    var GridView = (function () {
+        function GridView() {
+            this.type = 'GridView';
+        }
+        return GridView;
+    })();
     Xaml.GridView = GridView;
     ;
-    function ListView() { return { type: 'ListView' }; }
+    var ListView = (function () {
+        function ListView() {
+            this.type = 'ListView';
+        }
+        return ListView;
+    })();
     Xaml.ListView = ListView;
     ;
-    function Grid() { return { type: 'Grid' }; }
+    var Grid = (function () {
+        function Grid() {
+            this.type = 'Grid';
+        }
+        return Grid;
+    })();
     Xaml.Grid = Grid;
     ;
-    function StackPanel() { return { type: 'StackPanel' }; }
+    var StackPanel = (function () {
+        function StackPanel() {
+            this.type = 'StackPanel';
+        }
+        return StackPanel;
+    })();
     Xaml.StackPanel = StackPanel;
     ;
-    function Image() { return { type: 'Image' }; }
+    var Image = (function () {
+        function Image() {
+            this.type = 'Image';
+        }
+        return Image;
+    })();
     Xaml.Image = Image;
     ;
-    function TextBlock() { return { type: 'TextBlock' }; }
+    var TextBlock = (function () {
+        function TextBlock() {
+            this.type = 'TextBlock';
+        }
+        return TextBlock;
+    })();
     Xaml.TextBlock = TextBlock;
     ;
-    function Button() { return { type: 'Button' }; }
+    var Button = (function () {
+        function Button() {
+            this.type = 'Button';
+        }
+        return Button;
+    })();
     Xaml.Button = Button;
     ;
-    function CheckBox() { return { type: 'CheckBox' }; }
+    var CheckBox = (function () {
+        function CheckBox() {
+            this.type = 'CheckBox';
+        }
+        return CheckBox;
+    })();
     Xaml.CheckBox = CheckBox;
     ;
-    function Slider() { return { type: 'Slider' }; }
+    var Slider = (function () {
+        function Slider() {
+            this.type = 'Slider';
+        }
+        return Slider;
+    })();
     Xaml.Slider = Slider;
     ;
-    function ProgressBar() { return { type: 'ProgressBar' }; }
+    var ProgressBar = (function () {
+        function ProgressBar() {
+            this.type = 'ProgressBar';
+        }
+        return ProgressBar;
+    })();
     Xaml.ProgressBar = ProgressBar;
     ;
-    function RichEditBox() { return { type: 'RichEditBox' }; }
+    var RichEditBox = (function () {
+        function RichEditBox() {
+            this.type = 'RichEditBox';
+        }
+        return RichEditBox;
+    })();
     Xaml.RichEditBox = RichEditBox;
     ;
-    function TextBox() { return { type: 'TextBox' }; }
+    var TextBox = (function () {
+        function TextBox() {
+            this.type = 'TextBox';
+        }
+        return TextBox;
+    })();
     Xaml.TextBox = TextBox;
     ;
-    function ListBox() { return { type: 'ListBox' }; }
+    var ListBox = (function () {
+        function ListBox() {
+            this.type = 'ListBox';
+        }
+        return ListBox;
+    })();
     Xaml.ListBox = ListBox;
     ;
-    function ComboBox() { return { type: 'ComboBox' }; }
+    var ComboBox = (function () {
+        function ComboBox() {
+            this.type = 'ComboBox';
+        }
+        return ComboBox;
+    })();
     Xaml.ComboBox = ComboBox;
     ;
-    function CalendarDatePicker() { return { type: 'CalendarDatePicker' }; }
+    var CalendarDatePicker = (function () {
+        function CalendarDatePicker() {
+            this.type = 'CalendarDatePicker';
+        }
+        return CalendarDatePicker;
+    })();
     Xaml.CalendarDatePicker = CalendarDatePicker;
     ;
-    function CalendarView() { return { type: 'CalendarView' }; }
+    var CalendarView = (function () {
+        function CalendarView() {
+            this.type = 'CalendarView';
+        }
+        return CalendarView;
+    })();
     Xaml.CalendarView = CalendarView;
     ;
-    function RelativePanel() { return { type: 'RelativePanel' }; }
+    var RelativePanel = (function () {
+        function RelativePanel() {
+            this.type = 'RelativePanel';
+        }
+        return RelativePanel;
+    })();
     Xaml.RelativePanel = RelativePanel;
     ;
-    function RepositionThemeTransition() { return { type: 'RepositionThemeTransition' }; }
+    var RepositionThemeTransition = (function () {
+        function RepositionThemeTransition() {
+            this.type = 'RepositionThemeTransition';
+        }
+        return RepositionThemeTransition;
+    })();
     Xaml.RepositionThemeTransition = RepositionThemeTransition;
     ;
 })(Xaml || (Xaml = {}));

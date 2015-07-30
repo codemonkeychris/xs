@@ -6,64 +6,112 @@ declare module React {
     function createElement(ctor: any, members: any): any;
 }
 declare module Xaml {
-    function Viewbox(): {
+    interface FrameworkElementProps {
+        name?: string;
+        width?: number;
+        height?: number;
+    }
+    interface ViewboxProps extends FrameworkElementProps {
+        stretch?: string;
+    }
+    class Viewbox {
         type: string;
-    };
-    function ScrollViewer(): {
+        constructor();
+        props: ViewboxProps;
+    }
+    class ScrollViewer {
         type: string;
-    };
-    function GridView(): {
+        constructor();
+        props: FrameworkElementProps;
+    }
+    class GridView {
         type: string;
-    };
-    function ListView(): {
+        constructor();
+        props: FrameworkElementProps;
+    }
+    class ListView {
         type: string;
-    };
-    function Grid(): {
+        constructor();
+        props: FrameworkElementProps;
+    }
+    class Grid {
         type: string;
-    };
-    function StackPanel(): {
+        constructor();
+        props: FrameworkElementProps;
+    }
+    class StackPanel {
         type: string;
-    };
-    function Image(): {
+        constructor();
+        props: FrameworkElementProps;
+    }
+    class Image {
         type: string;
-    };
-    function TextBlock(): {
+        constructor();
+        props: FrameworkElementProps;
+    }
+    class TextBlock {
         type: string;
-    };
-    function Button(): {
+        constructor();
+        props: FrameworkElementProps;
+    }
+    class Button {
         type: string;
-    };
-    function CheckBox(): {
+        constructor();
+        props: FrameworkElementProps;
+    }
+    class CheckBox {
         type: string;
-    };
-    function Slider(): {
+        constructor();
+        props: FrameworkElementProps;
+    }
+    class Slider {
         type: string;
-    };
-    function ProgressBar(): {
+        constructor();
+        props: FrameworkElementProps;
+    }
+    class ProgressBar {
         type: string;
-    };
-    function RichEditBox(): {
+        constructor();
+        props: FrameworkElementProps;
+    }
+    class RichEditBox {
         type: string;
-    };
-    function TextBox(): {
+        constructor();
+        props: FrameworkElementProps;
+    }
+    class TextBox {
         type: string;
-    };
-    function ListBox(): {
+        constructor();
+        props: FrameworkElementProps;
+    }
+    class ListBox {
         type: string;
-    };
-    function ComboBox(): {
+        constructor();
+        props: FrameworkElementProps;
+    }
+    class ComboBox {
         type: string;
-    };
-    function CalendarDatePicker(): {
+        constructor();
+        props: FrameworkElementProps;
+    }
+    class CalendarDatePicker {
         type: string;
-    };
-    function CalendarView(): {
+        constructor();
+        props: FrameworkElementProps;
+    }
+    class CalendarView {
         type: string;
-    };
-    function RelativePanel(): {
+        constructor();
+        props: FrameworkElementProps;
+    }
+    class RelativePanel {
         type: string;
-    };
-    function RepositionThemeTransition(): {
+        constructor();
+        props: FrameworkElementProps;
+    }
+    class RepositionThemeTransition {
         type: string;
-    };
+        constructor();
+        props: FrameworkElementProps;
+    }
 }

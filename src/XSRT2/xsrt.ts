@@ -61,7 +61,7 @@ module React {
 
     var funcCount = 1;
     export function createElement(ctor, members) {
-        var result = ctor();
+        var result = new ctor();
         applyMembers(result, members);
         if (arguments.length > 2) {
             result.children = Array.prototype.slice.call(arguments, 2);
@@ -71,24 +71,154 @@ module React {
 }
 
 module Xaml {
-    export function Viewbox() { return { type: 'Viewbox' } };
-    export function ScrollViewer() { return { type: 'ScrollViewer' } };
-    export function GridView() { return { type: 'GridView' } };
-    export function ListView() { return { type: 'ListView' } };
-    export function Grid() { return { type: 'Grid' } };
-    export function StackPanel() { return { type: 'StackPanel' } };
-    export function Image() { return { type: 'Image' } };
-    export function TextBlock() { return { type: 'TextBlock' } };
-    export function Button() { return { type: 'Button' } };
-    export function CheckBox() { return { type: 'CheckBox' } };
-    export function Slider() { return { type: 'Slider' } };
-    export function ProgressBar() { return { type: 'ProgressBar' } };
-    export function RichEditBox() { return { type: 'RichEditBox' } };
-    export function TextBox() { return { type: 'TextBox' } };
-    export function ListBox() { return { type: 'ListBox' } };
-    export function ComboBox() { return { type: 'ComboBox' } };
-    export function CalendarDatePicker() { return { type: 'CalendarDatePicker' } };
-    export function CalendarView() { return { type: 'CalendarView' } };
-    export function RelativePanel() { return { type: 'RelativePanel' } };
-    export function RepositionThemeTransition() { return { type: 'RepositionThemeTransition' } };
+    export interface FrameworkElementProps {
+        name?: string;
+        width?: number;
+        height?: number;
+    }
+    export interface ViewboxProps extends FrameworkElementProps {
+        stretch?: string;
+        stretchDirection?: string;
+        child: any;
+    }
+    export class Viewbox { 
+        type: string;
+        constructor() {
+            this.type = 'Viewbox';
+        }
+        props: ViewboxProps
+    };
+    export class ScrollViewer {
+        type: string;
+        constructor() {
+            this.type = 'ScrollViewer';
+        }
+        props: FrameworkElementProps
+    };
+    export class GridView {
+        type: string;
+        constructor() {
+            this.type = 'GridView';
+        }
+        props: FrameworkElementProps
+    };
+    export class ListView {
+        type: string;
+        constructor() {
+            this.type = 'ListView';
+        }
+        props: FrameworkElementProps
+    };
+    export class Grid {
+        type: string;
+        constructor() {
+            this.type = 'Grid';
+        }
+        props: FrameworkElementProps
+    };
+    export class StackPanel {
+        type: string;
+        constructor() {
+            this.type = 'StackPanel';
+        }
+        props: FrameworkElementProps
+    };
+    export class Image {
+        type: string;
+        constructor() {
+            this.type = 'Image';
+        }
+        props: FrameworkElementProps
+    };
+    export class TextBlock {
+        type: string;
+        constructor() {
+            this.type = 'TextBlock';
+        }
+        props: FrameworkElementProps
+    };
+    export class Button {
+        type: string;
+        constructor() {
+            this.type = 'Button';
+        }
+        props: FrameworkElementProps
+    };
+    export class CheckBox {
+        type: string;
+        constructor() {
+            this.type = 'CheckBox';
+        }
+        props: FrameworkElementProps
+    };
+    export class Slider {
+        type: string;
+        constructor() {
+            this.type = 'Slider';
+        }
+        props: FrameworkElementProps
+    };
+    export class ProgressBar {
+        type: string;
+        constructor() {
+            this.type = 'ProgressBar';
+        }
+        props: FrameworkElementProps
+    };
+    export class RichEditBox {
+        type: string;
+        constructor() {
+            this.type = 'RichEditBox';
+        }
+        props: FrameworkElementProps
+    };
+    export class TextBox {
+        type: string;
+        constructor() {
+            this.type = 'TextBox';
+        }
+        props: FrameworkElementProps
+    };
+    export class ListBox {
+        type: string;
+        constructor() {
+            this.type = 'ListBox';
+        }
+        props: FrameworkElementProps
+    };
+    export class ComboBox {
+        type: string;
+        constructor() {
+            this.type = 'ComboBox';
+        }
+        props: FrameworkElementProps
+    };
+    export class CalendarDatePicker {
+        type: string;
+        constructor() {
+            this.type = 'CalendarDatePicker';
+        }
+        props: FrameworkElementProps
+    };
+    export class CalendarView {
+        type: string;
+        constructor() {
+            this.type = 'CalendarView';
+        }
+        props: FrameworkElementProps
+    };
+    export class RelativePanel {
+        type: string;
+        constructor() {
+            this.type = 'RelativePanel';
+        }
+        props: FrameworkElementProps
+    };
+    export class RepositionThemeTransition {
+        type: string;
+        constructor() {
+            this.type = 'RepositionThemeTransition';
+        }
+        props: FrameworkElementProps
+    };
 }
