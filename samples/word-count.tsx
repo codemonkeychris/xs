@@ -30,12 +30,12 @@ var App;
                 rows={['auto', '*']}
                 columns={['*']} >
                 
-                <Xaml.TextBlock name='label1' grid$row='0'>{"count:" + host.getState().text.length }</Xaml.TextBlock>
+                <Xaml.TextBlock name='label1' grid$row={0}>{"count:" + host.getState().text.length }</Xaml.TextBlock>
                 <MultiLineTextBox
-                    grid$row='1'
-                    grid$column='0'
+                    grid$row={1}
+                    grid$column={0}
                     fontFamily='Consolas'
-                    fontSize='14'
+                    fontSize={14}
                     onTextChanged={textChanged}
                     text={host.getState().text}  />
             </Xaml.Grid>

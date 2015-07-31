@@ -74,8 +74,8 @@ var App;
                 return (
                     <Xaml.StackPanel horizontalAlignment='Stretch' verticalAlignment='Stretch'>
                         <Xaml.Button name='b1' content='hello' />
-                        <Xaml.ProgressBar name='p1' minimum='0' maximum='10' value={host.getState().n} />
-                        <Xaml.Slider name='s1' minimum='0' maximum='10' value={host.getState().n} />
+                        <Xaml.ProgressBar name='p1' minimum={0} maximum={10} value={host.getState().n} />
+                        <Xaml.Slider name='s1' minimum={0} maximum={10} value={host.getState().n} />
                     </Xaml.StackPanel>
                 );
             }
@@ -98,7 +98,7 @@ var App;
                         rows={['auto', '*']}
                         columns={['*']} >
                 
-                        <Xaml.TextBlock foreground='red' name='label1' grid$row='0'>{host.getState().text.length}</Xaml.TextBlock>
+                        <Xaml.TextBlock foreground='red' name='label1' grid$row={0}>{host.getState().text.length}</Xaml.TextBlock>
                     </Xaml.Grid>
                 );
             }
@@ -121,7 +121,7 @@ var App;
                         rows={['auto', '*']}
                         columns={['*']} >
                 
-                        <Xaml.TextBlock style={{foreground:'red'}} name='label1' grid$row='0'>{host.getState().text.length}</Xaml.TextBlock>
+                        <Xaml.TextBlock style={{foreground:'red'}} name='label1' grid$row={0}>{host.getState().text.length}</Xaml.TextBlock>
                     </Xaml.Grid>
                 );
             }
@@ -143,7 +143,7 @@ var App;
                         rows={['auto', '*']}
                         columns={['*']} >
                 
-                        <Xaml.TextBlock name='label1' grid$row='0'>{host.getState().text.length}</Xaml.TextBlock>
+                        <Xaml.TextBlock name='label1' grid$row={0}>{host.getState().text.length}</Xaml.TextBlock>
                         <MultiLineTextBox
                             name='textBox1'
                             grid$row='1'
@@ -177,7 +177,7 @@ var App;
                         rows={['auto', '*']}
                         columns={['*']} >
                 
-                        <Xaml.TextBlock name='label2' grid$row='0'>{host.getState().text.length}</Xaml.TextBlock>
+                        <Xaml.TextBlock name='label2' grid$row={0}>{host.getState().text.length}</Xaml.TextBlock>
                         <MultiLineTextBox
                             name='textBox1'
                             grid$row='1'

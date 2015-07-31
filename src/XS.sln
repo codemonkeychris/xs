@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.22823.1
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XSTest", "XSTest\XSTest.csproj", "{684FDC4D-4031-4E21-BC19-F66EBE304319}"
 EndProject
@@ -16,11 +16,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{8992875C-86D2-46AB-A0A5-7ABB2193D3E4}"
 	ProjectSection(SolutionItems) = preProject
-		..\samples\hello-jsx.js = ..\samples\hello-jsx.js
-		..\samples\listview-demo.js = ..\samples\listview-demo.js
-		..\samples\relative-panel.js = ..\samples\relative-panel.js
-		..\samples\simple-demo.js = ..\samples\simple-demo.js
-		..\samples\word-count.js = ..\samples\word-count.js
+		..\samples\hello-jsx.tsx = ..\samples\hello-jsx.tsx
+		..\samples\listview-demo.tsx = ..\samples\listview-demo.tsx
+		..\samples\relative-panel.tsx = ..\samples\relative-panel.tsx
+		..\samples\simple-demo.tsx = ..\samples\simple-demo.tsx
+		..\samples\word-count.tsx = ..\samples\word-count.tsx
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManualTests", "ManualTests\ManualTests.csproj", "{BA250439-B7A6-4279-97F0-383385EE59A7}"

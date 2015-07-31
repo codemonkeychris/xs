@@ -232,6 +232,11 @@ namespace XSRT2 {
             {
                 FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
                 TrySet(context, obj, lastObj,
+                    "foreground", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.Foreground = XamlStringParse<Brush>(valueToken));
+                TrySet(context, obj, lastObj,
                     "text", 
                     true,
                     t,

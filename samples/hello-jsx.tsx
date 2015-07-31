@@ -20,7 +20,7 @@ var App;
             <Xaml.StackPanel name='root'>
                 <Xaml.TextBlock name='header' 
                     text='Welcome to XS!' 
-                    fontSize='56'
+                    fontSize={56}
                     margin='30,10,10,10' />
                 <Xaml.Button name='b1' onClick={clicked}
                     content={<Xaml.TextBlock

@@ -104,6 +104,7 @@ namespace XSRT2 {
             true,
             "FrameworkElement",
             new PropEntry[] {
+                XamlProp("Foreground", "Brush"),
                 DefaultStringProp("Text"),
                 BasicProp("FontFamily", "new FontFamily(valueToken.ToString())"),
                 DoubleProp("FontSize"),
