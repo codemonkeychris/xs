@@ -4,6 +4,7 @@ declare module XsrtJS {
 }
 declare module React {
     function createElement(ctor: any, members: any): any;
+    function __spread(target: any, record1: any, record2: any): any;
 }
 declare module JSX {
     interface ElementAttributesProperty {

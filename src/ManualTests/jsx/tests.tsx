@@ -126,6 +126,29 @@ var App;
                 );
             }
         },
+        fg_color_spread: {
+            state: {
+                text: "a"
+            },
+            ready: function(ev) {
+                var label1 = ev.root.findName("label1");
+                xsrt.assert(label1, "label1 should exist");
+                xsrt.assert(label1 && label1.text === "1", "should have number '1' in label");
+                xsrt.assert(label1 && label1.foreground, "should have foreground label");
+            },
+            render: function() {
+                return (
+                    <Xaml.Grid 
+                        horizontalAlignment='Stretch'
+                        verticalAlignment='Stretch'
+                        rows={['auto', '*']}
+                        columns={['*']} >
+                
+                        <Xaml.TextBlock {...{foreground:'red'}} name='label1' grid$row={0}>{host.getState().text.length}</Xaml.TextBlock>
+                    </Xaml.Grid>
+                );
+            }
+        },
         simple_test_1: {
             state: {
                 text: "a"

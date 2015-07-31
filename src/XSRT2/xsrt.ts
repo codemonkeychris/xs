@@ -68,6 +68,11 @@ module React {
         }
         return result;
     }
+
+    export function __spread(target, record1, record2) {
+        return (<any>Object).assign(target, record1, record2);
+        
+    }
 }
 
 module JSX {

@@ -60,6 +60,10 @@ var React;
         return result;
     }
     React.createElement = createElement;
+    function __spread(target, record1, record2) {
+        return Object.assign(target, record1, record2);
+    }
+    React.__spread = __spread;
 })(React || (React = {}));
 var Xaml;
 (function (Xaml) {
