@@ -216,7 +216,8 @@ Platform::Object^ JScriptValueMarshaller::ToObject()
 {
     if (m_valueRoot == JS_INVALID_REFERENCE)
     {
-        return nullptr;
+        auto map = ref new Platform::Collections::Map<Platform::String^, Platform::Object^>();
+        return dynamic_cast<Windows::Foundation::Collections::IMap<Platform::String^, Platform::Object^>^>(map);
     }
     else
     {
