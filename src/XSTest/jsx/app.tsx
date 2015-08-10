@@ -15,7 +15,7 @@ var App;
     function render() {
         return (
             <Xaml.Grid>
-                <Xaml.ListView margin='10,10,10,10' itemsSource={Object.keys(Xaml.StackPanel).map(renderItem)} />
+                <Xaml.ListView margin='10,10,10,10' itemsSource={Object.keys(Xaml).map(renderItem)} />
             </Xaml.Grid>
         );
     }

@@ -2,11 +2,10 @@
 var App;
 (function (App) {
     function renderItem(item) {
-        var x = 5;
-        return (React.createElement(Xaml.Grid, null, React.createElement(Xaml.TextBlock, {"text": item, "fontWeight": item % 2 == 0 ? 'bold' : 'normal'})));
+        return (React.createElement(Xaml.StackPanel, {"orientation": 'Horizontal'}, React.createElement(Xaml.TextBlock, {"text": item, "fontWeight": 'Bold'})));
     }
     function render() {
-        return (React.createElement(Xaml.Grid, null, React.createElement(Xaml.ListView, {"margin": '10,10,10,10', "itemsSource": [0, 1, 2, 3, 4, 5, 6, 7, 8].map(renderItem)})));
+        return (React.createElement(Xaml.Grid, null, React.createElement(Xaml.ListView, {"margin": '10,10,10,10', "itemsSource": Object.keys(Xaml).map(renderItem)})));
     }
     App.render = render;
 })(App || (App = {}));
