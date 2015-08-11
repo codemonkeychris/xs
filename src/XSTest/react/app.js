@@ -89,11 +89,11 @@ var Notebook;
         function calcBody(restOfLine) {
             if (!restOfLine || restOfLine.trim().length === 0) {
                 var s = "";
-                if (peekLine() === "```") {
+                if (peekLine().trim() === "```") {
                     takeLine(); // ``` 
                     var l = "";
-                    while ((l = peekLine()) && l !== "```") {
-                        s += takeLine() + "\n";
+                    while ((l = peekLine()) && l.trim() !== "```") {
+                        s += takeLine().trim() + "\n";
                     }
                     takeLine(); // ```
                 }
@@ -108,7 +108,7 @@ var Notebook;
             if (body.indexOf('\n') != -1) {
                 pushOut(preamble);
                 pushOut("```");
-                pushOut(body);
+                pushOut(body.trim());
                 pushOut("```");
             }
             else if (codeMarker) {
@@ -165,6 +165,7 @@ var App;
     }
     var data = [{ x: 12, y: 20 }, { x: 2000, y: 20 }, { x: 30, y: 20 }, { x: 30, y: 20 }];
     var input = "## JSNotebook... a simple way to write up JS code... \n" +
+        "F5 to refresh is you edit expressions\n" +
         "\n" +
         "Input expressions are simple:\n" +
         "in[0]=40+40\n" +

@@ -108,46 +108,49 @@ module Notebook {
             }
             return {value:restOfLine};
         }
-        function pushResult(preamble: string, body: string, codeMarker: boolean) {
+        function pushResult(preamble: string, body: string, codeMarker: boolean, noteMarker: boolean) {
+            var prepre = noteMarker ? "> " : "";
             if (body.indexOf('\n') != -1) {
-                pushOut(preamble);
+                pushOut(prepre + preamble);
                 pushOut("```");
                 pushOut(body.trim());
                 pushOut("```");
             }
             else if (codeMarker) {
-                pushOut(preamble + "`" + body + "`");
+                pushOut(prepre + preamble + "`" + body + "`");
             }
             else {
-                pushOut(preamble + body);
+                pushOut(prepre + preamble + body);
             }
         }
         function processLine(line : string) { 
-            var inMatch =   /^in\[([0123456789]+)\]\s*=\s*((`(.*)`)|([^`].*)|())/;
-            var outMatch = /^out\[([0123456789]+)\]\s*=\s*((`(.*)`)|([^`].*)|())/;
+            var inMatch =   /^(>\s+)?in\[([0123456789]+)\]\s*=\s*((`(.*)`)|([^`].*)|())/;
+            var outMatch = /^(>\s+)?out\[([0123456789]+)\]\s*=\s*((`(.*)`)|([^`].*)|())/;
 
             var inResult = inMatch.exec(line);
             var outResult = outMatch.exec(line);
 
             if (inResult) {
                 // debugger;
-                var body = calcBody(inResult[2]);
-                var index = 0 || inResult[1];
+                var body = calcBody(inResult[3]);
+                body.noteMarker = !!inResult[1];
+                var index = 0 || inResult[2];
                 if (renumberInOut) {
                     index = inCount;
                 }
                 inCount++;
                 evals[index] = scopedEval(body.value, context);
-                pushResult("in[" + index + "]=", body.value, body.codeMarker);
+                pushResult("in[" + index + "]=", body.value, body.codeMarker, body.noteMarker);
             }
             else if (outResult) {
-                var body = calcBody(outResult[2]); // need to consume old body
-                var index = 0 || outResult[1];
+                var body = calcBody(outResult[3]); // need to consume old body
+                body.noteMarker = !!outResult[1];
+                var index = 0 || outResult[2];
                 if (renumberInOut) {
                     index = inCount-1; // take last in
                 }
                 var result = formatString(evals[index]);
-                pushResult("out["+index+"]=", result, body.codeMarker);
+                pushResult("out["+index+"]=", result, body.codeMarker, body.noteMarker);
             }
             else {
                 pushOut(line);
@@ -172,7 +175,7 @@ module App {
             scrollViewer$horizontalScrollBarVisibility='Auto'
             scrollViewer$verticalScrollBarVisibility='Auto'
             acceptsReturn={true}
-            textWrapping='Wrap'
+            textWrapping='NoWrap'
             horizontalAlignment='Stretch'
             verticalAlignment='Stretch' />
     }
