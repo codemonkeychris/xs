@@ -66,9 +66,14 @@ module Notebook {
 
     function scopedEval(js, context) {
         var result;
+        try {
         // with (context) {
           result = eval(js);
         //}
+        }
+        catch (e) {
+            return "" + e;
+        }
         return result;
     }
 
@@ -90,7 +95,7 @@ module Notebook {
         var currentLine = 0;
         var rows = [];
 
-        function calcBody(restOfLine : string) : {codeMarker?:boolean; value:string} {
+        function calcBody(restOfLine : string) : {codeMarker?:boolean; noteMarker?:boolean; value:string} {
             if (!restOfLine || restOfLine.trim().length === 0) {
                 var s = "";
                 if (peekLine().trim() === "```") {
@@ -113,7 +118,7 @@ module Notebook {
             if (body.indexOf('\n') != -1) {
                 pushOut(prepre + preamble);
                 pushOut("```");
-                pushOut(body.trim());
+                pushOut(body.replace(/\s*$/gm, '')); //trimRight
                 pushOut("```");
             }
             else if (codeMarker) {
@@ -182,39 +187,52 @@ module App {
 
     var data = [ {x:12, y:20 }, {x:2000, y:20 }, {x:30, y:20 }, {x:30, y:20 } ];
 
-    var input = 
-"## JSNotebook... a simple way to write up JS code... \n"+
-"F5 to refresh is you edit expressions\n"+
+    var input = "" +
+"# JSNotebook... a simple way to write up JS code... \n"+
 "\n"+
-"Input expressions are simple:\n"+
+"### Basic expressions\n"+
+"\n"+
 "in[0]=40+40\n"+
-"You can optionally surround the expression with Markdown inline code markings:\n"+
-"in[1]=`40+40`\n"+
+"\n"+
+"You can optionally surround the expression with Markdown inline code \n"+
+"markings and prefix with the note (>) marker if you like. \n"+
+"\n"+
+"> in[1]=`40+40`\n"+
 "\n"+
 "The result will be put after any out statement:\n"+
-"out[0]=222\n"+
 "\n"+
-"Multiline expressions are done using Markdown syntax for code:\n"+
-"in[1]=\n"+
+"> out[1]=80\n"+
+"\n"+
+"### Multiline expressions are done using Markdown syntax for code:\n"+
+"> in[2]=\n"+
 "```\n"+
-"40 + \n"+
+"40 +\n"+
 "40\n"+
 "```\n"+
-"out[1]=222\n"+
+"> out[2]=80\n"+
 "\n"+
-"Variables can be defiend\n"+
-"in[2]=x=10\n"+
-"in[3]=x*20\n"+
-"out[3]=222\n"+
+"### Variables can be defiend\n"+
+"> in[3]=x=10\n"+
 "\n"+
-"in[4] = data = [ {x:12, y:20 }, {x:2000, y:20 }, {x:30, y:20 }, {x:30, y:20 } ]\n"+
-"out[4] = #\n"+
-"in[5] = Notebook.textTable(data)\n"+
-"out[5] =\n"+
+"> in[4]=x*20\n"+
+"\n"+
+"> out[4]=200\n"+
+"\n"+
+"> in[5]=data = [ {x:12, y:20 }, {x:2000, y:20 }, {x:30, y:20 }, {x:30, y:20 } ]\n"+
+"\n"+
+"> out[5]=[object Object],[object Object],[object Object],[object Object]\n"+
+"\n"+
+"### There are several built in functions for formatting\n"+
+"> in[6]=Notebook.textTable(data)\n"+
+"\n"+
+"> out[6]=\n"+
+"```\n"+
+"   x| y\n"+
+"  12|20\n"+
+"2000|20\n"+
+"  30|20\n"+
+"  30|20\n"+
 "```\n";
-"table here\n";
-"```\n";
-"\n";
 
     function keyDown(sender, e) {
         if (e.key === 116) {
@@ -227,8 +245,14 @@ module App {
     }
     export function render() {
         return (
-            <Xaml.Grid>
-                <MultiLineTextBox onKeyDown={keyDown} fontFamily='Consolas' margin='10,10,10,10' text={Notebook.process(host.getState().input, { data: data, textTable:Notebook.textTable })} />
+            <Xaml.Grid rows={['*', 'auto']}>
+                <Xaml.TextBlock grid$row={1}>Press F5 to refresh</Xaml.TextBlock>
+                <MultiLineTextBox 
+                    grid$row={0} 
+                    onKeyDown={keyDown} 
+                    fontFamily='Consolas' 
+                    margin='10,10,10,10' 
+                    text={Notebook.process(host.getState().input, { data: data, textTable:Notebook.textTable })} />
             </Xaml.Grid>
         );
     }
