@@ -31,6 +31,7 @@ JsValueRef CALLBACK Shim(JsValueRef callee, bool isConstructCall, JsValueRef *ar
     case 4:
         return holder->ref->GetState(callee, isConstructCall, arguments, argumentCount, nullptr);
     }
+    return JS_INVALID_REFERENCE;
 }
 
 void CALLBACK EnqueueCallback(JsProjectionCallback jsCallback, JsProjectionCallbackContext jsContext, void *callbackState)

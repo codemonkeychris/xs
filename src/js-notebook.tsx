@@ -1,4 +1,4 @@
-﻿/// <reference path='../../xsrt2/xsrt.d.ts' />
+/// <reference path='../../xsrt2/xsrt.d.ts' />
 module Notebook {
     interface ColumnInfo {
         name?: string;

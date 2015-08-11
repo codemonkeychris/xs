@@ -17,14 +17,63 @@ using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Input;
 
 namespace XSRT2 {
     public static class Handler
     {
+        internal static class UIElementHandler
+        {
+            internal static void SetProperties(UIElement t, JObject obj, JObject lastObj, DiffContext context)
+            {
+                TrySetEvent(context, obj, lastObj, "KeyDown", t, (target, valueToken, lastValueToken) => SetKeyDownEventHandler(valueToken.ToString(), target));
+                TrySetEvent(context, obj, lastObj, "KeyUp", t, (target, valueToken, lastValueToken) => SetKeyUpEventHandler(valueToken.ToString(), target));
+            }
+            static void KeyDownRouter(object sender, KeyRoutedEventArgs e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["KeyDown"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetKeyDownEventHandler(string handlerName, UIElement element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["KeyDown"] = handlerName;
+                element.KeyDown -= KeyDownRouter;
+                element.KeyDown += KeyDownRouter;
+            }
+            static void KeyUpRouter(object sender, KeyRoutedEventArgs e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["KeyUp"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetKeyUpEventHandler(string handlerName, UIElement element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["KeyUp"] = handlerName;
+                element.KeyUp -= KeyUpRouter;
+                element.KeyUp += KeyUpRouter;
+            }
+        }
+
         internal static class FrameworkElementHandler
         {
             internal static void SetProperties(FrameworkElement t, JObject obj, JObject lastObj, DiffContext context)
             {
+                UIElementHandler.SetProperties(t, obj, lastObj, context);
                 TrySet(context, obj, lastObj,
                     "scrollViewer$verticalScrollBarVisibility", 
                     false,

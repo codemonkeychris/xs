@@ -46,14 +46,18 @@ declare module Xaml {
         relative$leftOf?: string;
         relative$rightOf?: string;
     }
-    interface FrameworkElementProps extends ScrollViewerAttachedProps, GridAttachedProps, AccessibilityProps, RelativePanelAttachedProps {
+    interface UIElementProps {
+        style?: {};
+        onKeyDown?: any;
+        onKeyUp?: any;
+    }
+    interface FrameworkElementProps extends UIElementProps, ScrollViewerAttachedProps, GridAttachedProps, AccessibilityProps, RelativePanelAttachedProps {
         name?: string;
         width?: number;
         height?: number;
         horizontalAlignment?: string;
         verticalAlignment?: string;
         margin?: string;
-        style?: {};
     }
     interface ViewboxProps extends FrameworkElementProps {
         stretch?: string;

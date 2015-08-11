@@ -23,15 +23,28 @@ using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Input;
 
 namespace XSRT2 {
     public static class Handler
     {
         <#
         ClassDef(
-            "FrameworkElement", 
+            "UIElement", 
             false,
             null,
+            null,
+            new EventEntry[] {
+                new EventEntry() { Name="KeyDown", WinRTName="KeyDown", EventType="KeyRoutedEventArgs" },
+                new EventEntry() { Name="KeyUp", WinRTName="KeyUp", EventType="KeyRoutedEventArgs" }
+            });
+        #>
+
+        <#
+        ClassDef(
+            "FrameworkElement", 
+            false,
+            "UIElement",
             // UNDONE: what is the scalable story for attached properties?
             //
             new PropEntry[] { 

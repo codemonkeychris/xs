@@ -117,14 +117,18 @@ module Xaml {
         relative$rightOf?: string; //ref?
     }
 
-    export interface FrameworkElementProps extends ScrollViewerAttachedProps, GridAttachedProps, AccessibilityProps, RelativePanelAttachedProps {
+    export interface UIElementProps {
+        style?: {}; // UNDONE
+        onKeyDown?: any; // callback?
+        onKeyUp?: any; // callback?
+    }
+    export interface FrameworkElementProps extends UIElementProps, ScrollViewerAttachedProps, GridAttachedProps, AccessibilityProps, RelativePanelAttachedProps {
         name?: string;
         width?: number;
         height?: number;
         horizontalAlignment?: string;
         verticalAlignment?: string;
         margin?: string;
-        style?: {}; // UNDONE
     }
     export interface ViewboxProps extends FrameworkElementProps {
         stretch?: string;
