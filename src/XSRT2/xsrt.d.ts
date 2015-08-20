@@ -1,6 +1,7 @@
 declare var host: any;
 declare var xsrt: any;
 declare module XsrtJS {
+    function displayError(errorMessage: string): any;
 }
 declare module React {
     function createElement(ctor: any, members: any): any;

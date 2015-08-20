@@ -7,12 +7,25 @@ module XsrtJS {
     //
     declare var App: any;
 
+    function refreshClicked() {
+        xsrt.forceCleanReload();
+    }
+
+    export function displayError(errorMessage: string) {
+        return (
+            <Xaml.StackPanel>
+                <Xaml.TextBlock fontFamily='Consolas' text={ errorMessage } />
+                <Xaml.Button onClick={refreshClicked} content='Refresh' />
+            </Xaml.StackPanel>
+        );
+    }
+
     function render(ev) {
         try {
-            ev.view = JSON.stringify((App && App.render) ? App.render() : { type: 'TextBlock', text: 'Error: App.render not found!' });
+            ev.view = JSON.stringify((App && App.render) ? App.render() : displayError('Error: App.render not found!'));
         }
         catch (e) {
-            ev.view = JSON.stringify({ type: 'TextBlock', text: 'Error: ' + e });
+            ev.view = JSON.stringify(displayError('Error: ' + e ));
         }
     }
     function command(ev) {
@@ -70,7 +83,8 @@ module React {
     }
 
     export function __spread(target, record1, record2) {
-        return (<any>Object).assign(target, record1, record2);
+        var o : any = Object;
+        return o.assign(target, record1, record2);
         
     }
 }
@@ -253,7 +267,7 @@ module Xaml {
         verticalSnapPointsAlignment?: string;
         verticalSnapPointsType?: string;
         zoomMode?: string;
-        // UNDONE: public IList<System.Single> ZoomSnapPoints { get; }
+        // UNDONE: public IList System.Single ZoomSnapPoints { get; }
         zoomSnapPointsType?: string;
 
     }

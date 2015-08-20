@@ -138,7 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="xsrt.d.ts" />
-    <TypeScriptCompile Include="xsrt.ts" />
+    <None Include="xsrt.tsx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\JSRT\JSRT.vcxproj">
@@ -166,7 +166,7 @@
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>cd $(ProjectDir)
-tsc -d xsrt.ts</PreBuildEvent>
+tsc --JSX react -d xsrt.tsx</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

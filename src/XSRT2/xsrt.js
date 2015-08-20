@@ -1,11 +1,18 @@
 var XsrtJS;
 (function (XsrtJS) {
+    function refreshClicked() {
+        xsrt.forceCleanReload();
+    }
+    function displayError(errorMessage) {
+        return (React.createElement(Xaml.StackPanel, null, React.createElement(Xaml.TextBlock, {"fontFamily": 'Consolas', "text": errorMessage}), React.createElement(Xaml.Button, {"onClick": refreshClicked, "content": 'Refresh'})));
+    }
+    XsrtJS.displayError = displayError;
     function render(ev) {
         try {
-            ev.view = JSON.stringify((App && App.render) ? App.render() : { type: 'TextBlock', text: 'Error: App.render not found!' });
+            ev.view = JSON.stringify((App && App.render) ? App.render() : displayError('Error: App.render not found!'));
         }
         catch (e) {
-            ev.view = JSON.stringify({ type: 'TextBlock', text: 'Error: ' + e });
+            ev.view = JSON.stringify(displayError('Error: ' + e));
         }
     }
     function command(ev) {
@@ -61,7 +68,8 @@ var React;
     }
     React.createElement = createElement;
     function __spread(target, record1, record2) {
-        return Object.assign(target, record1, record2);
+        var o = Object;
+        return o.assign(target, record1, record2);
     }
     React.__spread = __spread;
 })(React || (React = {}));
