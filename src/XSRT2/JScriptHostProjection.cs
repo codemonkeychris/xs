@@ -89,6 +89,11 @@ namespace XSRT2
             realHost.RegisterTests(names);
         }
 
+        public void ForceCleanReload()
+        {
+            this.IsInitialized = false;
+            realHost.CheckForUpdates(true);
+        }
         public void Assert(bool condition, string message)
         {
             realHost.LogAssert(condition, message);

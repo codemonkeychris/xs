@@ -104,7 +104,7 @@ namespace XSRT2
 
         void autoTimer_Tick(object sender, object e)
         {
-            CheckForUpdates();
+            CheckForUpdates(forceReload:false);
         }
         public void LogAssert(bool result, string message)
         {
@@ -143,12 +143,12 @@ namespace XSRT2
         public async void Startup()
         {
             await InitFile();
-            await CheckFile();
+            await CheckFile(forceReload:false);
             RenderIfNeeded();
         }
-        public async void CheckForUpdates()
+        public async void CheckForUpdates(bool forceReload)
         {
-            await CheckFile();
+            await CheckFile(forceReload);
             RenderIfNeeded();
         }
         public void Close()
@@ -246,12 +246,12 @@ namespace XSRT2
             return ProgramWithMessaage(x.ToString());
         }
 
-        async Task<string> CheckFile()
+        async Task<string> CheckFile(bool forceReload)
         {
             var file = await Windows.Storage.ApplicationData.Current.RoamingFolder.CreateFileAsync(programFileName, Windows.Storage.CreationCollisionOption.OpenIfExists);
             //var file = await Windows.Storage.KnownFolders.DocumentsLibrary.CreateFileAsync(path, Windows.Storage.CreationCollisionOption.OpenIfExists);
             var contents = await ReadText(file);
-            bool changed = lastProgram != contents;
+            bool changed = forceReload || lastProgram != contents;
 
             if (StressReload)
             {
@@ -263,12 +263,12 @@ namespace XSRT2
             {
                 lastProgram = contents;
                 var runtime = await RuntimeHelpers.GetRuntimeJavaScript();
-                Initialize(contents, runtime);
+                Initialize(contents, runtime, forceReload);
             }
             return contents;
         }
 
-        void Initialize(string program, string runtime)
+        void Initialize(string program, string runtime, bool forceReload)
         {
             object lastState = null;
             if (jsrt != null)
@@ -291,7 +291,7 @@ namespace XSRT2
             jsrt.AddGlobalObject("xsrt", hostProjection);
             tests.Clear(); // always clear tests, they get re-registered
 
-            if (!PreserveStateOnReload)
+            if (!PreserveStateOnReload || forceReload)
             {
                 hostProjection.IsInitialized = false;
                 testLogs.Clear(); // only clear logs if we want to start fresh
@@ -310,13 +310,18 @@ namespace XSRT2
             {
                 jsrt.Eval(ProgramWithException(x) + "\r\n" + runtime);
             }
-            if (PreserveStateOnReload && lastState != null)
+            bool restoreState = !forceReload && PreserveStateOnReload && lastState != null;
+            if (restoreState)
             {
                 jsrt.LoadState(lastState);
             }
+            if (forceReload)
+            {
+                diff.Reset();
+            }
             if (Initialized != null)
             {
-                Initialized(this, new InitializedEventArgs() { RestoredState = PreserveStateOnReload && lastState != null });
+                Initialized(this, new InitializedEventArgs() { RestoredState = restoreState });
             }
         }
 

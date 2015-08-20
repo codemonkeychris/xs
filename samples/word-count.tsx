@@ -1,7 +1,6 @@
 /// <reference path='../../xsrt2/xsrt.d.ts' />
-var App;
-(function (App) {
-    App.setInitialState = function() {
+module App {
+    export function setInitialState() {
         host.setState({ 
             text: "test"
         });
@@ -21,26 +20,25 @@ var App;
             verticalAlignment='Stretch' />
     }
 
-    function render() {
+    export function render() {
 
         return (
             <Xaml.Grid 
                 horizontalAlignment='Stretch'
                 verticalAlignment='Stretch'
-                rows={['auto', '*']}
+                rows={['auto', '*', 'auto']}
                 columns={['*']} >
                 
                 <Xaml.TextBlock name='label1' grid$row={0}>{"count:" + host.getState().text.length }</Xaml.TextBlock>
+                <Xaml.TextBlock name='label2' grid$row={2}>Type in the text box</Xaml.TextBlock>
                 <MultiLineTextBox
                     grid$row={1}
                     grid$column={0}
                     fontFamily='Consolas'
-                    fontSize={14}
+                    fontSize={18}
                     onTextChanged={textChanged}
                     text={host.getState().text}  />
             </Xaml.Grid>
         );
     }
-    App.render = render;
-})(App || (App = {}));
-
+}

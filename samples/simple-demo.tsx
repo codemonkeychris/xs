@@ -1,7 +1,6 @@
 /// <reference path='../../xsrt2/xsrt.d.ts' />
-var App;
-(function (App) {
-    App.setInitialState = function() {
+module App {
+    export function setInitialState() {
         host.setState({ 
             x1: "Click Me!",
             prefix: "Item",
@@ -18,6 +17,10 @@ var App;
         host.setState({ x1: "Clicked!" });
     }
 
+    function resetClicked() {
+        xsrt.forceCleanReload();
+    }
+
     function textChanged(sender, e) {
         host.setState({ prefix: sender.text });
     }
@@ -26,7 +29,7 @@ var App;
         host.setState({ filter: xsrt.getIsChecked(sender) });
     }
 
-    function render() {
+    export function render() {
         return (
             <Xaml.Grid 
                 rows={['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto']}
@@ -37,6 +40,12 @@ var App;
                 <Xaml.Button grid$row={1} 
                     onClick={buttonClicked}
                     content={<Xaml.TextBlock name='t1' text={'O:' + host.getState().x1} />} />
+
+                <Xaml.Button 
+                    grid$row={1} 
+                    grid$column={2}
+                    onClick={resetClicked}
+                    content='Reset' />
 
                 <Xaml.CheckBox grid$row={2} content='Filter' 
                     onClick={checked}
@@ -85,5 +94,4 @@ var App;
             </Xaml.Grid>
         );
     }
-    App.render = render;
-})(App || (App = {}));
+}

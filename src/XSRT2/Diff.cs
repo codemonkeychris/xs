@@ -33,6 +33,12 @@ namespace XSRT2
         {
             this.control = control;
         }
+        public void Reset()
+        {
+            namedObjectMap = new Dictionary<string, object>();
+            lastUI = null;
+            control.Content = null;
+        }
         public DependencyObject LastGeneratedView
         {
             get { return lastGeneratedView;  }
