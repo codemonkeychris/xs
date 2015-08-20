@@ -1,11 +1,10 @@
 ﻿/// <reference path='../../xsrt2/xsrt.d.ts' />
-var App;
-(function (App) {
+module App {
     function MyButton() {
         return <Xaml.Button margin='5,5,5,5' />;
     }
 
-    function render() {
+    export function render() {
         return (
             <Xaml.RelativePanel name='rel1' childrenTransitions={[<Xaml.RepositionThemeTransition />]}>
                 <MyButton name='b1'>
@@ -23,5 +22,4 @@ var App;
             </Xaml.RelativePanel>
         );
     }
-    App.render = render;
-})(App || (App = {}));
+}

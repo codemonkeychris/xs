@@ -1,8 +1,7 @@
 /// <reference path='../../xsrt2/xsrt.d.ts' />
-var App;
-(function (App) {
+module App {
 
-    App.setInitialState = function() {
+    export function setInitialState() {
         host.setState({x1: "Click Me!", frame : 0 });
     };
     
@@ -15,7 +14,7 @@ var App;
         host.setState({frame: c+1});
     }, 250);
 
-    App.render = function() {
+    export function render() {
         return (
             <Xaml.StackPanel name='root'>
                 <Xaml.TextBlock name='header' 
@@ -30,5 +29,5 @@ var App;
             </Xaml.StackPanel>
         );
     }
-    
-})(App || (App = {}));
+}
+
