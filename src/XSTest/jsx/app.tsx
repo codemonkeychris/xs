@@ -1,32 +1,32 @@
 ﻿/// <reference path='../../xsrt2/xsrt.d.ts' />
 module App {
-
-    export function setInitialState() {
-        host.setState({x1: "Click Me!", frame : 0 });
-    };
-    
-    function clicked() {
-        host.setState({ x1: "Clicked!" });
+    function renderItem(item) {
+        return (
+            <Xaml.Grid>
+                <Xaml.TextBlock 
+                    text={item} 
+                    fontWeight={ item % 2 == 0 ? 'bold' : 'normal' } />
+            </Xaml.Grid>
+        );
     }
 
-    setInterval(function() {
-        var c = +host.getState().frame;
-        host.setState({frame: c+1});
-    }, 250);
+    function range(min, max) {
+        var res = [];
+        for (var i=min; i<max; i++) {
+            res.push(i);
+        }
+        return res;
+    }
+
+    function items() {
+        return range(0,10000).map(renderItem);
+    }
 
     export function render() {
         return (
-            <Xaml.StackPanel name='root'>
-                <Xaml.TextBlock name='header' 
-                    text='Welcome to XS!' 
-                    fontSize={56}
-                    margin='30,10,10,10' />
-                <Xaml.Button name='b1' onClick={clicked}
-                    content={<Xaml.TextBlock
-                        name='t1'
-                        text={host.getState().frame + ':' + host.getState().x1} /> 
-                    } />
-            </Xaml.StackPanel>
+            <Xaml.Grid>
+                <Xaml.ListView margin='10,10,10,10' itemsSource={items()} />
+            </Xaml.Grid>
         );
     }
 }
