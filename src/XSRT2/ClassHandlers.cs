@@ -1391,10 +1391,21 @@ namespace XSRT2 {
                 context,
                 (target, list) =>
                 {
-                    target.ItemContainerTransitions.Clear();
-                    foreach (var child in list)
+                    var col = target.ItemContainerTransitions;
+                    if (col == null)
                     {
-                        target.ItemContainerTransitions.Add(child);
+                        target.ItemContainerTransitions = col = new TransitionCollection();
+                    }
+                    else
+                    {
+                        col.Clear();
+                    }
+                    if (list != null)
+                    {
+                        foreach (var child in list)
+                        {
+                            col.Add(child);
+                        }
                     }
                 });
 
@@ -1418,9 +1429,12 @@ namespace XSRT2 {
                     {
                         col.Clear();
                     }
-                    foreach (var child in list)
+                    if (list != null)
                     {
-                        col.Add(child);
+                        foreach (var child in list)
+                        {
+                            col.Add(child);
+                        }
                     }
                 });
 
@@ -1500,14 +1514,29 @@ namespace XSRT2 {
 
         internal static void SetItemsSource(ItemsControl control, JToken source, JToken lastSource, Handler.DiffContext context)
         {
-            // UNDONE: need to do delta on previous version of the list
+            // UNDONE: need to do better delta on previous version of the list
             //
             List<object> collection = new List<object>();
             if (source.Type == JTokenType.Array)
             {
+                IJEnumerable<JToken> lastSourceEnumerable = null;
+                IEnumerator<JToken> lastSourceEnum = null;
+                if (lastSource != null && lastSource.Type == JTokenType.Array)
+                {
+                    lastSourceEnumerable = lastSource.AsJEnumerable();
+                    lastSourceEnum = lastSourceEnumerable.GetEnumerator();
+                    lastSourceEnum.MoveNext();
+                }
+
                 foreach (var child in source.AsJEnumerable())
                 {
-                    collection.Add(CreateForObjectType(child, lastSource, context));
+                    JToken comp = null;
+                    if (lastSourceEnum != null)
+                    {
+                        comp = lastSourceEnum.Current;
+                        lastSourceEnum.MoveNext();
+                    }
+                    collection.Add(CreateForObjectType(child, comp, context));
                 }
             }
 

@@ -1,8 +1,18 @@
 /// <reference path='../../xsrt2/xsrt.d.ts' />
 var App;
 (function (App) {
+    function setInitialState() {
+        host.setState({
+            sliderPos: 3,
+            count: 1000
+        });
+    }
+    App.setInitialState = setInitialState;
+    ;
     function renderItem(item) {
-        return (React.createElement(Xaml.Grid, null, React.createElement(Xaml.TextBlock, {"text": item, "fontWeight": item % 2 == 0 ? 'bold' : 'normal'})));
+        var idx = (item / host.getState().sliderPos) || 0;
+        var stripped = idx % 2 == 0;
+        return (React.createElement(Xaml.Grid, {"background": stripped ? 'silver' : 'white'}, React.createElement(Xaml.TextBlock, {"text": "Item:" + item})));
     }
     function range(min, max) {
         var res = [];
@@ -11,11 +21,14 @@ var App;
         }
         return res;
     }
-    function items() {
-        return range(0, 10000).map(renderItem);
+    function sliderChanged(sender, e) {
+        host.setState({ sliderPos: e.newValue });
+    }
+    function countChanged(sender, e) {
+        host.setState({ count: e.newValue });
     }
     function render() {
-        return (React.createElement(Xaml.Grid, null, React.createElement(Xaml.ListView, {"margin": '10,10,10,10', "itemsSource": items()})));
+        return (React.createElement(Xaml.Grid, {"rows": ['auto', 'auto', '*']}, React.createElement(Xaml.Slider, {"grid$row": 0, "minimum": 1, "maximum": 20, "value": host.getState().sliderPos, "onValueChanged": sliderChanged}), React.createElement(Xaml.Slider, {"grid$row": 1, "minimum": 1, "maximum": 2000, "value": host.getState().count, "onValueChanged": countChanged}), React.createElement(Xaml.ListView, {"itemContainerTransitions": null, "grid$row": 2, "margin": '10,10,10,10', "itemsSource": range(0, host.getState().count || 1000).map(renderItem)})));
     }
     App.render = render;
 })(App || (App = {}));
