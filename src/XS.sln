@@ -17,11 +17,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{8992875C-86D2-46AB-A0A5-7ABB2193D3E4}"
 	ProjectSection(SolutionItems) = preProject
 		..\samples\hello-jsx.tsx = ..\samples\hello-jsx.tsx
-		js-notebook.tsx = js-notebook.tsx
+		..\samples\js-notebook.tsx = ..\samples\js-notebook.tsx
 		..\samples\listview-demo.tsx = ..\samples\listview-demo.tsx
 		..\samples\relative-panel.tsx = ..\samples\relative-panel.tsx
-		repl.tsx = repl.tsx
+		..\samples\repl.tsx = ..\samples\repl.tsx
 		..\samples\simple-demo.tsx = ..\samples\simple-demo.tsx
+		..\samples\todo.tsx = ..\samples\todo.tsx
 		..\samples\word-count.tsx = ..\samples\word-count.tsx
 	EndProjectSection
 EndProject
