@@ -279,10 +279,13 @@ void JScriptRuntime::ClearTimers()
     m_timers.clear();
 }
 
-int JScriptRuntime::Eval(String^ script)
+Platform::Object^ JScriptRuntime::Eval(String^ script)
 {
     auto strscript = script->Data();
-    return JScriptEval(m_runtime, strscript);
+    auto value = JScriptEval(m_runtime, strscript);
+    JScriptValueMarshaller^ marshaller = ref new JScriptValueMarshaller();
+    marshaller->AssignJsValue(value);
+    return marshaller->ToObject();
 }
 
 JScriptRuntime::~JScriptRuntime()

@@ -212,11 +212,11 @@ void ThrowScriptException()
     throw ref new Platform::Exception(E_FAIL, GetScriptException());
 }
 
-int JScriptEval(
+JsValueRef JScriptEval(
     JsRuntimeHandle runtime,
     wstring script)
 {
-    int returnValue = EXIT_FAILURE;
+    JsValueRef result = JS_INVALID_REFERENCE;
 
     if (script.empty())
     {
@@ -227,7 +227,6 @@ int JScriptEval(
     // Run the script.
     //
     JsErrorCode errorCode, parseError;
-    JsValueRef result;
     JsValueRef parsed;
 
     parseError = JsParseScript(script.c_str(), currentSourceContext++, L"." /*source URL*/, &parsed);
@@ -243,16 +242,6 @@ int JScriptEval(
         IfFailThrowNoRet(errorCode, L"failed to run script.");
     }
 
-    //
-    // Convert the return value.
-    //
-
-    JsValueRef numberResult;
-    double doubleResult;
-    IfFailThrowNoRet(JsConvertValueToNumber(result, &numberResult), L"failed to convert return value.");
-    IfFailThrowNoRet(JsNumberToDouble(numberResult, &doubleResult), L"failed to convert return value.");
-    returnValue = (int)doubleResult;
-
 error:
-    return returnValue;
+    return result;
 }

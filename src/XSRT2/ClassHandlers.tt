@@ -33,8 +33,7 @@ namespace XSRT2 {
             "UIElement", 
             false,
             null,
-            null,
-            new EventEntry[] {
+            events:new EventEntry[] {
                 new EventEntry() { Name="KeyDown", WinRTName="KeyDown", EventType="KeyRoutedEventArgs" },
                 new EventEntry() { Name="KeyUp", WinRTName="KeyUp", EventType="KeyRoutedEventArgs" }
             });
@@ -47,7 +46,7 @@ namespace XSRT2 {
             "UIElement",
             // UNDONE: what is the scalable story for attached properties?
             //
-            new PropEntry[] { 
+            props:new PropEntry[] { 
                 new PropEntry() { Name="scrollViewer$verticalScrollBarVisibility", SetBody="{ target.SetValue(ScrollViewer.VerticalScrollBarVisibilityProperty, XamlStringParse<ScrollBarVisibility>(valueToken)); }" },
                 new PropEntry() { Name="scrollViewer$horizontalScrollBarVisibility", SetBody="{ target.SetValue(ScrollViewer.HorizontalScrollBarVisibilityProperty, XamlStringParse<ScrollBarVisibility>(valueToken)); }" },
 
@@ -93,8 +92,7 @@ namespace XSRT2 {
                 DoubleProp("Width"),
                 DoubleProp("Height"),
                 new PropEntry() { Name="name", SetBody="{ target.Name = valueToken.ToString(); }" }
-            },
-            null
+            }
         ); 
         #>
 
@@ -103,12 +101,11 @@ namespace XSRT2 {
             "Viewbox",
             true,
             "FrameworkElement",
-            new PropEntry[] {
+            props:new PropEntry[] {
                 DefaultBasicProp("Child", "(UIElement)CreateFromState(valueToken, lastValueToken, context)"),
                 XamlProp("Stretch", "Stretch"),
                 XamlProp("StretchDirection", "StretchDirection")
-            },
-            null
+            }
         );
         #>
         <#
@@ -116,14 +113,13 @@ namespace XSRT2 {
             "TextBlock",
             true,
             "FrameworkElement",
-            new PropEntry[] {
+            props:new PropEntry[] {
                 XamlProp("Foreground", "Brush"),
                 DefaultStringProp("Text"),
                 BasicProp("FontFamily", "new FontFamily(valueToken.ToString())"),
                 DoubleProp("FontSize"),
                 XamlProp("FontWeight", "FontWeight")
-            },
-            null
+            }
         );
         #>
 
@@ -132,10 +128,9 @@ namespace XSRT2 {
             "Image",
             true,
             "FrameworkElement",
-            new PropEntry[] {
+            props:new PropEntry[] {
                 DeferBasicProp("Source", "new BitmapImage(FromRelativeUri(target, valueToken.ToString(), context))")
-            },
-            null
+            }
         );
         #>
         
@@ -144,7 +139,7 @@ namespace XSRT2 {
             "RichEditBox",
             true,
             "Control",
-            new PropEntry[] {
+            props:new PropEntry[] {
                 BooleanProp("AcceptsReturn"),
                 new PropEntry() { Name="text", SetBody="target.Document.SetText(TextSetOptions.None, valueToken.ToString())" },
                 BooleanProp("IsColorFontEnabled"),
@@ -157,7 +152,7 @@ namespace XSRT2 {
                 EnumProp("TextReadingOrder"),
                 EnumProp("TextWrapping")
             },
-            new EventEntry[] {
+            events:new EventEntry[] {
                 new EventEntry() { Name="TextChanged", WinRTName="TextChanged", EventType="RoutedEventArgs" }
             }
         );
@@ -168,7 +163,7 @@ namespace XSRT2 {
             "TextBox",
             true,
             "Control",
-            new PropEntry[] {
+            props:new PropEntry[] {
                 BooleanProp("AcceptsReturn"),
                 DefaultStringProp("Text"),
                 BooleanProp("IsColorFontEnabled"),
@@ -184,7 +179,7 @@ namespace XSRT2 {
                 EnumProp("TextReadingOrder"),
                 EnumProp("TextWrapping")
             },
-            new EventEntry[] {
+            events:new EventEntry[] {
                 new EventEntry() { Name="TextChanged", WinRTName="TextChanged", EventType="RoutedEventArgs" }
             }
         );
@@ -194,11 +189,7 @@ namespace XSRT2 {
         ClassDef(
             "GridView",
             true,
-            "ListViewBase",
-            new PropEntry[] {
-            },
-            new EventEntry[] {
-            }
+            "ListViewBase"
         );
         #>
 
@@ -207,10 +198,7 @@ namespace XSRT2 {
             "ListView",
             true,
             "ListViewBase",
-            new PropEntry[] {
-            },
-            new EventEntry[] {
-            }
+            postInitCall:"AddListViewFixups(createResult.Value);"
         );
         #>
 
@@ -218,11 +206,7 @@ namespace XSRT2 {
         ClassDef(
             "ListViewBase",
             false,
-            "Selector",
-            new PropEntry[] {
-            },
-            new EventEntry[] {
-            }
+            "Selector"
         );
         #>
         
@@ -230,11 +214,7 @@ namespace XSRT2 {
         ClassDef(
             "ComboBox",
             true,
-            "Selector",
-            new PropEntry[] {
-            },
-            new EventEntry[] {
-            }
+            "Selector"
         );
         #>
         
@@ -242,11 +222,7 @@ namespace XSRT2 {
         ClassDef(
             "ListBox",
             true,
-            "Selector",
-            new PropEntry[] {
-            },
-            new EventEntry[] {
-            }
+            "Selector"
         );
         #>
 
@@ -255,10 +231,10 @@ namespace XSRT2 {
             "Selector",
             false,
             "ItemsControl",
-            new PropEntry[] {
+            props:new PropEntry[] {
                 new PropEntry() { Name="selectedItem", SetBody="{ target.SelectedItem = CreateForObjectType(valueToken, lastValueToken, context); }" }
             },
-            new EventEntry[] {
+            events:new EventEntry[] {
                 new EventEntry() { Name="SelectionChanged", WinRTName="SelectionChanged", EventType="SelectionChangedEventArgs" }
             }
         );
@@ -269,11 +245,9 @@ namespace XSRT2 {
             "ItemsControl",
             false,
             "Control",
-            new PropEntry[] {
+            props:new PropEntry[] {
                 new PropEntry() { Name="itemsSource", SetBody="{ SetItemsSource(target, valueToken, lastValueToken, context); }" },
                 new PropEntry() { Name="itemContainerTransitions", SetBody="{ SetItemContainerTransitions(target, valueToken, lastValueToken, context); }" }
-            },
-            new EventEntry[] {
             }
         );
         #>
@@ -283,12 +257,12 @@ namespace XSRT2 {
             "RangeBase",
             false,
             "Control",
-            new PropEntry[] {
+            props:new PropEntry[] {
                 DoubleProp("Minimum"),
                 DoubleProp("Maximum"),
                 DoubleProp("Value")
             },
-            new EventEntry[] {
+            events:new EventEntry[] {
                 new EventEntry() { Name="ValueChanged", WinRTName="ValueChanged", EventType="RangeBaseValueChangedEventArgs" }
             }
         );
@@ -297,30 +271,30 @@ namespace XSRT2 {
         // UNDONE: Content property (and others) now will recreate when child props change instead of incremental
         // update now that we drop "lastNamedObjectMap" on the floor and track references... 
         // 
-        <# ClassDef("Button", true, "ButtonBase", null, null); #>
+        <# ClassDef("Button", true, "ButtonBase"); #>
         <# ClassDef("CalendarDatePicker", true, "Control", 
-            new PropEntry[] {
+            props:new PropEntry[] {
                 DateTimeOffsetProp("Date")
             }, 
-            new EventEntry[] {
+            events:new EventEntry[] {
                 new EventEntry() { Name="CalendarViewDayItemChanging", WinRTName="CalendarViewDayItemChanging", EventType="CalendarViewDayItemChangingEventArgs" },
                 new EventEntry() { Name="Closed", WinRTName="Closed", EventType="Object" },
                 new EventEntry() { Name="DateChanged", WinRTName="DateChanged", EventType="CalendarDatePickerDateChangedEventArgs" },
                 new EventEntry() { Name="Opened", WinRTName="Opened", EventType="Object" }
             }); #>
         <# ClassDef("CalendarView", true, "Control", 
-            new PropEntry[] {
+            props:new PropEntry[] {
                 DateTimeOffsetProp("MinDate"),
                 DateTimeOffsetProp("MaxDate")
             }, 
-            new EventEntry[] {
+            events:new EventEntry[] {
                 new EventEntry() { Name="CalendarViewDayItemChanging", WinRTName="CalendarViewDayItemChanging", EventType="CalendarViewDayItemChangingEventArgs" },
                 new EventEntry() { Name="SelectedDatesChanged", WinRTName="SelectedDatesChanged", EventType="CalendarViewSelectedDatesChangedEventArgs" }
             }); #>
-        <# ClassDef("RelativePanel", true, "Panel", null, null); #>
-        <# ClassDef("RepositionThemeTransition", true, null, null, null); #>
-        <# ClassDef("ProgressBar", true, "RangeBase", null, null); #>
-        <# ClassDef("Slider", true, "RangeBase", null, null); #>
+        <# ClassDef("RelativePanel", true, "Panel"); #>
+        <# ClassDef("RepositionThemeTransition", true, null); #>
+        <# ClassDef("ProgressBar", true, "RangeBase"); #>
+        <# ClassDef("Slider", true, "RangeBase"); #>
         
 
         <#
@@ -328,10 +302,10 @@ namespace XSRT2 {
             "CheckBox",
             true,
             "ButtonBase",
-            new PropEntry[] {
-            BooleanProp("IsChecked")
+            props:new PropEntry[] {
+                BooleanProp("IsChecked")
             },
-            new EventEntry[] {
+            events:new EventEntry[] {
                 new EventEntry() { Name="Checked", WinRTName="Checked", EventType="RoutedEventArgs" }
             }
         );
@@ -342,7 +316,7 @@ namespace XSRT2 {
             "ScrollViewer",
             true,
             "ContentControl",
-            new PropEntry[] {
+            props:new PropEntry[] {
                 XamlProp("HorizontalScrollBarVisibility", "ScrollBarVisibility"),
                 XamlProp("HorizontalScrollMode", "ScrollMode"),
                 XamlProp("HorizontalSnapPointsAlignment", "SnapPointsAlignment"),
@@ -368,8 +342,7 @@ namespace XSRT2 {
                 // UNDONE: public IList<System.Single> ZoomSnapPoints { get; }
                 XamlProp("ZoomSnapPointsType", "SnapPointsType")
 
-            },
-            null
+            }
         );
         #>
 
@@ -378,9 +351,7 @@ namespace XSRT2 {
             "ButtonBase",
             false,
             "ContentControl",
-            new PropEntry[] {
-            },
-            new EventEntry[] {
+            events:new EventEntry[] {
                 new EventEntry() { Name="Click", WinRTName="Click", EventType="RoutedEventArgs" }
             }
         );
@@ -391,10 +362,9 @@ namespace XSRT2 {
             "ContentControl",
             false,
             "Control",
-            new PropEntry[] {
+            props:new PropEntry[] {
                 DefaultBasicProp("Content", "CreateFromState(valueToken, lastValueToken, context)")
-            },
-            null
+            }
         );
         #>
 
@@ -403,14 +373,13 @@ namespace XSRT2 {
             "Control",
             false,
             "FrameworkElement",
-            new PropEntry[] {
+            props:new PropEntry[] {
                 XamlProp("Background", "Brush"),
                 XamlProp("Foreground", "Brush"),
                 BasicProp("FontFamily", "new FontFamily(valueToken.ToString())"),
                 DoubleProp("FontSize"),
                 EnumProp("FontWeight")
-            },
-            null
+            }
         );
         #>
 
@@ -418,21 +387,19 @@ namespace XSRT2 {
             "StackPanel", 
             true, 
             "Panel", 
-            new PropEntry[] { 
+            props:new PropEntry[] { 
                 EnumProp("Orientation")
-            }, 
-            null); #>
+            }); #>
 
         <# 
         ClassDef(
             "Grid", 
             true, 
             "Panel", 
-            new PropEntry[] {
+            props:new PropEntry[] {
                     new PropEntry() { Name="rows", SetBody="{ PanelHandler.SetGridRowDefinitions(target, (JArray)valueToken); }" },
                     new PropEntry() { Name="columns", SetBody="{ PanelHandler.SetGridColumnDefinitions(target, (JArray)valueToken); }" }
-            },
-            null
+            }
         ); 
         #>
 
@@ -705,6 +672,24 @@ namespace XSRT2 {
                 default:
                     return "Unhandled:" + Enum.GetName(typeof(JTokenType), obj.Type);
             }
+        }
+
+        static void AddListViewFixups(ListView lv)
+        {
+            // UNDONE: ShowsScrollingPlaceholder for even more hotness
+
+            lv.ChoosingItemContainer += delegate (ListViewBase sender, ChoosingItemContainerEventArgs args)
+            {
+                // UNDONE: call template and do recursive expansion!
+                args.IsContainerPrepared = true;
+                ListViewItem itemContainer = new ListViewItem();
+                itemContainer.Content = args.Item;
+                args.ItemContainer = itemContainer;
+            };
+            lv.ContainerContentChanging += delegate (ListViewBase sender, ContainerContentChangingEventArgs args)
+            {
+                args.Handled = true;
+            };
         }
 
         internal static void SetItemsSource(ItemsControl control, JToken source, JToken lastSource, Handler.DiffContext context)
@@ -1067,7 +1052,7 @@ PropEntry RefAttachedProp(string winRTPropName, string shortProvider, string win
         Defer = true
     };
 }
-void ClassDef(string name, bool isPublic, string baseTypeName, PropEntry[] props, EventEntry[] events) {
+void ClassDef(string name, bool isPublic, string baseTypeName, string postInitCall = "", PropEntry[] props = null, EventEntry[] events = null) {
     if (isPublic) { publicHandlerNames.Add(name); }
     PushIndent("    ");
     PushIndent("    ");
@@ -1075,7 +1060,7 @@ void ClassDef(string name, bool isPublic, string baseTypeName, PropEntry[] props
     WriteLine("{");
     PushIndent("    ");
     if (isPublic) {
-        Create(name);
+        Create(name, postInitCall);
     }
     PropSetter(name, baseTypeName, props, events);
     if (events != null) {
@@ -1088,13 +1073,16 @@ void ClassDef(string name, bool isPublic, string baseTypeName, PropEntry[] props
     PopIndent();
     PopIndent();
 }
-void Create(string name) {
+void Create(string name, string postInitCall) {
     WriteLine("internal static " + name + " Create(JObject obj, JObject lastObj, DiffContext context)");
     WriteLine("{");
     PushIndent("    ");
     WriteLine("var createResult = CreateOrGetLast<" + name + ">(obj, context);");
     WriteLine("context.PushName(createResult.Name);");
     WriteLine("SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);");
+    if (postInitCall != null && postInitCall.Length > 0) {
+        WriteLine(postInitCall);
+    }
     WriteLine("context.PopName(createResult.Name);");
     WriteLine("return createResult.Value;");
     PopIndent();

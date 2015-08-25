@@ -549,6 +549,7 @@ namespace XSRT2 {
                 var createResult = CreateOrGetLast<ListView>(obj, context);
                 context.PushName(createResult.Name);
                 SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                AddListViewFixups(createResult.Value);
                 context.PopName(createResult.Name);
                 return createResult.Value;
             }
@@ -1510,6 +1511,28 @@ namespace XSRT2 {
                 default:
                     return "Unhandled:" + Enum.GetName(typeof(JTokenType), obj.Type);
             }
+        }
+
+        static void AddListViewFixups(ListView lv)
+        {
+            // UNDONE: this doesn't work yet, but the plumbing is here... 
+            //
+
+            // UNDONE: ShowsScrollingPlaceholder for even more hotness
+
+            //lv.ChoosingItemContainer += delegate (ListViewBase sender, ChoosingItemContainerEventArgs args)
+            //{
+            //    // UNDONE: call template and do recursive expansion!
+            //    args.IsContainerPrepared = true;
+            //    ListViewItem itemContainer = new ListViewItem();
+            //    // itemContainer.Content = args.Item;
+            //    args.ItemContainer = itemContainer;
+            //};
+
+            //lv.ContainerContentChanging += delegate (ListViewBase sender, ContainerContentChangingEventArgs args)
+            //{
+            //    args.Handled = true;
+            //};
         }
 
         internal static void SetItemsSource(ItemsControl control, JToken source, JToken lastSource, Handler.DiffContext context)

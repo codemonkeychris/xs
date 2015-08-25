@@ -47,7 +47,7 @@ namespace JSRT
         void AddWinRTNamespace(Platform::String^ name);
         void AddHostObject(Platform::String^ name, Platform::Object^ value);
         void AddGlobalObject(Platform::String^ name, Platform::Object^ value);
-        int Eval(Platform::String^ script);
+        Platform::Object^ Eval(Platform::String^ script);
         event EchoEventHandler^ EchoNotify;
         void TriggerTimer(int id);
     };
