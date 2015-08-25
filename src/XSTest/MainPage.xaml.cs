@@ -28,7 +28,7 @@ namespace XSTest
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        Host host;
+        UIAwareHost host;
 
         public MainPage()
         {
@@ -41,11 +41,11 @@ namespace XSTest
                 HorizontalContentAlignment=HorizontalAlignment.Stretch,
                 VerticalContentAlignment=VerticalAlignment.Stretch
             };
-            host = new Host((ContentControl)this.Content, typeof(MainPage), "app.js") {
-                AutoCheckUpdates = true, // will future changes to app.js in RoaminState directory will be shown?
-                OverwriteIfExists = true // will embedded app.js always be overwriten on program start?
-            };
-            host.Rendered += Host_Rendered;
+            host = new UIAwareHost((ContentControl)this.Content, typeof(MainPage), "app.js");
+
+            host.AutoCheckUpdates = true; // will future changes to app.js in RoaminState directory will be shown?
+            host.OverwriteIfExists = true; // will embedded app.js always be overwriten on program start?
+            host.Runtime.Rendered += Host_Rendered;
             host.Startup();
 
         }
@@ -56,7 +56,7 @@ namespace XSTest
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
-            host.Close();
+            host.Runtime.Close();
             host = null;
             base.OnNavigatingFrom(e);
         }

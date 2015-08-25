@@ -12,30 +12,24 @@ using Windows.UI.Xaml.Controls.Primitives;
 
 namespace XSRT2
 {
-    public sealed class Host
+    public sealed class XSRuntime
     {
+        static string runtimeCache = null;
+
         JSRT.JScriptRuntime jsrt = null;
-        XSRT2.JScriptHostProjection hostProjection;
+        XSRT2.JScriptXSRuntimeProjection hostProjection;
         Diff diff;
         string lastProgram = "";
-        bool autoCheckUpdates = false;
-        bool overwriteIfExists = true;
-        DispatcherTimer fileWatcherUpdateTimer;
-        Type appType;
-        string programFileName;
+        string program = "";
         UInt64 lastSeenVersion = UInt64.MaxValue;
         string runningTest = "n/a";
         List<string> tests = new List<string>();
         List<LogEntry> testLogs = new List<LogEntry>();
-        const string defaultPath = "xs-program.js";
 
-        public Host(ContentControl displayControl, Type appType, string programFileName)
+        public XSRuntime(ContentControl displayControl)
         {
             PreserveStateOnReload = true;
-            displayControl.SizeChanged += DisplayControl_SizeChanged;
-            this.appType = appType;
-            this.programFileName = programFileName;
-            hostProjection = new XSRT2.JScriptHostProjection(this);
+            hostProjection = new XSRT2.JScriptXSRuntimeProjection(this);
             diff = new Diff(displayControl);
             Handler.Command += delegate (object sender, CommandEventArgs e)
             {
@@ -44,7 +38,19 @@ namespace XSRT2
             };
         }
 
-        private void DisplayControl_SizeChanged(object sender, SizeChangedEventArgs e)
+        public string Program
+        {
+            get { return program; }
+            set { program = value; SetProgram(value, false); } 
+        }
+
+        public void ForceCleanReload()
+        {
+            SetProgram(lastProgram, true);
+        }
+
+
+        public void SizeChanged(double width, double height)
         {
             // UNDONE: design question - should resize force a recalc? Here we push in some
             // new state which will force a re-render... hmm... 
@@ -52,8 +58,8 @@ namespace XSRT2
             if (jsrt != null)
             {
                 var state = (IDictionary<string, object>)jsrt.SaveState();
-                state["clientHeight"] = e.NewSize.Height;
-                state["clientWidth"] = e.NewSize.Width;
+                state["clientHeight"] = height;
+                state["clientWidth"] = width;
                 jsrt.LoadState(state);
                 RenderIfNeeded();
             }
@@ -62,21 +68,9 @@ namespace XSRT2
         public event EventHandler<DiffStats> Rendered;
         public event EventHandler<InitializedEventArgs> Initialized; 
 
-        public bool StressReload { get; set; }
+        public DependencyObject LastGeneratedView { get { return diff.LastGeneratedView; } }
 
-        internal DependencyObject LastGeneratedView { get { return diff.LastGeneratedView; } }
-
-        public bool AutoCheckUpdates
-        {
-            get { return autoCheckUpdates; }
-            set { autoCheckUpdates = value; UpdateAutoTimer(); }
-        }
         public bool PreserveStateOnReload { get; set; }
-        public bool OverwriteIfExists
-        {
-            get { return overwriteIfExists; }
-            set { overwriteIfExists = value; }
-        }
         
         public void RegisterTests([ReadOnlyArray] string[] names)
         {
@@ -85,27 +79,6 @@ namespace XSRT2
         public object SaveState() { return jsrt.SaveState(); }
         public void LoadState(object value) { jsrt.LoadState(value); }
 
-        void UpdateAutoTimer()
-        {
-            if (fileWatcherUpdateTimer != null)
-            {
-                fileWatcherUpdateTimer.Stop();
-                fileWatcherUpdateTimer = null;
-            }
-
-            if (autoCheckUpdates)
-            {
-                fileWatcherUpdateTimer = new DispatcherTimer();
-                fileWatcherUpdateTimer.Interval = TimeSpan.FromMilliseconds(250);
-                fileWatcherUpdateTimer.Tick += autoTimer_Tick;
-                fileWatcherUpdateTimer.Start();
-            }
-        }
-
-        void autoTimer_Tick(object sender, object e)
-        {
-            CheckForUpdates(forceReload:false);
-        }
         public void LogAssert(bool result, string message)
         {
             testLogs.Add(new LogEntry() { Result = result, Message = message, Test = runningTest });
@@ -140,17 +113,6 @@ namespace XSRT2
             }
             return r;
         }
-        public async void Startup()
-        {
-            await InitFile();
-            await CheckFile(forceReload:false);
-            RenderIfNeeded();
-        }
-        public async void CheckForUpdates(bool forceReload)
-        {
-            await CheckFile(forceReload);
-            RenderIfNeeded();
-        }
         public void Close()
         {
             jsrt.ClearActive();
@@ -175,62 +137,8 @@ namespace XSRT2
             }
         }
 
-        async Task<string> InitFile()
-        {
 
-            StorageFile file;
-            try
-            {
-                var found = await Windows.Storage.ApplicationData.Current.RoamingFolder.TryGetItemAsync(programFileName);
-                if (found == null)
-                {
-                    var program = await RuntimeHelpers.GetResource(appType, programFileName);
-                    file = await Windows.Storage.ApplicationData.Current.RoamingFolder.CreateFileAsync(programFileName, Windows.Storage.CreationCollisionOption.FailIfExists);
-                    await FileIO.WriteTextAsync(file, program);
-                }
-                else
-                {
-                    file = (StorageFile)found;
-                    if (overwriteIfExists)
-                    {
-                        var program = await RuntimeHelpers.GetResource(appType, programFileName);
-                        await FileIO.WriteTextAsync(file, program);
-                    }
-                }
-            }
-            catch
-            {
-                file = await Windows.Storage.ApplicationData.Current.RoamingFolder.CreateFileAsync(programFileName, CreationCollisionOption.OpenIfExists);
-            }
-
-            if (overwriteIfExists)
-            {
-                return await RuntimeHelpers.GetResource(appType, programFileName);
-            }
-            else
-            {
-                return await ReadText(file);
-            }
-        }
-
-        // This is here purely as a debugging aid for hard coding content of the file in cases
-        // where there is a problem
-        // 
-        static async Task<string> ReadText(StorageFile file)
-        {
-            try
-            {
-                var str = await FileIO.ReadTextAsync(file);
-                return str;
-            }
-            catch (UnauthorizedAccessException)
-            {
-                // need wait
-                return ProgramWithMessaage("Failed to load file (access denied)");
-            }
-        }
-
-        static string ProgramWithMessaage(string message)
+        internal static string ProgramWithMessage(string message)
         {
             return @"var App;
                 (function(App) {
@@ -241,32 +149,28 @@ namespace XSRT2
                 })(App || (App = { }));";
         }
 
-        static string ProgramWithException(Exception x)
+        internal static string ProgramWithException(Exception x)
         {
-            return ProgramWithMessaage(x.ToString());
+            return ProgramWithMessage(x.ToString());
         }
 
-        async Task<string> CheckFile(bool forceReload)
+        internal async Task<string> SetProgram(string contents, bool forceReload)
         {
-            var file = await Windows.Storage.ApplicationData.Current.RoamingFolder.CreateFileAsync(programFileName, Windows.Storage.CreationCollisionOption.OpenIfExists);
-            //var file = await Windows.Storage.KnownFolders.DocumentsLibrary.CreateFileAsync(path, Windows.Storage.CreationCollisionOption.OpenIfExists);
-            var contents = await ReadText(file);
             bool changed = forceReload || lastProgram != contents;
 
-            if (StressReload)
-            {
-                var b = new byte[1];
-                new Random().NextBytes(b);
-                changed = changed || (b[0] < 50); // 20% chance of random reload
-            }
             if (changed)
             {
                 lastProgram = contents;
-                var runtime = await RuntimeHelpers.GetRuntimeJavaScript();
+                string runtime = runtimeCache;
+                if (runtime == null)
+                {
+                    runtime = runtimeCache = await RuntimeHelpers.GetRuntimeJavaScript();
+                }
                 Initialize(contents, runtime, forceReload);
             }
             return contents;
         }
+
 
         void Initialize(string program, string runtime, bool forceReload)
         {

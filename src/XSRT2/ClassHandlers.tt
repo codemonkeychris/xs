@@ -360,7 +360,7 @@ namespace XSRT2 {
         <#
         ClassDef(
             "ContentControl",
-            false,
+            true,
             "Control",
             props:new PropEntry[] {
                 DefaultBasicProp("Content", "CreateFromState(valueToken, lastValueToken, context)")

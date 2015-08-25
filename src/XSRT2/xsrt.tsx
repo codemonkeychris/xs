@@ -355,6 +355,13 @@ module Xaml {
         }
         props: TextBlockProps;
     };
+    export class ContentControl {
+        type: string;
+        constructor() {
+            this.type = 'ContentControl';
+        }
+        props: ContentControlProps;
+    };
     export class Button {
         type: string;
         constructor() {

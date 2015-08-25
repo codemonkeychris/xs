@@ -1,58 +1,65 @@
 ﻿/// <reference path='../../xsrt2/xsrt.d.ts' />
 module App {
     export function setInitialState() {
+        var initialText = JSON.stringify({ type: 'TextBlock', text: "hello world" });
         host.setState({ 
-            sliderPos: 3,
-            count: 1000
+            text: initialText,
+            content: JSON.parse(initialText)
         });
     };
 
-    function renderItem(item) {
-
-        var idx = (item / host.getState().sliderPos) | 0;
-        var stripped = idx % 2 == 0;
-
-        return (
-            <Xaml.Grid background={ stripped ? 'silver' : 'white' }>
-                <Xaml.TextBlock 
-                    text={"Item:" + item} />
-            </Xaml.Grid>
-        );
+    function textChanged(sender, e) {
+        host.setState({ text: sender.text });
     }
-
-    function range(min, max) {
-        var res = [];
-        for (var i=min; i<max; i++) {
-            res.push(i);
+    function refreshClicked(sender, e) {
+        try {
+            host.setState({ content: JSON.parse(host.getState().text) });
         }
-        return res;
+        catch (e) {
+            host.setState({ content: host.getState().text });
+        }
     }
 
-    function sliderChanged(sender, e) {
-        host.setState({ sliderPos: e.newValue });
-    }
-    function countChanged(sender, e) {
-        host.setState({ count: e.newValue });
+    function MultiLineTextBox() {
+        return <Xaml.TextBox
+            scrollViewer$horizontalScrollBarVisibility='Auto'
+            scrollViewer$verticalScrollBarVisibility='Auto'
+            acceptsReturn={true}
+            textWrapping='Wrap'
+            horizontalAlignment='Stretch'
+            verticalAlignment='Stretch' />
     }
 
     export function render() {
-        return (
-            <Xaml.Grid rows={['auto', 'auto', '*']}>
-                <Xaml.Slider 
-                    grid$row={0}
-                    minimum={1} maximum={20} value={host.getState().sliderPos} 
-                    onValueChanged={sliderChanged} />
-                <Xaml.Slider 
+
+        return ( 
+            <Xaml.Grid 
+                horizontalAlignment='Stretch'
+                verticalAlignment='Stretch'
+                rows={['auto', '*', 'auto']}
+                columns={['*', 'auto', '*']} >
+                
+                <MultiLineTextBox
                     grid$row={1}
-                    minimum={1} maximum={2000} value={host.getState().count} 
-                    onValueChanged={countChanged} />
-                <Xaml.ListView 
-                    itemContainerTransitions={null} 
-                    grid$row={2} 
-                    margin='10,10,10,10'
-                    itemsSource={range(0,host.getState().count || 1000).map(renderItem)} />
+                    grid$column={0}
+                    fontFamily='Consolas'
+                    fontSize={16}
+                    onTextChanged={textChanged}
+                    text={host.getState().text}  />
+
+                <Xaml.Button
+                    grid$row={1}
+                    grid$column={1}
+                    content='refresh'
+                    onClick={refreshClicked}
+                    />
+
+                <Xaml.ContentControl 
+                    grid$row={1}
+                    grid$column={2}
+                    content={host.getState().content}
+                    />
             </Xaml.Grid>
         );
     }
 }
-

@@ -118,10 +118,11 @@
       <DependentUpon>ClassHandlers.tt</DependentUpon>
     </Compile>
     <Compile Include="Diff.cs" />
-    <Compile Include="Host.cs" />
+    <Compile Include="XSRuntime.cs" />
     <Compile Include="RuntimeHelpers.cs" />
-    <Compile Include="JScriptHostProjection.cs" />
+    <Compile Include="JScriptXSRuntimeProjection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UIAwareHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">

@@ -25,7 +25,7 @@ namespace ManualTests
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        Host host;
+        UIAwareHost host;
 
         public MainPage()
         {
@@ -39,13 +39,11 @@ namespace ManualTests
                 HorizontalContentAlignment = HorizontalAlignment.Stretch,
                 VerticalContentAlignment = VerticalAlignment.Stretch
             };
-            host = new Host((ContentControl)this.Content, typeof(MainPage), "tests.js")
-            {
-                AutoCheckUpdates = true,        // will future changes to app.js in RoaminState directory will be shown?
-                OverwriteIfExists = true,       // will embedded app.js always be overwriten on program start?
-                PreserveStateOnReload = false   // will state be kept alive between program reloads
-            };
-            host.Initialized += Host_Initialized;
+            host = new UIAwareHost((ContentControl)this.Content, typeof(MainPage), "tests.js");
+            host.AutoCheckUpdates = true;        // will future changes to app.js in RoaminState directory will be shown?
+            host.OverwriteIfExists = true;       // will embedded app.js always be overwriten on program start?
+            host.Runtime.PreserveStateOnReload = false;  // will state be kept alive between program reloads
+            host.Runtime.Initialized += Host_Initialized;
             host.Startup();
         }
 
@@ -53,18 +51,18 @@ namespace ManualTests
         {
             await Dispatcher.RunIdleAsync((IdleDispatchedHandler)async delegate (IdleDispatchedHandlerArgs ignore)
             {
-                await host.RunAllTests();
-                var state = (IDictionary <string, object>)(host.SaveState());
+                await host.Runtime.RunAllTests();
+                var state = (IDictionary <string, object>)(host.Runtime.SaveState());
                 state["mode"] = "results";
-                host.LoadState(state);
-                host.RenderIfNeeded();
-                ApplicationView.GetForCurrentView().Title = "{succeeded:" + host.GetTestSummary() + "}";
+                host.Runtime.LoadState(state);
+                host.Runtime.RenderIfNeeded();
+                ApplicationView.GetForCurrentView().Title = "{succeeded:" + host.Runtime.GetTestSummary() + "}";
             });
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
-            host.Close();
+            host.Runtime.Close();
             host = null;
             base.OnNavigatingFrom(e);
         }

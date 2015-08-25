@@ -29,15 +29,15 @@ namespace XSRT2
     {
         public string Name { get; set; }
     }
-    public sealed class JScriptHostProjection
+    public sealed class JScriptXSRuntimeProjection
     {
         private EventRegistrationTokenTable<EventHandler<RenderEventArgs>> render = new EventRegistrationTokenTable<EventHandler<RenderEventArgs>>();
         private EventRegistrationTokenTable<EventHandler<CommandEventArgs>> command = new EventRegistrationTokenTable<EventHandler<CommandEventArgs>>();
         private EventRegistrationTokenTable<EventHandler<TestReadyEventArgs>> testReady = new EventRegistrationTokenTable<EventHandler<TestReadyEventArgs>>();
         private EventRegistrationTokenTable<EventHandler<TestSetupEventArgs>> testSetup = new EventRegistrationTokenTable<EventHandler<TestSetupEventArgs>>();
-        Host realHost;
+        XSRuntime realHost;
 
-        internal JScriptHostProjection(Host realHost)
+        internal JScriptXSRuntimeProjection(XSRuntime realHost)
         {
             this.realHost = realHost;
         }
@@ -83,6 +83,12 @@ namespace XSRT2
             ((RichEditBox)v).Document.GetText(Windows.UI.Text.TextGetOptions.UseCrlf, out s);
             return s;
         }
+        public object ParseJSONStringAsXS(string s)
+        {
+            Diff d = new Diff(null);
+            var stats = d.Process(s);
+            return d.LastGeneratedView;
+        }
 
         public void RegisterTests([ReadOnlyArray] string[] names)
         {
@@ -92,7 +98,7 @@ namespace XSRT2
         public void ForceCleanReload()
         {
             this.IsInitialized = false;
-            realHost.CheckForUpdates(true);
+            realHost.ForceCleanReload();
         }
         public void Assert(bool condition, string message)
         {

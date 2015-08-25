@@ -1151,6 +1151,14 @@ namespace XSRT2 {
         
         internal static class ContentControlHandler
         {
+            internal static ContentControl Create(JObject obj, JObject lastObj, DiffContext context)
+            {
+                var createResult = CreateOrGetLast<ContentControl>(obj, context);
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
+            }
             internal static void SetProperties(ContentControl t, JObject obj, JObject lastObj, DiffContext context)
             {
                 ControlHandler.SetProperties(t, obj, lastObj, context);
@@ -1720,6 +1728,7 @@ namespace XSRT2 {
                 handlers["Slider"] = SliderHandler.Create;
                 handlers["CheckBox"] = CheckBoxHandler.Create;
                 handlers["ScrollViewer"] = ScrollViewerHandler.Create;
+                handlers["ContentControl"] = ContentControlHandler.Create;
                 handlers["StackPanel"] = StackPanelHandler.Create;
                 handlers["Grid"] = GridHandler.Create;
             }

@@ -237,6 +237,11 @@ declare module Xaml {
         constructor();
         props: TextBlockProps;
     }
+    class ContentControl {
+        type: string;
+        constructor();
+        props: ContentControlProps;
+    }
     class Button {
         type: string;
         constructor();

@@ -139,6 +139,14 @@ var Xaml;
     })();
     Xaml.TextBlock = TextBlock;
     ;
+    var ContentControl = (function () {
+        function ContentControl() {
+            this.type = 'ContentControl';
+        }
+        return ContentControl;
+    })();
+    Xaml.ContentControl = ContentControl;
+    ;
     var Button = (function () {
         function Button() {
             this.type = 'Button';

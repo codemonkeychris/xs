@@ -37,7 +37,10 @@ namespace XSRT2
         {
             namedObjectMap = new Dictionary<string, object>();
             lastUI = null;
-            control.Content = null;
+            if (control != null)
+            {
+                control.Content = null;
+            }
         }
         public DependencyObject LastGeneratedView
         {
@@ -54,7 +57,11 @@ namespace XSRT2
                 EventSetCount = 0,
                 HostElement = control
             };
-            control.Content = lastGeneratedView = Handler.CreateFromState(newUI, lastUI, context);
+            lastGeneratedView = Handler.CreateFromState(newUI, lastUI, context);
+            if (control != null)
+            {
+                control.Content = lastGeneratedView;
+            }
             foreach (var d in context.Defer)
             {
                 d.Do();

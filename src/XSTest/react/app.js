@@ -2,33 +2,25 @@
 var App;
 (function (App) {
     function setInitialState() {
+        var initialText = JSON.stringify({ type: 'TextBlock', text: "hello world" });
         host.setState({
-            sliderPos: 3,
-            count: 1000
+            text: initialText,
+            content: JSON.parse(initialText)
         });
     }
     App.setInitialState = setInitialState;
     ;
-    function renderItem(item) {
-        var idx = (item / host.getState().sliderPos) || 0;
-        var stripped = idx % 2 == 0;
-        return (React.createElement(Xaml.Grid, {"background": stripped ? 'silver' : 'white'}, React.createElement(Xaml.TextBlock, {"text": "Item:" + item})));
+    function textChanged(sender, e) {
+        host.setState({ text: sender.text });
     }
-    function range(min, max) {
-        var res = [];
-        for (var i = min; i < max; i++) {
-            res.push(i);
-        }
-        return res;
+    function refreshClicked(sender, e) {
+        host.setState({ content: JSON.parse(host.getState().text) });
     }
-    function sliderChanged(sender, e) {
-        host.setState({ sliderPos: e.newValue });
-    }
-    function countChanged(sender, e) {
-        host.setState({ count: e.newValue });
+    function MultiLineTextBox() {
+        return React.createElement(Xaml.TextBox, {"scrollViewer$horizontalScrollBarVisibility": 'Auto', "scrollViewer$verticalScrollBarVisibility": 'Auto', "acceptsReturn": true, "textWrapping": 'Wrap', "horizontalAlignment": 'Stretch', "verticalAlignment": 'Stretch'});
     }
     function render() {
-        return (React.createElement(Xaml.Grid, {"rows": ['auto', 'auto', '*']}, React.createElement(Xaml.Slider, {"grid$row": 0, "minimum": 1, "maximum": 20, "value": host.getState().sliderPos, "onValueChanged": sliderChanged}), React.createElement(Xaml.Slider, {"grid$row": 1, "minimum": 1, "maximum": 2000, "value": host.getState().count, "onValueChanged": countChanged}), React.createElement(Xaml.ListView, {"itemContainerTransitions": null, "grid$row": 2, "margin": '10,10,10,10', "itemsSource": range(0, host.getState().count || 1000).map(renderItem)})));
+        return (React.createElement(Xaml.Grid, {"horizontalAlignment": 'Stretch', "verticalAlignment": 'Stretch', "rows": ['auto', '*', 'auto'], "columns": ['*', 'auto', '*']}, React.createElement(MultiLineTextBox, {"grid$row": 1, "grid$column": 0, "fontFamily": 'Consolas', "fontSize": 16, "onTextChanged": textChanged, "text": host.getState().text}), React.createElement(Xaml.Button, {"grid$row": 1, "grid$column": 1, "content": 'refresh', "onClick": refreshClicked}), React.createElement(Xaml.ContentControl, {"grid$row": 1, "grid$column": 2, "content": host.getState().text})));
     }
     App.render = render;
 })(App || (App = {}));
