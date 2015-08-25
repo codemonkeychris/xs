@@ -1,4 +1,4 @@
-﻿
+﻿//  #define USE_LISTVIEW_VIRTUALIZATION
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -549,7 +549,7 @@ namespace XSRT2 {
                 var createResult = CreateOrGetLast<ListView>(obj, context);
                 context.PushName(createResult.Name);
                 SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
-                AddListViewFixups(createResult.Value);
+                AddListViewFixups(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
                 context.PopName(createResult.Name);
                 return createResult.Value;
             }
@@ -1265,41 +1265,6 @@ namespace XSRT2 {
                 }
             }
 
-            static void Unparent(UIElement child)
-            {
-                DependencyObject visualParent = null;
-
-                var fe = child as FrameworkElement;
-                if (fe != null && fe.Parent != null)
-                {
-                    visualParent = fe.Parent;
-                }
-                if (visualParent == null)
-                {
-                    visualParent = VisualTreeHelper.GetParent(child);
-                }
-                var parentContent = visualParent as ContentControl;
-                var parentPresenter = visualParent as ContentPresenter;
-                var parentBorder = visualParent as Border;
-                var parentPanel = visualParent as Panel;
-                if (parentPanel != null)
-                {
-                    parentPanel.Children.Remove(child);
-                }
-                else if (parentContent != null)
-                {
-                    parentContent.Content = null;
-                }
-                else if (parentBorder != null)
-                {
-                    parentBorder.Child = null;
-                }
-                else if (parentPresenter != null)
-                {
-                    parentPresenter.Content = null;
-                }
-            }
-
             static void SetPanelChildren(Panel t, JObject obj, JObject lastObj, DiffContext context)
             {
                 Handler.FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
@@ -1513,27 +1478,48 @@ namespace XSRT2 {
             }
         }
 
-        static void AddListViewFixups(ListView lv)
+        static void AddListViewFixups(ListView lv, JObject obj, JObject lastObj, DiffContext context)
         {
-            // UNDONE: this doesn't work yet, but the plumbing is here... 
-            //
-
+#if USE_LISTVIEW_VIRTUALIZATION
             // UNDONE: ShowsScrollingPlaceholder for even more hotness
 
-            //lv.ChoosingItemContainer += delegate (ListViewBase sender, ChoosingItemContainerEventArgs args)
-            //{
-            //    // UNDONE: call template and do recursive expansion!
-            //    args.IsContainerPrepared = true;
-            //    ListViewItem itemContainer = new ListViewItem();
-            //    // itemContainer.Content = args.Item;
-            //    args.ItemContainer = itemContainer;
-            //};
+            lv.ChoosingItemContainer += delegate (ListViewBase sender, ChoosingItemContainerEventArgs args)
+            {
+                args.IsContainerPrepared = true;
 
-            //lv.ContainerContentChanging += delegate (ListViewBase sender, ContainerContentChangingEventArgs args)
-            //{
-            //    args.Handled = true;
-            //};
+                ListViewItem itemContainer = args.ItemContainer as ListViewItem;
+                if (itemContainer == null) { itemContainer = new ListViewItem(); }
+                args.ItemContainer = itemContainer;
+            };
+            lv.ContainerContentChanging += delegate (ListViewBase sender, ContainerContentChangingEventArgs args)
+            {
+                args.Handled = true;
+
+                ListViewItem itemContainer = args.ItemContainer as ListViewItem;
+                ItemEntry ie = args.Item as ItemEntry;
+                if (ie != null)
+                {
+                    var rendered = CreateForObjectType(ie.child, ie.comp, context) as UIElement;
+                    if (rendered != itemContainer.Content)
+                    {
+                        Unparent(rendered);
+                        itemContainer.Content = rendered;
+                    }
+                }
+                else
+                {
+                    itemContainer.Content = args.Item;
+                }
+            };
+#endif
         }
+
+#if USE_LISTVIEW_VIRTUALIZATION
+        class ItemEntry {
+            public JToken child;
+            public JToken comp;
+        }
+#endif
 
         internal static void SetItemsSource(ItemsControl control, JToken source, JToken lastSource, Handler.DiffContext context)
         {
@@ -1559,7 +1545,11 @@ namespace XSRT2 {
                         comp = lastSourceEnum.Current;
                         lastSourceEnum.MoveNext();
                     }
+#if USE_LISTVIEW_VIRTUALIZATION
+                    collection.Add(new ItemEntry() { child=child, comp=comp });
+#else
                     collection.Add(CreateForObjectType(child, comp, context));
+#endif
                 }
             }
 
@@ -1595,7 +1585,40 @@ namespace XSRT2 {
             context.AddObject(resolvedName, instance);
             return new CreateResult<T>() { Value = instance, Recycled = false, Name = resolvedName };
         }
+        static void Unparent(UIElement child)
+        {
+            DependencyObject visualParent = null;
 
+            var fe = child as FrameworkElement;
+            if (fe != null && fe.Parent != null)
+            {
+                visualParent = fe.Parent;
+            }
+            if (visualParent == null)
+            {
+                visualParent = VisualTreeHelper.GetParent(child);
+            }
+            var parentContent = visualParent as ContentControl;
+            var parentPresenter = visualParent as ContentPresenter;
+            var parentBorder = visualParent as Border;
+            var parentPanel = visualParent as Panel;
+            if (parentPanel != null)
+            {
+                parentPanel.Children.Remove(child);
+            }
+            else if (parentContent != null)
+            {
+                parentContent.Content = null;
+            }
+            else if (parentBorder != null)
+            {
+                parentBorder.Child = null;
+            }
+            else if (parentPresenter != null)
+            {
+                parentPresenter.Content = null;
+            }
+        }
         static void TrySet<T>(DiffContext context, JObject obj, JObject last, string name, T target, Setter<T> setter)
         {
             TrySet<T>(context, obj, last, name, false, target, setter);

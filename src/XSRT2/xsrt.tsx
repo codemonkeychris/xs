@@ -192,7 +192,7 @@ module Xaml {
 
     }
     export interface ListViewProps extends ListViewBaseProps {
-        
+
     }
     export interface GridViewProps extends ListViewBaseProps {
 
