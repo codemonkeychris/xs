@@ -1,0 +1,3 @@
+[submodule "src/jsrt"]
+	path = src/jsrt
+	url = https://github.com/codemonkeychris/jsrt.git

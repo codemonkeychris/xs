@@ -5,6 +5,16 @@ programming techniques (insipred by ReactNative)
 
 > Note: At this point contributions aren't supported
 
+## Cloning
+This project uses a `git submodule` reference to https://github.com/codemonkeychris/jsrt
+
+```
+git clone https://github.com/codemonkeychris/xs.git
+cd xs
+git submodule init
+git submodule update
+```
+
 ## Building
 
 1. Install Windows 10 RTM build
