@@ -142,7 +142,7 @@
     <None Include="xsrt.tsx" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\JSRT\JSRT.vcxproj">
+    <ProjectReference Include="..\JSRT\JSRT\JSRT.vcxproj">
       <Project>{41c3a8dc-b669-40c9-a4e3-d48f36016668}</Project>
       <Name>XSRT</Name>
     </ProjectReference>

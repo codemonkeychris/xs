@@ -154,7 +154,7 @@
       <Project>{c565983e-dc41-4627-beb5-39c3e5a7e399}</Project>
       <Name>XSRT2</Name>
     </ProjectReference>
-    <ProjectReference Include="..\JSRT\JSRT.vcxproj">
+    <ProjectReference Include="..\JSRT\JSRT\JSRT.vcxproj">
       <Project>{41c3a8dc-b669-40c9-a4e3-d48f36016668}</Project>
       <Name>XSRT</Name>
     </ProjectReference>
