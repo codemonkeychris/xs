@@ -24,10 +24,30 @@ using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Shapes;
 
 namespace XSRT2 {
     public static class Handler
     {
+        <#
+        // UNDONE: rest of Shape
+        ClassDef(
+            "Shape",
+            false,
+            "FrameworkElement",
+            props:new PropEntry[] {
+                XamlProp("Fill", "Brush"),
+                XamlProp("Stroke", "Brush"),
+                DoubleProp("StrokeThickness")
+            }
+        );
+        #>
+
+        <# ClassDef("Ellipse",true,"Shape"); #>
+        <# ClassDef("Rectangle",true,"Shape"); #>
+
+
+
         <#
         ClassDef(
             "UIElement", 

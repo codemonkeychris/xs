@@ -1,88 +1,114 @@
 ﻿/// <reference path='../../xsrt2/xsrt.d.ts' />
-module App {
-    
-    // cloning from http://codepen.io/mfunkie/pen/BnzKx/?editors=001
-    //
+function circle(radius: number) { 
+    return <Xaml.Ellipse width={radius} height={radius} fill="Black" />
+}
+function hstack(children) {
+    return <Xaml.StackPanel orientation='Horizontal'>{children}</Xaml.StackPanel>
+}
+function vstack(children) {
+    return <Xaml.StackPanel orientation='Vertical'>{children}</Xaml.StackPanel>
+}
+function range(min,max) {
+    var result = []; 
+    for (var i=min; i<max; i++) {
+        result.push(i);
+    }
+    return result;
+}
 
-    // UNDONE: need to model React.createClass and props to correctly model 
-    // the {todos} from the sample
-    //
+module App {
+
+    interface Entry {
+        inputText: string;
+        result: any;
+    }
 
     export function setInitialState() {
+        var helloWorld = doEval("t = " + JSON.stringify({ type: 'TextBlock', text: "hello world" }));
+        var sample = doEval("hstack(range(1,5).map(function(i) { return i * 10; }).map(circle))");
         host.setState({ 
-            todos: [
-                { value:'Be awesome', done: false },
-                { value:'Learn React', done: true },
-                { value:'Use JSX in my CodePens', done: true }            
-            ],
-            inputValue: ''
+            text: "",
+            history: [
+                helloWorld,
+                { inputText: "1+1", result: 1+1 },
+                sample
+            ]
         });
     };
 
-    function addTodo() {
-        var todos = host.getState().todos;
-        todos.push({value:host.getState().inputValue, done: false });
-        host.setState({ todos: todos, inputValue: ''});
-    }
-
     function textChanged(sender, e) {
-        host.setState({ inputValue: sender.text });
+        host.setState({ text: sender.text });
+    }
+    function evalClicked(sender, e) {
+        var entry = doEval(host.getState().text);
+
+        var history = host.getState().history;
+        history.push(entry);
+        host.setState({history: history, text: ''});
+    }
+    function doEval(input:string) {
+        var entry : Entry;
+        var result : any;
+        try {
+            result = eval(input);
+        }
+        catch (e) {
+            result = "" + e;
+        }
+
+        try {
+            entry = { 
+                inputText: input, 
+                result: JSON.parse(JSON.stringify(result)) 
+            };
+        }
+        catch (e) {
+            entry = { inputText: input, result: result };
+        }
+        return entry;
     }
 
-    function markTodoDone(index : number) {
-        var todos = host.getState().todos;
-        var todo = host.getState().todos[index];
-        todos.splice(index, 1);
-        todo.done = !todo.done;
-
-        todo.done ? todos.push(todo) : todos.unshift(todo);
-
-        host.setState({
-          todos: todos
-        });
-    }
-
-    function renderTodo(todo : {value:string; done:boolean}, index : number) {
+    function renderEntry(e : Entry) {
         return (
-            <Xaml.CheckBox 
-                content={todo.value} 
-                isChecked={todo.done} 
-                onChecked={markTodoDone.bind(this, index)} />
+            <Xaml.StackPanel>
+                <Xaml.TextBlock text={">" + e.inputText} />
+                <Xaml.ContentControl content={e.result} />
+            </Xaml.StackPanel>
         );
+    }
+
+    function EntryBox() {
+        return <Xaml.TextBox
+            fontFamily='Consolas'
+            fontSize={14}
+            width={450}
+            horizontalAlignment='Stretch'
+            verticalAlignment='Stretch' />
     }
 
     export function render() {
-      
+
         return ( 
-            <Xaml.Grid 
-                horizontalAlignment='Stretch'
-                verticalAlignment='Stretch'
-                rows={['auto', '*', 'auto']}
-                columns={['*', 'auto']} 
-                margin='5,5,5,5' >
+            <Xaml.ScrollViewer>
+                <Xaml.StackPanel 
+                    horizontalAlignment='Stretch'
+                    verticalAlignment='Stretch' >
                 
-                <Xaml.TextBlock grid$row={0} fontSize={28} text="My Todo List" margin='0,0,0,10' />
-                <Xaml.TextBox
-                    grid$row={2}
-                    grid$column={0}
-                    placeholderText='What do you need to do?'
-                    onTextChanged={textChanged}
-                    margin='0,0,5,0'
-                    text={host.getState().inputValue}  />
-                <Xaml.Button
-                    grid$row={2}
-                    grid$column={1}
-                    content='add'
-                    margin='0,0,0,0'
-                    onClick={addTodo} />
-                <Xaml.ListBox
-                    grid$row={1}
-                    grid$column={0}
-                    grid$columnSpan={2}
-                    margin='0,0,0,5'
-                    itemsSource={host.getState().todos.map(renderTodo)}
-                    />
-            </Xaml.Grid>
+                    <Xaml.StackPanel>{host.getState().history.map(renderEntry)}</Xaml.StackPanel>
+
+                    <Xaml.StackPanel orientation='Horizontal'>
+                        <EntryBox
+                            onTextChanged={textChanged}
+                            text={host.getState().text}  />
+                        <Xaml.Button
+                            content='eval'
+                            onClick={evalClicked}
+                            />
+                    </Xaml.StackPanel>
+
+                </Xaml.StackPanel>
+            </Xaml.ScrollViewer>
         );
     }
 }
+

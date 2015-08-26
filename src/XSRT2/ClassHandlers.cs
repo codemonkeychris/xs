@@ -18,10 +18,67 @@ using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Shapes;
 
 namespace XSRT2 {
     public static class Handler
     {
+        internal static class ShapeHandler
+        {
+            internal static void SetProperties(Shape t, JObject obj, JObject lastObj, DiffContext context)
+            {
+                FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
+                TrySet(context, obj, lastObj,
+                    "fill", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.Fill = XamlStringParse<Brush>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "stroke", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.Stroke = XamlStringParse<Brush>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "strokeThickness", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.StrokeThickness = valueToken.Value<double>());
+            }
+        }
+
+        internal static class EllipseHandler
+        {
+            internal static Ellipse Create(JObject obj, JObject lastObj, DiffContext context)
+            {
+                var createResult = CreateOrGetLast<Ellipse>(obj, context);
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
+            }
+            internal static void SetProperties(Ellipse t, JObject obj, JObject lastObj, DiffContext context)
+            {
+                ShapeHandler.SetProperties(t, obj, lastObj, context);
+            }
+        }
+        internal static class RectangleHandler
+        {
+            internal static Rectangle Create(JObject obj, JObject lastObj, DiffContext context)
+            {
+                var createResult = CreateOrGetLast<Rectangle>(obj, context);
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
+            }
+            internal static void SetProperties(Rectangle t, JObject obj, JObject lastObj, DiffContext context)
+            {
+                ShapeHandler.SetProperties(t, obj, lastObj, context);
+            }
+        }
+
+
+
         internal static class UIElementHandler
         {
             internal static void SetProperties(UIElement t, JObject obj, JObject lastObj, DiffContext context)
@@ -1329,10 +1386,14 @@ namespace XSRT2 {
                         {
                             CollectPanelChildrenWorker(t, child.AsJEnumerable(), lastChild != null ? lastChild.AsJEnumerable() : null, children, context);
                         }
-                        else
+                        else if(child.Type == JTokenType.Object)
                         {
                             var instance = CreateFromState((JObject)child, lastChild as JObject, context);
                             children.Add((FrameworkElement)instance);
+                        }
+                        else
+                        {
+                            children.Add(new ContentControl() { Content = child.ToString() });
                         }
                     }
                 }
@@ -1710,6 +1771,8 @@ namespace XSRT2 {
             if (handlers == null)
             {
                 handlers = new Dictionary<string, CreateCallback>();
+                handlers["Ellipse"] = EllipseHandler.Create;
+                handlers["Rectangle"] = RectangleHandler.Create;
                 handlers["Viewbox"] = ViewboxHandler.Create;
                 handlers["TextBlock"] = TextBlockHandler.Create;
                 handlers["Image"] = ImageHandler.Create;

@@ -1,45 +1,73 @@
 /// <reference path='../../xsrt2/xsrt.d.ts' />
+function circle(radius) {
+    return React.createElement(Xaml.Ellipse, {"width": radius, "height": radius, "fill": "Black"});
+}
+function hstack(children) {
+    return React.createElement(Xaml.StackPanel, {"orientation": 'Horizontal'}, children);
+}
+function vstack(children) {
+    return React.createElement(Xaml.StackPanel, {"orientation": 'Vertical'}, children);
+}
+function range(min, max) {
+    var result = [];
+    for (var i = min; i < max; i++) {
+        result.push(i);
+    }
+    return result;
+}
 var App;
 (function (App) {
     function setInitialState() {
-        var initialText = JSON.stringify({ type: 'TextBlock', text: "hello world" });
+        var helloWorld = doEval("t = " + JSON.stringify({ type: 'TextBlock', text: "hello world" }));
+        var sample = doEval("hstack(range(1,5).map(function(i) { return i * 10; }).map(circle))");
         host.setState({
-            todos: [
-                { value: 'Be awesome', done: false },
-                { value: 'Learn React', done: true },
-                { value: 'Use JSX in my CodePens', done: true }
-            ],
-            inputValue: ''
+            text: "",
+            history: [
+                helloWorld,
+                { inputText: "1+1", result: 1 + 1 },
+                sample
+            ]
         });
     }
     App.setInitialState = setInitialState;
     ;
-    function addTodo() {
-        var todos = host.getState().todos;
-        todos.push({ value: host.getState().inputValue, done: false });
-        host.setState({ todos: todos, inputValue: '' });
-    }
     function textChanged(sender, e) {
-        host.setState({ inputValue: sender.text });
+        host.setState({ text: sender.text });
     }
-    function addClicked(sender, e) {
-        addTodo();
+    function evalClicked(sender, e) {
+        var entry = doEval(host.getState().text);
+        var history = host.getState().history;
+        history.push(entry);
+        host.setState({ history: history, text: '' });
     }
-    function markTodoDone(index) {
-        var todos = host.getState().todos;
-        var todo = host.getState().todos[index];
-        todos.splice(index, 1);
-        todo.done = !todo.done;
-        todo.done ? todos.push(todo) : todos.unshift(todo);
-        host.setState({
-            todos: todos
-        });
+    function doEval(input) {
+        var entry;
+        var result;
+        try {
+            result = eval(input);
+        }
+        catch (e) {
+            result = "" + e;
+        }
+        try {
+            entry = {
+                inputText: input,
+                result: JSON.parse(JSON.stringify(result))
+            };
+        }
+        catch (e) {
+            entry = { inputText: input, result: result };
+        }
+        return entry;
     }
-    function renderTodo(todo, index) {
-        return (React.createElement(Xaml.CheckBox, {"content": todo.value, "isChecked": todo.done, "onChecked": markTodoDone.bind(this, index)}));
+    function renderEntry(e) {
+        return (React.createElement(Xaml.StackPanel, null, React.createElement(Xaml.TextBlock, {"text": ">" + e.inputText}), React.createElement(Xaml.ContentControl, {"content": e.result})));
+    }
+    function EntryBox() {
+        return React.createElement(Xaml.TextBox, {"fontFamily": 'Consolas', "fontSize": 14, "width": 450, "horizontalAlignment": 'Stretch', "verticalAlignment": 'Stretch'});
     }
     function render() {
-        return (React.createElement(Xaml.Grid, {"horizontalAlignment": 'Stretch', "verticalAlignment": 'Stretch', "rows": ['*', 'auto'], "columns": ['*', 'auto']}, React.createElement(Xaml.TextBox, {"grid$row": 1, "grid$column": 0, "placeholderText": 'What do you need to do?', "onTextChanged": textChanged, "text": host.getState().inputValue}), React.createElement(Xaml.Button, {"grid$row": 1, "grid$column": 1, "content": 'add', "onClick": addClicked}), React.createElement(Xaml.ListBox, {"grid$row": 0, "grid$column": 0, "grid$columnSpan": 2, "itemsSource": host.getState().todos.map(renderTodo)})));
+        return (React.createElement(Xaml.ScrollViewer, null, React.createElement(Xaml.StackPanel, {"horizontalAlignment": 'Stretch', "verticalAlignment": 'Stretch'}, React.createElement(Xaml.StackPanel, null, host.getState().history.map(renderEntry)), React.createElement(Xaml.StackPanel, {"orientation": 'Horizontal'}, React.createElement(EntryBox, {"onTextChanged": textChanged, "text": host.getState().text}), React.createElement(Xaml.Button, {"content": 'eval', "onClick": evalClicked})))));
     }
     App.render = render;
 })(App || (App = {}));

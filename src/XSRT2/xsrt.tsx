@@ -1,52 +1,6 @@
 ﻿declare var host: any;
 declare var xsrt: any;
 
-module XsrtJS {
-    // UNDONE: a bit of a hack... I want the "App" to see what we define here, but we 
-    // also call into random things defined on "App"... noodle on this more
-    //
-    declare var App: any;
-
-    function refreshClicked() {
-        xsrt.forceCleanReload();
-    }
-
-    export function displayError(errorMessage: string) {
-        return (
-            <Xaml.StackPanel>
-                <Xaml.TextBlock fontFamily='Consolas' text={ errorMessage } />
-                <Xaml.Button onClick={refreshClicked} content='Refresh' />
-            </Xaml.StackPanel>
-        );
-    }
-
-    function render(ev) {
-        try {
-            ev.view = JSON.stringify((App && App.render) ? App.render() : displayError('Error: App.render not found!'));
-        }
-        catch (e) {
-            ev.view = JSON.stringify(displayError('Error: ' + e ));
-        }
-    }
-    function command(ev) {
-        try {
-            var handler = App && App.eventHandlers && App.eventHandlers[ev.commandHandlerToken];
-            if (handler) { handler(ev.sender, ev.eventArgs); }
-        }
-        catch (e) {
-            // UNDONE: add exception pipe
-        }
-    }
-    xsrt.addEventListener('render', render);
-    xsrt.addEventListener('command', command);
-    if (App && App.setInitialState) {
-        if (!xsrt.isInitialized) {
-            xsrt.isInitialized = true;
-            App.setInitialState();
-        }
-    }
-}
-
 module React {
     declare var App: any;
 
@@ -96,6 +50,18 @@ module JSX {
 }
 
 module Xaml {
+    export interface ShapeProps extends FrameworkElementProps {
+        fill?: string;
+        stroke?: string;
+        strokeThickness?: number;
+    }
+    export interface EllipseProps extends ShapeProps {
+
+    }
+    export interface RectangleProps extends ShapeProps {
+
+    }
+
     export interface ScrollViewerAttachedProps {
         scrollViewer$verticalScrollBarVisibility?: string;
         scrollViewer$horizontalScrollBarVisibility?: string;
@@ -299,6 +265,20 @@ module Xaml {
 
 
 
+    export class Ellipse { 
+        type: string;
+        constructor() {
+            this.type = 'Ellipse';
+        }
+        props: EllipseProps
+    };
+    export class Rectangle { 
+        type: string;
+        constructor() {
+            this.type = 'Rectangle';
+        }
+        props: RectangleProps
+    };
     export class Viewbox { 
         type: string;
         constructor() {
@@ -447,3 +427,50 @@ module Xaml {
         props: RepositionThemeTransitionProps;
     };
 }
+
+module XsrtJS {
+    // UNDONE: a bit of a hack... I want the "App" to see what we define here, but we 
+    // also call into random things defined on "App"... noodle on this more
+    //
+    declare var App: any;
+
+    function refreshClicked() {
+        xsrt.forceCleanReload();
+    }
+
+    export function displayError(errorMessage: string) {
+        return (
+            <Xaml.StackPanel>
+                <Xaml.TextBlock fontFamily='Consolas' text={ errorMessage } />
+                <Xaml.Button onClick={refreshClicked} content='Refresh' />
+            </Xaml.StackPanel>
+        );
+    }
+
+    function render(ev) {
+        try {
+            ev.view = JSON.stringify((App && App.render) ? App.render() : displayError('Error: App.render not found!'));
+        }
+        catch (e) {
+            ev.view = JSON.stringify(displayError('Error: ' + e ));
+        }
+    }
+    function command(ev) {
+        try {
+            var handler = App && App.eventHandlers && App.eventHandlers[ev.commandHandlerToken];
+            if (handler) { handler(ev.sender, ev.eventArgs); }
+        }
+        catch (e) {
+            // UNDONE: add exception pipe
+        }
+    }
+    xsrt.addEventListener('render', render);
+    xsrt.addEventListener('command', command);
+    if (App && App.setInitialState) {
+        if (!xsrt.isInitialized) {
+            xsrt.isInitialized = true;
+            App.setInitialState();
+        }
+    }
+}
+

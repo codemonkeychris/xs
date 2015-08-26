@@ -1,31 +1,87 @@
 ﻿/// <reference path='../../xsrt2/xsrt.d.ts' />
+function circle(radius: number) { 
+    return <Xaml.Ellipse width={radius} height={radius} fill="Black" />
+}
+function hstack(children) {
+    return <Xaml.StackPanel orientation='Horizontal'>{children}</Xaml.StackPanel>
+}
+function vstack(children) {
+    return <Xaml.StackPanel orientation='Vertical'>{children}</Xaml.StackPanel>
+}
+function range(min,max) {
+    var result = []; 
+    for (var i=min; i<max; i++) {
+        result.push(i);
+    }
+    return result;
+}
+
 module App {
+
+    interface Entry {
+        inputText: string;
+        result: any;
+    }
+
     export function setInitialState() {
-        var initialText = JSON.stringify({ type: 'TextBlock', text: "hello world" });
+        var helloWorld = doEval("t = " + JSON.stringify({ type: 'TextBlock', text: "hello world" }));
+        var sample = doEval("hstack(range(1,5).map(function(i) { return i * 10; }).map(circle))");
         host.setState({ 
-            text: initialText,
-            content: JSON.parse(initialText)
+            text: "",
+            history: [
+                helloWorld,
+                { inputText: "1+1", result: 1+1 },
+                sample
+            ]
         });
     };
 
     function textChanged(sender, e) {
         host.setState({ text: sender.text });
     }
-    function refreshClicked(sender, e) {
+    function evalClicked(sender, e) {
+        var entry = doEval(host.getState().text);
+
+        var history = host.getState().history;
+        history.push(entry);
+        host.setState({history: history, text: ''});
+    }
+    function doEval(input:string) {
+        var entry : Entry;
+        var result : any;
         try {
-            host.setState({ content: JSON.parse(host.getState().text) });
+            result = eval(input);
         }
         catch (e) {
-            host.setState({ content: host.getState().text });
+            result = "" + e;
         }
+
+        try {
+            entry = { 
+                inputText: input, 
+                result: JSON.parse(JSON.stringify(result)) 
+            };
+        }
+        catch (e) {
+            entry = { inputText: input, result: result };
+        }
+        return entry;
     }
 
-    function MultiLineTextBox() {
+    function renderEntry(e : Entry) {
+        return (
+            <Xaml.StackPanel>
+                <Xaml.TextBlock text={">" + e.inputText} />
+                <Xaml.ContentControl content={e.result} />
+            </Xaml.StackPanel>
+        );
+    }
+
+    function EntryBox() {
         return <Xaml.TextBox
-            scrollViewer$horizontalScrollBarVisibility='Auto'
-            scrollViewer$verticalScrollBarVisibility='Auto'
-            acceptsReturn={true}
-            textWrapping='Wrap'
+            fontFamily='Consolas'
+            fontSize={14}
+            width={450}
             horizontalAlignment='Stretch'
             verticalAlignment='Stretch' />
     }
@@ -33,33 +89,26 @@ module App {
     export function render() {
 
         return ( 
-            <Xaml.Grid 
-                horizontalAlignment='Stretch'
-                verticalAlignment='Stretch'
-                rows={['auto', '*', 'auto']}
-                columns={['*', 'auto', '*']} >
+            <Xaml.ScrollViewer>
+                <Xaml.StackPanel 
+                    horizontalAlignment='Stretch'
+                    verticalAlignment='Stretch' >
                 
-                <MultiLineTextBox
-                    grid$row={1}
-                    grid$column={0}
-                    fontFamily='Consolas'
-                    fontSize={16}
-                    onTextChanged={textChanged}
-                    text={host.getState().text}  />
+                    <Xaml.StackPanel>{host.getState().history.map(renderEntry)}</Xaml.StackPanel>
 
-                <Xaml.Button
-                    grid$row={1}
-                    grid$column={1}
-                    content='refresh'
-                    onClick={refreshClicked}
-                    />
+                    <Xaml.StackPanel orientation='Horizontal'>
+                        <EntryBox
+                            onTextChanged={textChanged}
+                            text={host.getState().text}  />
+                        <Xaml.Button
+                            content='eval'
+                            onClick={evalClicked}
+                            />
+                    </Xaml.StackPanel>
 
-                <Xaml.ContentControl 
-                    grid$row={1}
-                    grid$column={2}
-                    content={host.getState().content}
-                    />
-            </Xaml.Grid>
+                </Xaml.StackPanel>
+            </Xaml.ScrollViewer>
         );
     }
 }
+

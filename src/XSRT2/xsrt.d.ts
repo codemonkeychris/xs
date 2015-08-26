@@ -1,8 +1,5 @@
 declare var host: any;
 declare var xsrt: any;
-declare module XsrtJS {
-    function displayError(errorMessage: string): any;
-}
 declare module React {
     function createElement(ctor: any, members: any): any;
     function __spread(target: any, record1: any, record2: any): any;
@@ -13,6 +10,15 @@ declare module JSX {
     }
 }
 declare module Xaml {
+    interface ShapeProps extends FrameworkElementProps {
+        fill?: string;
+        stroke?: string;
+        strokeThickness?: number;
+    }
+    interface EllipseProps extends ShapeProps {
+    }
+    interface RectangleProps extends ShapeProps {
+    }
     interface ScrollViewerAttachedProps {
         scrollViewer$verticalScrollBarVisibility?: string;
         scrollViewer$horizontalScrollBarVisibility?: string;
@@ -197,6 +203,16 @@ declare module Xaml {
         rows?: [string];
         columns?: [string];
     }
+    class Ellipse {
+        type: string;
+        constructor();
+        props: EllipseProps;
+    }
+    class Rectangle {
+        type: string;
+        constructor();
+        props: RectangleProps;
+    }
     class Viewbox {
         type: string;
         constructor();
@@ -302,4 +318,7 @@ declare module Xaml {
         constructor();
         props: RepositionThemeTransitionProps;
     }
+}
+declare module XsrtJS {
+    function displayError(errorMessage: string): any;
 }

@@ -1,39 +1,3 @@
-var XsrtJS;
-(function (XsrtJS) {
-    function refreshClicked() {
-        xsrt.forceCleanReload();
-    }
-    function displayError(errorMessage) {
-        return (React.createElement(Xaml.StackPanel, null, React.createElement(Xaml.TextBlock, {"fontFamily": 'Consolas', "text": errorMessage}), React.createElement(Xaml.Button, {"onClick": refreshClicked, "content": 'Refresh'})));
-    }
-    XsrtJS.displayError = displayError;
-    function render(ev) {
-        try {
-            ev.view = JSON.stringify((App && App.render) ? App.render() : displayError('Error: App.render not found!'));
-        }
-        catch (e) {
-            ev.view = JSON.stringify(displayError('Error: ' + e));
-        }
-    }
-    function command(ev) {
-        try {
-            var handler = App && App.eventHandlers && App.eventHandlers[ev.commandHandlerToken];
-            if (handler) {
-                handler(ev.sender, ev.eventArgs);
-            }
-        }
-        catch (e) {
-        }
-    }
-    xsrt.addEventListener('render', render);
-    xsrt.addEventListener('command', command);
-    if (App && App.setInitialState) {
-        if (!xsrt.isInitialized) {
-            xsrt.isInitialized = true;
-            App.setInitialState();
-        }
-    }
-})(XsrtJS || (XsrtJS = {}));
 var React;
 (function (React) {
     function applyMembers(result, members) {
@@ -75,6 +39,22 @@ var React;
 })(React || (React = {}));
 var Xaml;
 (function (Xaml) {
+    var Ellipse = (function () {
+        function Ellipse() {
+            this.type = 'Ellipse';
+        }
+        return Ellipse;
+    })();
+    Xaml.Ellipse = Ellipse;
+    ;
+    var Rectangle = (function () {
+        function Rectangle() {
+            this.type = 'Rectangle';
+        }
+        return Rectangle;
+    })();
+    Xaml.Rectangle = Rectangle;
+    ;
     var Viewbox = (function () {
         function Viewbox() {
             this.type = 'Viewbox';
@@ -244,3 +224,39 @@ var Xaml;
     Xaml.RepositionThemeTransition = RepositionThemeTransition;
     ;
 })(Xaml || (Xaml = {}));
+var XsrtJS;
+(function (XsrtJS) {
+    function refreshClicked() {
+        xsrt.forceCleanReload();
+    }
+    function displayError(errorMessage) {
+        return (React.createElement(Xaml.StackPanel, null, React.createElement(Xaml.TextBlock, {"fontFamily": 'Consolas', "text": errorMessage}), React.createElement(Xaml.Button, {"onClick": refreshClicked, "content": 'Refresh'})));
+    }
+    XsrtJS.displayError = displayError;
+    function render(ev) {
+        try {
+            ev.view = JSON.stringify((App && App.render) ? App.render() : displayError('Error: App.render not found!'));
+        }
+        catch (e) {
+            ev.view = JSON.stringify(displayError('Error: ' + e));
+        }
+    }
+    function command(ev) {
+        try {
+            var handler = App && App.eventHandlers && App.eventHandlers[ev.commandHandlerToken];
+            if (handler) {
+                handler(ev.sender, ev.eventArgs);
+            }
+        }
+        catch (e) {
+        }
+    }
+    xsrt.addEventListener('render', render);
+    xsrt.addEventListener('command', command);
+    if (App && App.setInitialState) {
+        if (!xsrt.isInitialized) {
+            xsrt.isInitialized = true;
+            App.setInitialState();
+        }
+    }
+})(XsrtJS || (XsrtJS = {}));
