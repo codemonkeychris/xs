@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Storage;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -25,9 +26,11 @@ namespace XSRT2
         string runningTest = "n/a";
         List<string> tests = new List<string>();
         List<LogEntry> testLogs = new List<LogEntry>();
+        CoreDispatcher dispatcher;
 
         public XSRuntime(ContentControl displayControl)
         {
+            dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
             PreserveStateOnReload = true;
             hostProjection = new XSRT2.JScriptXSRuntimeProjection(this);
             diff = new Diff(displayControl);
@@ -36,6 +39,13 @@ namespace XSRT2
                 hostProjection.CallCommand(e);
                 RenderIfNeeded();
             };
+        }
+
+        async Task<T> InvokeOnDispatcher<T>(Func<T> t)
+        {
+            T value = default(T);
+            await dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate () { value = t(); });
+            return value;
         }
 
         public string Program
@@ -166,7 +176,7 @@ namespace XSRT2
                 {
                     runtime = runtimeCache = await RuntimeHelpers.GetRuntimeJavaScript();
                 }
-                Initialize(contents, runtime, forceReload);
+                var ig = await InvokeOnDispatcher(() => { Initialize(contents, runtime, forceReload); return 0; });
             }
             return contents;
         }
@@ -179,8 +189,8 @@ namespace XSRT2
             {
                 lastState = jsrt.SaveState();
                 hostProjection.ReleaseEventHandlers();
-                jsrt.ClearActive();
                 jsrt.ClearTimers();
+                jsrt.ClearActive();
                 jsrt = null;
             }
             lastSeenVersion = ulong.MinValue;
