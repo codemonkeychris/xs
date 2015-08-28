@@ -1912,7 +1912,7 @@ namespace XSRT2 {
                 surrogateKeys[baseName] = n;
                 string key = baseName + n;
 
-                var concat = nameStack.Count > 0 ? nameStack.Aggregate((a, b) => a + "-" + b) : "root";
+                var concat = nameStack.Count > 0 ? nameStack[nameStack.Count - 1] : "root";
                  
                 return concat + "-" + key;
             }
