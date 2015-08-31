@@ -6,7 +6,7 @@
     RequestedTheme="Light">
     <Application.Resources>
         <DataTemplate x:Key="emptyTemplate">
-            <Button Width="100" Height="100" Content="{Binding Content}" />
+            <Button Width="100" Height="100" Content="{Binding}" />
         </DataTemplate>
     </Application.Resources>
 </Application>
