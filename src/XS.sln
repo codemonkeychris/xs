@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XSTest", "XSTest\XSTest.csproj", "{684FDC4D-4031-4E21-BC19-F66EBE304319}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JSRT", "JSRT\JSRT\JSRT.vcxproj", "{41C3A8DC-B669-40C9-A4E3-D48F36016668}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JSRT", "jsrt\JSRT\JSRT.vcxproj", "{41C3A8DC-B669-40C9-A4E3-D48F36016668}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XSRT2", "XSRT2\XSRT2.csproj", "{C565983E-DC41-4627-BEB5-39C3E5A7E399}"
 EndProject
@@ -19,6 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{8992
 		..\samples\hello-jsx.tsx = ..\samples\hello-jsx.tsx
 		..\samples\js-notebook.tsx = ..\samples\js-notebook.tsx
 		..\samples\listview-demo.tsx = ..\samples\listview-demo.tsx
+		..\samples\map.tsx = ..\samples\map.tsx
 		..\samples\relative-panel.tsx = ..\samples\relative-panel.tsx
 		..\samples\repl.tsx = ..\samples\repl.tsx
 		..\samples\simple-demo.tsx = ..\samples\simple-demo.tsx
@@ -28,7 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{8992
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManualTests", "ManualTests\ManualTests.csproj", "{BA250439-B7A6-4279-97F0-383385EE59A7}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JSRTUnitTests", "JSRT\JSRTUnitTests\JSRTUnitTests.vcxproj", "{C22AA49E-AD55-4B79-9709-46468BFF3F37}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JSRTUnitTests", "jsrt\JSRTUnitTests\JSRTUnitTests.vcxproj", "{C22AA49E-AD55-4B79-9709-46468BFF3F37}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -39,6 +39,14 @@ var React;
 })(React || (React = {}));
 var Xaml;
 (function (Xaml) {
+    var MapControl = (function () {
+        function MapControl() {
+            this.type = 'MapControl';
+        }
+        return MapControl;
+    })();
+    Xaml.MapControl = MapControl;
+    ;
     var Ellipse = (function () {
         function Ellipse() {
             this.type = 'Ellipse';

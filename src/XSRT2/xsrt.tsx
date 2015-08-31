@@ -50,6 +50,58 @@ module JSX {
 }
 
 module Xaml {
+    export interface MapControlProps extends ControlProps {
+        // UNDONE: ActualCamera
+        businessLandmarksVisible?: boolean;
+        // UNDONE: Center
+        // UNDONE: Children
+        // UNDONE: public MapColorScheme ColorScheme { get; set; }
+        // UNDONE: public MapCustomExperience CustomExperience { get; set; }
+        desiredPitch?: number;
+        heading?: number;
+        // READONLY: BooleanProp("Is3DSupported"),
+        // READONLY: BooleanProp("IsStreetsideSupported"),
+        landmarksVisible?: boolean;
+        // UNDONE: public MapLoadingStatus LoadingStatus { get; }
+        // UNDONE: public IList<MapElement> MapElements { get; }
+        mapServiceToken: string; // not optional
+        // READONLY: DoubleProp("MaxZoomLevel"),
+        // READONLY: DoubleProp("MinZoomLevel"),
+        // UNDONE: public MapPanInteractionMode PanInteractionMode { get; set; }
+        pedestrianFeaturesVisible?: boolean;
+        // READONLY: DoubleProp("Pitch"),
+        // UNDONE: public MapInteractionMode RotateInteractionMode { get; set; }
+        // UNDONE: public IList<MapRouteView> Routes { get; }
+        // UNDONE: public MapScene Scene { get; set; }
+        // UNDONE: public MapStyle Style { get; set; }
+        // UNDONE: public MapCamera TargetCamera { get; }
+        // UNDONE: public IList<MapTileSource> TileSources { get; }
+        // UNDONE: public MapInteractionMode TiltInteractionMode { get; set; }
+        trafficFlowVisible?: boolean;
+        // UNDONE: public Point TransformOrigin { get; set; }
+        transitFeaturesVisible?: boolean;
+        // UNDONE: public MapWatermarkMode WatermarkMode { get; set; }
+        // UNDONE: public MapInteractionMode ZoomInteractionMode { get; set; }
+        zoomLevel?: number;
+
+        onActualCameraChanged?: any; // callback? 
+        onActualCameraChanging?: any; // callback? 
+        onCenterChanged?: any; // callback? 
+        onCustomExperienceChanged?: any; // callback? 
+        onHeadingChanged?: any; // callback? 
+        onLoadingStatusChanged?: any; // callback? 
+        onMapDoubleTapped?: any; // callback? 
+        onMapElementClick?: any; // callback? 
+        onMapElementPointerEntered?: any; // callback? 
+        onMapElementPointerExited?: any; // callback? 
+        onMapHolding?: any; // callback? 
+        onMapTapped?: any; // callback? 
+        onPitchChanged?: any; // callback? 
+        onTargetCameraChanged?: any; // callback? 
+        onTransformOriginChanged?: any; // callback? 
+        onZoomLevelChanged?: any; // callback? 
+
+    }
     export interface ShapeProps extends FrameworkElementProps {
         fill?: string;
         stroke?: string;
@@ -263,7 +315,13 @@ module Xaml {
         columns?: [string];
     }
 
-
+    export class MapControl {
+        type: string;
+        constructor() {
+            this.type = 'MapControl';
+        }
+        props: MapControlProps
+    };
 
     export class Ellipse { 
         type: string;

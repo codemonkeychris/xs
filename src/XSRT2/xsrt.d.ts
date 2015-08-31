@@ -10,6 +10,33 @@ declare module JSX {
     }
 }
 declare module Xaml {
+    interface MapControlProps extends ControlProps {
+        businessLandmarksVisible?: boolean;
+        desiredPitch?: number;
+        heading?: number;
+        landmarksVisible?: boolean;
+        mapServiceToken: string;
+        pedestrianFeaturesVisible?: boolean;
+        trafficFlowVisible?: boolean;
+        transitFeaturesVisible?: boolean;
+        zoomLevel?: number;
+        onActualCameraChanged?: any;
+        onActualCameraChanging?: any;
+        onCenterChanged?: any;
+        onCustomExperienceChanged?: any;
+        onHeadingChanged?: any;
+        onLoadingStatusChanged?: any;
+        onMapDoubleTapped?: any;
+        onMapElementClick?: any;
+        onMapElementPointerEntered?: any;
+        onMapElementPointerExited?: any;
+        onMapHolding?: any;
+        onMapTapped?: any;
+        onPitchChanged?: any;
+        onTargetCameraChanged?: any;
+        onTransformOriginChanged?: any;
+        onZoomLevelChanged?: any;
+    }
     interface ShapeProps extends FrameworkElementProps {
         fill?: string;
         stroke?: string;
@@ -202,6 +229,11 @@ declare module Xaml {
     interface GridProps extends PanelProps {
         rows?: [string];
         columns?: [string];
+    }
+    class MapControl {
+        type: string;
+        constructor();
+        props: MapControlProps;
     }
     class Ellipse {
         type: string;

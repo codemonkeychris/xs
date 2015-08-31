@@ -19,10 +19,392 @@ using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Shapes;
+using Windows.UI.Xaml.Controls.Maps;
 
 namespace XSRT2 {
     public static class Handler
     {
+        internal static class MapControlHandler
+        {
+            internal static MapControl Create(JObject obj, JObject lastObj, DiffContext context)
+            {
+                var createResult = CreateOrGetLast<MapControl>(obj, context);
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
+            }
+            internal static void SetProperties(MapControl t, JObject obj, JObject lastObj, DiffContext context)
+            {
+                ControlHandler.SetProperties(t, obj, lastObj, context);
+                TrySet(context, obj, lastObj,
+                    "businessLandmarksVisible", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.BusinessLandmarksVisible = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "desiredPitch", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.DesiredPitch = valueToken.Value<double>());
+                TrySet(context, obj, lastObj,
+                    "heading", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.Heading = valueToken.Value<double>());
+                TrySet(context, obj, lastObj,
+                    "landmarksVisible", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.LandmarksVisible = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "mapServiceToken", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.MapServiceToken = valueToken.ToString());
+                TrySet(context, obj, lastObj,
+                    "pedestrianFeaturesVisible", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.PedestrianFeaturesVisible = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "trafficFlowVisible", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.TrafficFlowVisible = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "transitFeaturesVisible", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.TransitFeaturesVisible = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "zoomLevel", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.ZoomLevel = valueToken.Value<double>());
+                TrySetEvent(context, obj, lastObj, "ActualCameraChanged", t, (target, valueToken, lastValueToken) => SetActualCameraChangedEventHandler(valueToken.ToString(), target));
+                TrySetEvent(context, obj, lastObj, "ActualCameraChanging", t, (target, valueToken, lastValueToken) => SetActualCameraChangingEventHandler(valueToken.ToString(), target));
+                TrySetEvent(context, obj, lastObj, "CenterChanged", t, (target, valueToken, lastValueToken) => SetCenterChangedEventHandler(valueToken.ToString(), target));
+                TrySetEvent(context, obj, lastObj, "CustomExperienceChanged", t, (target, valueToken, lastValueToken) => SetCustomExperienceChangedEventHandler(valueToken.ToString(), target));
+                TrySetEvent(context, obj, lastObj, "HeadingChanged", t, (target, valueToken, lastValueToken) => SetHeadingChangedEventHandler(valueToken.ToString(), target));
+                TrySetEvent(context, obj, lastObj, "LoadingStatusChanged", t, (target, valueToken, lastValueToken) => SetLoadingStatusChangedEventHandler(valueToken.ToString(), target));
+                TrySetEvent(context, obj, lastObj, "MapDoubleTapped", t, (target, valueToken, lastValueToken) => SetMapDoubleTappedEventHandler(valueToken.ToString(), target));
+                TrySetEvent(context, obj, lastObj, "MapElementClick", t, (target, valueToken, lastValueToken) => SetMapElementClickEventHandler(valueToken.ToString(), target));
+                TrySetEvent(context, obj, lastObj, "MapElementPointerEntered", t, (target, valueToken, lastValueToken) => SetMapElementPointerEnteredEventHandler(valueToken.ToString(), target));
+                TrySetEvent(context, obj, lastObj, "MapElementPointerExited", t, (target, valueToken, lastValueToken) => SetMapElementPointerExitedEventHandler(valueToken.ToString(), target));
+                TrySetEvent(context, obj, lastObj, "MapHolding", t, (target, valueToken, lastValueToken) => SetMapHoldingEventHandler(valueToken.ToString(), target));
+                TrySetEvent(context, obj, lastObj, "MapTapped", t, (target, valueToken, lastValueToken) => SetMapTappedEventHandler(valueToken.ToString(), target));
+                TrySetEvent(context, obj, lastObj, "PitchChanged", t, (target, valueToken, lastValueToken) => SetPitchChangedEventHandler(valueToken.ToString(), target));
+                TrySetEvent(context, obj, lastObj, "TargetCameraChanged", t, (target, valueToken, lastValueToken) => SetTargetCameraChangedEventHandler(valueToken.ToString(), target));
+                TrySetEvent(context, obj, lastObj, "TransformOriginChanged", t, (target, valueToken, lastValueToken) => SetTransformOriginChangedEventHandler(valueToken.ToString(), target));
+                TrySetEvent(context, obj, lastObj, "ZoomLevelChanged", t, (target, valueToken, lastValueToken) => SetZoomLevelChangedEventHandler(valueToken.ToString(), target));
+            }
+            static void ActualCameraChangedRouter(object sender, MapActualCameraChangedEventArgs e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["ActualCameraChanged"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetActualCameraChangedEventHandler(string handlerName, MapControl element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["ActualCameraChanged"] = handlerName;
+                element.ActualCameraChanged -= ActualCameraChangedRouter;
+                element.ActualCameraChanged += ActualCameraChangedRouter;
+            }
+            static void ActualCameraChangingRouter(object sender, MapActualCameraChangingEventArgs e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["ActualCameraChanging"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetActualCameraChangingEventHandler(string handlerName, MapControl element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["ActualCameraChanging"] = handlerName;
+                element.ActualCameraChanging -= ActualCameraChangingRouter;
+                element.ActualCameraChanging += ActualCameraChangingRouter;
+            }
+            static void CenterChangedRouter(object sender, Object e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["CenterChanged"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetCenterChangedEventHandler(string handlerName, MapControl element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["CenterChanged"] = handlerName;
+                element.CenterChanged -= CenterChangedRouter;
+                element.CenterChanged += CenterChangedRouter;
+            }
+            static void CustomExperienceChangedRouter(object sender, MapCustomExperienceChangedEventArgs e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["CustomExperienceChanged"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetCustomExperienceChangedEventHandler(string handlerName, MapControl element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["CustomExperienceChanged"] = handlerName;
+                element.CustomExperienceChanged -= CustomExperienceChangedRouter;
+                element.CustomExperienceChanged += CustomExperienceChangedRouter;
+            }
+            static void HeadingChangedRouter(object sender, Object e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["HeadingChanged"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetHeadingChangedEventHandler(string handlerName, MapControl element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["HeadingChanged"] = handlerName;
+                element.HeadingChanged -= HeadingChangedRouter;
+                element.HeadingChanged += HeadingChangedRouter;
+            }
+            static void LoadingStatusChangedRouter(object sender, Object e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["LoadingStatusChanged"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetLoadingStatusChangedEventHandler(string handlerName, MapControl element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["LoadingStatusChanged"] = handlerName;
+                element.LoadingStatusChanged -= LoadingStatusChangedRouter;
+                element.LoadingStatusChanged += LoadingStatusChangedRouter;
+            }
+            static void MapDoubleTappedRouter(object sender, MapInputEventArgs e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["MapDoubleTapped"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetMapDoubleTappedEventHandler(string handlerName, MapControl element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["MapDoubleTapped"] = handlerName;
+                element.MapDoubleTapped -= MapDoubleTappedRouter;
+                element.MapDoubleTapped += MapDoubleTappedRouter;
+            }
+            static void MapElementClickRouter(object sender, MapElementClickEventArgs e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["MapElementClick"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetMapElementClickEventHandler(string handlerName, MapControl element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["MapElementClick"] = handlerName;
+                element.MapElementClick -= MapElementClickRouter;
+                element.MapElementClick += MapElementClickRouter;
+            }
+            static void MapElementPointerEnteredRouter(object sender, MapElementPointerEnteredEventArgs e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["MapElementPointerEntered"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetMapElementPointerEnteredEventHandler(string handlerName, MapControl element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["MapElementPointerEntered"] = handlerName;
+                element.MapElementPointerEntered -= MapElementPointerEnteredRouter;
+                element.MapElementPointerEntered += MapElementPointerEnteredRouter;
+            }
+            static void MapElementPointerExitedRouter(object sender, MapElementPointerExitedEventArgs e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["MapElementPointerExited"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetMapElementPointerExitedEventHandler(string handlerName, MapControl element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["MapElementPointerExited"] = handlerName;
+                element.MapElementPointerExited -= MapElementPointerExitedRouter;
+                element.MapElementPointerExited += MapElementPointerExitedRouter;
+            }
+            static void MapHoldingRouter(object sender, MapInputEventArgs e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["MapHolding"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetMapHoldingEventHandler(string handlerName, MapControl element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["MapHolding"] = handlerName;
+                element.MapHolding -= MapHoldingRouter;
+                element.MapHolding += MapHoldingRouter;
+            }
+            static void MapTappedRouter(object sender, MapInputEventArgs e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["MapTapped"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetMapTappedEventHandler(string handlerName, MapControl element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["MapTapped"] = handlerName;
+                element.MapTapped -= MapTappedRouter;
+                element.MapTapped += MapTappedRouter;
+            }
+            static void PitchChangedRouter(object sender, Object e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["PitchChanged"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetPitchChangedEventHandler(string handlerName, MapControl element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["PitchChanged"] = handlerName;
+                element.PitchChanged -= PitchChangedRouter;
+                element.PitchChanged += PitchChangedRouter;
+            }
+            static void TargetCameraChangedRouter(object sender, MapTargetCameraChangedEventArgs e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["TargetCameraChanged"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetTargetCameraChangedEventHandler(string handlerName, MapControl element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["TargetCameraChanged"] = handlerName;
+                element.TargetCameraChanged -= TargetCameraChangedRouter;
+                element.TargetCameraChanged += TargetCameraChangedRouter;
+            }
+            static void TransformOriginChangedRouter(object sender, Object e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["TransformOriginChanged"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetTransformOriginChangedEventHandler(string handlerName, MapControl element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["TransformOriginChanged"] = handlerName;
+                element.TransformOriginChanged -= TransformOriginChangedRouter;
+                element.TransformOriginChanged += TransformOriginChangedRouter;
+            }
+            static void ZoomLevelChangedRouter(object sender, Object e)
+            {
+                if (Command != null)
+                {
+                    var map = (Dictionary<string, string>)((FrameworkElement)sender).GetValue(eventMap);
+                    Command(null, new CommandEventArgs() { CommandHandlerToken = map["ZoomLevelChanged"], Sender = sender, EventArgs = e });
+                }
+            }
+            static void SetZoomLevelChangedEventHandler(string handlerName, MapControl element)
+            {
+                var map = (Dictionary<string, string>)element.GetValue(eventMap);
+                if (map == null)
+                {
+                    element.SetValue(eventMap, map = new Dictionary<string, string>());
+                }
+                map["ZoomLevelChanged"] = handlerName;
+                element.ZoomLevelChanged -= ZoomLevelChangedRouter;
+                element.ZoomLevelChanged += ZoomLevelChangedRouter;
+            }
+        }
+
         internal static class ShapeHandler
         {
             internal static void SetProperties(Shape t, JObject obj, JObject lastObj, DiffContext context)
@@ -1386,14 +1768,10 @@ namespace XSRT2 {
                         {
                             CollectPanelChildrenWorker(t, child.AsJEnumerable(), lastChild != null ? lastChild.AsJEnumerable() : null, children, context);
                         }
-                        else if(child.Type == JTokenType.Object)
+                        else
                         {
                             var instance = CreateFromState((JObject)child, lastChild as JObject, context);
                             children.Add((FrameworkElement)instance);
-                        }
-                        else
-                        {
-                            children.Add(new ContentControl() { Content = child.ToString() });
                         }
                     }
                 }
@@ -1771,6 +2149,7 @@ namespace XSRT2 {
             if (handlers == null)
             {
                 handlers = new Dictionary<string, CreateCallback>();
+                handlers["MapControl"] = MapControlHandler.Create;
                 handlers["Ellipse"] = EllipseHandler.Create;
                 handlers["Rectangle"] = RectangleHandler.Create;
                 handlers["Viewbox"] = ViewboxHandler.Create;
@@ -1912,7 +2291,7 @@ namespace XSRT2 {
                 surrogateKeys[baseName] = n;
                 string key = baseName + n;
 
-                var concat = nameStack.Count > 0 ? nameStack[nameStack.Count - 1] : "root";
+                var concat = nameStack.Count > 0 ? nameStack.Aggregate((a, b) => a + "-" + b) : "root";
                  
                 return concat + "-" + key;
             }
