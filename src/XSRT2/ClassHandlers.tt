@@ -26,19 +26,37 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Shapes;
 using Windows.UI.Xaml.Controls.Maps;
+using Windows.Devices.Geolocation;
 
 namespace XSRT2 {
     public static class Handler
     {
         <#
         ClassDef(
+            "MapItemsControl",
+            true,
+            null,
+            postInitCall:@"
+object templ;
+Application.Current.Resources.TryGetValue(""emptyTemplate"", out templ);
+createResult.Value.ItemTemplate = (DataTemplate)templ;
+",
+            props:new PropEntry[] {
+                new PropEntry() { Name="itemsSource", SetBody="{ SetItemsSource(target, valueToken, lastValueToken, context); }" },
+            }
+        );
+        #>
+                
+        <#
+        ClassDef(
             "MapControl",
             true,
             "Control",
+            postInitCall:"SetChildren(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);",
             props:new PropEntry[] {
                 // UNDONE: ActualCamera
                 BooleanProp("BusinessLandmarksVisible"),
-                // UNDONE: Center
+                GeopointProp("Center"),
                 // UNDONE: Children
                 // UNDONE: public MapColorScheme ColorScheme { get; set; }
                 // UNDONE: public MapCustomExperience CustomExperience { get; set; }
@@ -131,6 +149,9 @@ namespace XSRT2 {
                 new PropEntry() { Name="scrollViewer$verticalScrollBarVisibility", SetBody="{ target.SetValue(ScrollViewer.VerticalScrollBarVisibilityProperty, XamlStringParse<ScrollBarVisibility>(valueToken)); }" },
                 new PropEntry() { Name="scrollViewer$horizontalScrollBarVisibility", SetBody="{ target.SetValue(ScrollViewer.HorizontalScrollBarVisibilityProperty, XamlStringParse<ScrollBarVisibility>(valueToken)); }" },
 
+                // UNDONE: rest of mapControl
+                //
+                GeopointAttachedProp("Location", "map", "MapControl"),
 
                 // UNDONE: rest of grid
                 //
@@ -484,6 +505,45 @@ namespace XSRT2 {
         ); 
         #>
 
+        internal static partial class MapControlHandler 
+        {
+            static void SetChildren(MapControl t, JObject obj, JObject lastObj, DiffContext context)
+            {
+                List<DependencyObject> children = new List<DependencyObject>();
+                IJEnumerable<JToken> lastChildren = null;
+                JToken last;
+                if (lastObj != null && lastObj.TryGetValue("children", out last))
+                {
+                    lastChildren = last.AsJEnumerable();
+                }
+                CollectChildrenWorker(obj["children"].AsJEnumerable(), lastChildren, children, context);
+                var setChildrenNeeded = false;
+                if (t.Children.Count == children.Count)
+                {
+                    for (int i = 0; i < children.Count; i++)
+                    {
+                        if (!object.ReferenceEquals(children[i], t.Children[i]))
+                        {
+                            setChildrenNeeded = true;
+                        }
+                    }
+                }
+                else
+                {
+                    setChildrenNeeded = true;
+                }
+
+                if (setChildrenNeeded)
+                {
+                    t.Children.Clear();
+                    foreach (var child in children)
+                    {
+                        t.Children.Add(child);
+                    }
+                }
+            }
+        }
+
         internal static class PanelHandler
         {
             internal static void SetGridRowDefinitions(Grid t, JArray obj) 
@@ -509,7 +569,6 @@ namespace XSRT2 {
 
             static void SetPanelChildren(Panel t, JObject obj, JObject lastObj, DiffContext context)
             {
-                Handler.FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
                 List<UIElement> children = new List<UIElement>();
                 IJEnumerable<JToken> lastChildren = null;
                 JToken last;
@@ -517,7 +576,7 @@ namespace XSRT2 {
                 {
                     lastChildren = last.AsJEnumerable();
                 }
-                CollectPanelChildrenWorker(t, obj["children"].AsJEnumerable(), lastChildren, children, context);
+                CollectChildrenWorker(obj["children"].AsJEnumerable(), lastChildren, children, context);
                 var setChildrenNeeded = false;
                 if (t.Children.Count == children.Count)
                 {
@@ -544,33 +603,6 @@ namespace XSRT2 {
                     }
                 }
             }
-            static void CollectPanelChildrenWorker(Panel t, IJEnumerable<JToken> items, IEnumerable<JToken> lastItems, List<UIElement> children, DiffContext context)
-            {
-                IEnumerator<JToken> enumerator = null;
-                if (lastItems != null)
-                {
-                    enumerator = lastItems.GetEnumerator();
-                    enumerator.Reset();
-                }
-                if(items != null)
-                {
-                    foreach (var child in items)
-                    {
-                        JToken lastChild = null;
-                        if (enumerator != null && enumerator.MoveNext()) { lastChild = enumerator.Current; }
-
-                        if (child.Type == JTokenType.Array)
-                        {
-                            CollectPanelChildrenWorker(t, child.AsJEnumerable(), lastChild != null ? lastChild.AsJEnumerable() : null, children, context);
-                        }
-                        else
-                        {
-                            var instance = CreateFromState((JObject)child, lastChild as JObject, context);
-                            children.Add((FrameworkElement)instance);
-                        }
-                    }
-                }
-            }
             internal static void SetProperties(Panel t, JObject obj, JObject lastObj, DiffContext context)
             {
                 FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
@@ -581,6 +613,33 @@ namespace XSRT2 {
 
         }
 
+        static void CollectChildrenWorker<T>(IJEnumerable<JToken> items, IEnumerable<JToken> lastItems, List<T> children, DiffContext context) where T:DependencyObject
+        {
+            IEnumerator<JToken> enumerator = null;
+            if (lastItems != null)
+            {
+                enumerator = lastItems.GetEnumerator();
+                enumerator.Reset();
+            }
+            if(items != null)
+            {
+                foreach (var child in items)
+                {
+                    JToken lastChild = null;
+                    if (enumerator != null && enumerator.MoveNext()) { lastChild = enumerator.Current; }
+
+                    if (child.Type == JTokenType.Array)
+                    {
+                        CollectChildrenWorker(child.AsJEnumerable(), lastChild != null ? lastChild.AsJEnumerable() : null, children, context);
+                    }
+                    else
+                    {
+                        var instance = CreateFromState((JObject)child, lastChild as JObject, context);
+                        children.Add((T)instance);
+                    }
+                }
+            }
+        }
 
         static DependencyProperty eventMap = DependencyProperty.RegisterAttached("XSEventMap", typeof(Dictionary<string, string>), typeof(FrameworkElement), PropertyMetadata.Create((object)null));
         static Dictionary<string, CreateCallback> handlers;
@@ -763,7 +822,7 @@ namespace XSRT2 {
         }
 #endif
 
-        internal static void SetItemsSource(ItemsControl control, JToken source, JToken lastSource, Handler.DiffContext context)
+        static List<object> CollectItemsSourceItems(JToken source, JToken lastSource, Handler.DiffContext context)
         {
             // UNDONE: need to do better delta on previous version of the list
             //
@@ -794,8 +853,17 @@ namespace XSRT2 {
 #endif
                 }
             }
+            return collection;
+        }
 
-            control.ItemsSource = collection;
+        internal static void SetItemsSource(MapItemsControl control, JToken source, JToken lastSource, Handler.DiffContext context)
+        {
+            control.ItemsSource = CollectItemsSourceItems(source, lastSource, context);
+        }
+
+        internal static void SetItemsSource(ItemsControl control, JToken source, JToken lastSource, Handler.DiffContext context)
+        {
+            control.ItemsSource = CollectItemsSourceItems(source, lastSource, context);
         }
 
         static CreateResult<T> CreateOrGetLast<T>(JObject obj, DiffContext context) where T:new()
@@ -1097,6 +1165,35 @@ class EventEntry {
     public string WinRTName;
     public string EventType;
 }
+PropEntry GeopointProp(string name) 
+{
+    return new PropEntry() 
+        {  
+            Name=CamelCase(name), 
+            SetBody = @"{
+    JObject valueObj = (JObject)valueToken;
+    BasicGeoposition pos = new BasicGeoposition() {
+        Latitude = valueObj[""latitude""].Value<double>(),
+        Longitude = valueObj[""longitude""].Value<double>()
+    };
+    target.Center = new Geopoint(pos);
+}" 
+        };
+}
+PropEntry GeopointAttachedProp(string winRTPropName, string shortProvider, string winRTProvider) {
+    return new PropEntry() 
+        { 
+            Name=shortProvider + "$" + CamelCase(winRTPropName), 
+            SetBody=@"{
+    JObject valueObj = (JObject)valueToken;
+    BasicGeoposition pos = new BasicGeoposition() {
+        Latitude = valueObj[""latitude""].Value<double>(),
+        Longitude = valueObj[""longitude""].Value<double>()
+    };
+    target.SetValue("+winRTProvider+@"."+winRTPropName+@"Property, new Geopoint(pos));
+}"
+    };
+}
 string CamelCase(string name) {
     return Char.ToLowerInvariant(name[0]) + name.Substring(1);
 }
@@ -1164,7 +1261,7 @@ void ClassDef(string name, bool isPublic, string baseTypeName, string postInitCa
     if (isPublic) { publicHandlerNames.Add(name); }
     PushIndent("    ");
     PushIndent("    ");
-    WriteLine("internal static class " + name + "Handler");
+    WriteLine("internal static partial class " + name + "Handler");
     WriteLine("{");
     PushIndent("    ");
     if (isPublic) {

@@ -20,17 +20,44 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Shapes;
 using Windows.UI.Xaml.Controls.Maps;
+using Windows.Devices.Geolocation;
 
 namespace XSRT2 {
     public static class Handler
     {
-        internal static class MapControlHandler
+        internal static partial class MapItemsControlHandler
+        {
+            internal static MapItemsControl Create(JObject obj, JObject lastObj, DiffContext context)
+            {
+                var createResult = CreateOrGetLast<MapItemsControl>(obj, context);
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                
+                object templ;
+                Application.Current.Resources.TryGetValue("emptyTemplate", out templ);
+                createResult.Value.ItemTemplate = (DataTemplate)templ;
+
+                context.PopName(createResult.Name);
+                return createResult.Value;
+            }
+            internal static void SetProperties(MapItemsControl t, JObject obj, JObject lastObj, DiffContext context)
+            {
+                TrySet(context, obj, lastObj,
+                    "itemsSource", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => { SetItemsSource(target, valueToken, lastValueToken, context); });
+            }
+        }
+                
+        internal static partial class MapControlHandler
         {
             internal static MapControl Create(JObject obj, JObject lastObj, DiffContext context)
             {
                 var createResult = CreateOrGetLast<MapControl>(obj, context);
                 context.PushName(createResult.Name);
                 SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                SetChildren(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
                 context.PopName(createResult.Name);
                 return createResult.Value;
             }
@@ -42,6 +69,18 @@ namespace XSRT2 {
                     false,
                     t,
                     (target, valueToken, lastValueToken) => target.BusinessLandmarksVisible = Convert.ToBoolean(((JValue)valueToken).Value));
+                TrySet(context, obj, lastObj,
+                    "center", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => {
+                    JObject valueObj = (JObject)valueToken;
+                    BasicGeoposition pos = new BasicGeoposition() {
+                        Latitude = valueObj["latitude"].Value<double>(),
+                        Longitude = valueObj["longitude"].Value<double>()
+                    };
+                    target.Center = new Geopoint(pos);
+                });
                 TrySet(context, obj, lastObj,
                     "desiredPitch", 
                     false,
@@ -405,7 +444,7 @@ namespace XSRT2 {
             }
         }
 
-        internal static class ShapeHandler
+        internal static partial class ShapeHandler
         {
             internal static void SetProperties(Shape t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -428,7 +467,7 @@ namespace XSRT2 {
             }
         }
 
-        internal static class EllipseHandler
+        internal static partial class EllipseHandler
         {
             internal static Ellipse Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -443,7 +482,7 @@ namespace XSRT2 {
                 ShapeHandler.SetProperties(t, obj, lastObj, context);
             }
         }
-        internal static class RectangleHandler
+        internal static partial class RectangleHandler
         {
             internal static Rectangle Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -461,7 +500,7 @@ namespace XSRT2 {
 
 
 
-        internal static class UIElementHandler
+        internal static partial class UIElementHandler
         {
             internal static void SetProperties(UIElement t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -508,7 +547,7 @@ namespace XSRT2 {
             }
         }
 
-        internal static class FrameworkElementHandler
+        internal static partial class FrameworkElementHandler
         {
             internal static void SetProperties(FrameworkElement t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -523,6 +562,18 @@ namespace XSRT2 {
                     false,
                     t,
                     (target, valueToken, lastValueToken) => { target.SetValue(ScrollViewer.HorizontalScrollBarVisibilityProperty, XamlStringParse<ScrollBarVisibility>(valueToken)); });
+                TrySet(context, obj, lastObj,
+                    "map$location", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => {
+                    JObject valueObj = (JObject)valueToken;
+                    BasicGeoposition pos = new BasicGeoposition() {
+                        Latitude = valueObj["latitude"].Value<double>(),
+                        Longitude = valueObj["longitude"].Value<double>()
+                    };
+                    target.SetValue(MapControl.LocationProperty, new Geopoint(pos));
+                });
                 TrySet(context, obj, lastObj,
                     "grid$row", 
                     false,
@@ -676,7 +727,7 @@ namespace XSRT2 {
             }
         }
 
-        internal static class ViewboxHandler
+        internal static partial class ViewboxHandler
         {
             internal static Viewbox Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -706,7 +757,7 @@ namespace XSRT2 {
                     (target, valueToken, lastValueToken) => target.StretchDirection = XamlStringParse<StretchDirection>(valueToken));
             }
         }
-        internal static class TextBlockHandler
+        internal static partial class TextBlockHandler
         {
             internal static TextBlock Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -747,7 +798,7 @@ namespace XSRT2 {
             }
         }
 
-        internal static class ImageHandler
+        internal static partial class ImageHandler
         {
             internal static Image Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -768,7 +819,7 @@ namespace XSRT2 {
             }
         }
         
-        internal static class RichEditBoxHandler
+        internal static partial class RichEditBoxHandler
         {
             internal static RichEditBox Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -859,7 +910,7 @@ namespace XSRT2 {
             }
         }
 
-        internal static class TextBoxHandler
+        internal static partial class TextBoxHandler
         {
             internal static TextBox Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -965,7 +1016,7 @@ namespace XSRT2 {
             }
         }
 
-        internal static class GridViewHandler
+        internal static partial class GridViewHandler
         {
             internal static GridView Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -981,7 +1032,7 @@ namespace XSRT2 {
             }
         }
 
-        internal static class ListViewHandler
+        internal static partial class ListViewHandler
         {
             internal static ListView Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -998,7 +1049,7 @@ namespace XSRT2 {
             }
         }
 
-        internal static class ListViewBaseHandler
+        internal static partial class ListViewBaseHandler
         {
             internal static void SetProperties(ListViewBase t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -1006,7 +1057,7 @@ namespace XSRT2 {
             }
         }
         
-        internal static class ComboBoxHandler
+        internal static partial class ComboBoxHandler
         {
             internal static ComboBox Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -1022,7 +1073,7 @@ namespace XSRT2 {
             }
         }
         
-        internal static class ListBoxHandler
+        internal static partial class ListBoxHandler
         {
             internal static ListBox Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -1038,7 +1089,7 @@ namespace XSRT2 {
             }
         }
 
-        internal static class SelectorHandler
+        internal static partial class SelectorHandler
         {
             internal static void SetProperties(Selector t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -1071,7 +1122,7 @@ namespace XSRT2 {
             }
         }
 
-        internal static class ItemsControlHandler
+        internal static partial class ItemsControlHandler
         {
             internal static void SetProperties(ItemsControl t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -1089,7 +1140,7 @@ namespace XSRT2 {
             }
         }
 
-        internal static class RangeBaseHandler
+        internal static partial class RangeBaseHandler
         {
             internal static void SetProperties(RangeBase t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -1135,7 +1186,7 @@ namespace XSRT2 {
         // UNDONE: Content property (and others) now will recreate when child props change instead of incremental
         // update now that we drop "lastNamedObjectMap" on the floor and track references... 
         // 
-        internal static class ButtonHandler
+        internal static partial class ButtonHandler
         {
             internal static Button Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -1150,7 +1201,7 @@ namespace XSRT2 {
                 ButtonBaseHandler.SetProperties(t, obj, lastObj, context);
             }
         }
-        internal static class CalendarDatePickerHandler
+        internal static partial class CalendarDatePickerHandler
         {
             internal static CalendarDatePicker Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -1254,7 +1305,7 @@ namespace XSRT2 {
                 element.Opened += OpenedRouter;
             }
         }
-        internal static class CalendarViewHandler
+        internal static partial class CalendarViewHandler
         {
             internal static CalendarView Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -1327,7 +1378,7 @@ namespace XSRT2 {
                 element.SelectedDatesChanged += SelectedDatesChangedRouter;
             }
         }
-        internal static class RelativePanelHandler
+        internal static partial class RelativePanelHandler
         {
             internal static RelativePanel Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -1342,7 +1393,7 @@ namespace XSRT2 {
                 PanelHandler.SetProperties(t, obj, lastObj, context);
             }
         }
-        internal static class RepositionThemeTransitionHandler
+        internal static partial class RepositionThemeTransitionHandler
         {
             internal static RepositionThemeTransition Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -1356,7 +1407,7 @@ namespace XSRT2 {
             {
             }
         }
-        internal static class ProgressBarHandler
+        internal static partial class ProgressBarHandler
         {
             internal static ProgressBar Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -1371,7 +1422,7 @@ namespace XSRT2 {
                 RangeBaseHandler.SetProperties(t, obj, lastObj, context);
             }
         }
-        internal static class SliderHandler
+        internal static partial class SliderHandler
         {
             internal static Slider Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -1388,7 +1439,7 @@ namespace XSRT2 {
         }
         
 
-        internal static class CheckBoxHandler
+        internal static partial class CheckBoxHandler
         {
             internal static CheckBox Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -1429,7 +1480,7 @@ namespace XSRT2 {
             }
         }
 
-        internal static class ScrollViewerHandler
+        internal static partial class ScrollViewerHandler
         {
             internal static ScrollViewer Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -1560,7 +1611,7 @@ namespace XSRT2 {
             }
         }
 
-        internal static class ButtonBaseHandler
+        internal static partial class ButtonBaseHandler
         {
             internal static void SetProperties(ButtonBase t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -1588,7 +1639,7 @@ namespace XSRT2 {
             }
         }
         
-        internal static class ContentControlHandler
+        internal static partial class ContentControlHandler
         {
             internal static ContentControl Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -1609,7 +1660,7 @@ namespace XSRT2 {
             }
         }
 
-        internal static class ControlHandler
+        internal static partial class ControlHandler
         {
             internal static void SetProperties(Control t, JObject obj, JObject lastObj, DiffContext context)
             {
@@ -1642,7 +1693,7 @@ namespace XSRT2 {
             }
         }
 
-        internal static class StackPanelHandler
+        internal static partial class StackPanelHandler
         {
             internal static StackPanel Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -1663,7 +1714,7 @@ namespace XSRT2 {
             }
         }
 
-        internal static class GridHandler
+        internal static partial class GridHandler
         {
             internal static Grid Create(JObject obj, JObject lastObj, DiffContext context)
             {
@@ -1686,6 +1737,45 @@ namespace XSRT2 {
                     false,
                     t,
                     (target, valueToken, lastValueToken) => { PanelHandler.SetGridColumnDefinitions(target, (JArray)valueToken); });
+            }
+        }
+
+        internal static partial class MapControlHandler 
+        {
+            static void SetChildren(MapControl t, JObject obj, JObject lastObj, DiffContext context)
+            {
+                List<DependencyObject> children = new List<DependencyObject>();
+                IJEnumerable<JToken> lastChildren = null;
+                JToken last;
+                if (lastObj != null && lastObj.TryGetValue("children", out last))
+                {
+                    lastChildren = last.AsJEnumerable();
+                }
+                CollectChildrenWorker(obj["children"].AsJEnumerable(), lastChildren, children, context);
+                var setChildrenNeeded = false;
+                if (t.Children.Count == children.Count)
+                {
+                    for (int i = 0; i < children.Count; i++)
+                    {
+                        if (!object.ReferenceEquals(children[i], t.Children[i]))
+                        {
+                            setChildrenNeeded = true;
+                        }
+                    }
+                }
+                else
+                {
+                    setChildrenNeeded = true;
+                }
+
+                if (setChildrenNeeded)
+                {
+                    t.Children.Clear();
+                    foreach (var child in children)
+                    {
+                        t.Children.Add(child);
+                    }
+                }
             }
         }
 
@@ -1714,7 +1804,6 @@ namespace XSRT2 {
 
             static void SetPanelChildren(Panel t, JObject obj, JObject lastObj, DiffContext context)
             {
-                Handler.FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
                 List<UIElement> children = new List<UIElement>();
                 IJEnumerable<JToken> lastChildren = null;
                 JToken last;
@@ -1722,7 +1811,7 @@ namespace XSRT2 {
                 {
                     lastChildren = last.AsJEnumerable();
                 }
-                CollectPanelChildrenWorker(t, obj["children"].AsJEnumerable(), lastChildren, children, context);
+                CollectChildrenWorker(obj["children"].AsJEnumerable(), lastChildren, children, context);
                 var setChildrenNeeded = false;
                 if (t.Children.Count == children.Count)
                 {
@@ -1749,33 +1838,6 @@ namespace XSRT2 {
                     }
                 }
             }
-            static void CollectPanelChildrenWorker(Panel t, IJEnumerable<JToken> items, IEnumerable<JToken> lastItems, List<UIElement> children, DiffContext context)
-            {
-                IEnumerator<JToken> enumerator = null;
-                if (lastItems != null)
-                {
-                    enumerator = lastItems.GetEnumerator();
-                    enumerator.Reset();
-                }
-                if(items != null)
-                {
-                    foreach (var child in items)
-                    {
-                        JToken lastChild = null;
-                        if (enumerator != null && enumerator.MoveNext()) { lastChild = enumerator.Current; }
-
-                        if (child.Type == JTokenType.Array)
-                        {
-                            CollectPanelChildrenWorker(t, child.AsJEnumerable(), lastChild != null ? lastChild.AsJEnumerable() : null, children, context);
-                        }
-                        else
-                        {
-                            var instance = CreateFromState((JObject)child, lastChild as JObject, context);
-                            children.Add((FrameworkElement)instance);
-                        }
-                    }
-                }
-            }
             internal static void SetProperties(Panel t, JObject obj, JObject lastObj, DiffContext context)
             {
                 FrameworkElementHandler.SetProperties(t, obj, lastObj, context);
@@ -1786,6 +1848,33 @@ namespace XSRT2 {
 
         }
 
+        static void CollectChildrenWorker<T>(IJEnumerable<JToken> items, IEnumerable<JToken> lastItems, List<T> children, DiffContext context) where T:DependencyObject
+        {
+            IEnumerator<JToken> enumerator = null;
+            if (lastItems != null)
+            {
+                enumerator = lastItems.GetEnumerator();
+                enumerator.Reset();
+            }
+            if(items != null)
+            {
+                foreach (var child in items)
+                {
+                    JToken lastChild = null;
+                    if (enumerator != null && enumerator.MoveNext()) { lastChild = enumerator.Current; }
+
+                    if (child.Type == JTokenType.Array)
+                    {
+                        CollectChildrenWorker(child.AsJEnumerable(), lastChild != null ? lastChild.AsJEnumerable() : null, children, context);
+                    }
+                    else
+                    {
+                        var instance = CreateFromState((JObject)child, lastChild as JObject, context);
+                        children.Add((T)instance);
+                    }
+                }
+            }
+        }
 
         static DependencyProperty eventMap = DependencyProperty.RegisterAttached("XSEventMap", typeof(Dictionary<string, string>), typeof(FrameworkElement), PropertyMetadata.Create((object)null));
         static Dictionary<string, CreateCallback> handlers;
@@ -1968,7 +2057,7 @@ namespace XSRT2 {
         }
 #endif
 
-        internal static void SetItemsSource(ItemsControl control, JToken source, JToken lastSource, Handler.DiffContext context)
+        static List<object> CollectItemsSourceItems(JToken source, JToken lastSource, Handler.DiffContext context)
         {
             // UNDONE: need to do better delta on previous version of the list
             //
@@ -1999,8 +2088,17 @@ namespace XSRT2 {
 #endif
                 }
             }
+            return collection;
+        }
 
-            control.ItemsSource = collection;
+        internal static void SetItemsSource(MapItemsControl control, JToken source, JToken lastSource, Handler.DiffContext context)
+        {
+            control.ItemsSource = CollectItemsSourceItems(source, lastSource, context);
+        }
+
+        internal static void SetItemsSource(ItemsControl control, JToken source, JToken lastSource, Handler.DiffContext context)
+        {
+            control.ItemsSource = CollectItemsSourceItems(source, lastSource, context);
         }
 
         static CreateResult<T> CreateOrGetLast<T>(JObject obj, DiffContext context) where T:new()
@@ -2149,6 +2247,7 @@ namespace XSRT2 {
             if (handlers == null)
             {
                 handlers = new Dictionary<string, CreateCallback>();
+                handlers["MapItemsControl"] = MapItemsControlHandler.Create;
                 handlers["MapControl"] = MapControlHandler.Create;
                 handlers["Ellipse"] = EllipseHandler.Create;
                 handlers["Rectangle"] = RectangleHandler.Create;

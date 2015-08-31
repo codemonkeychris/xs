@@ -4,22 +4,39 @@ module App {
 
     export function setInitialState() {
         host.setState({ 
-            center: ""
+            center: "",
+            zoomLevel: 7.3,
+            centerPoint: {latitude:47.5219, longitude:-122.5875 }
         });
     };
 
     function centerChanged(sender) {
         var loc = sender.center.position;
 
-        host.setState({center: "alt:" + loc.altitude + ", lat:" + loc.latitude + ", lon:" + loc.longitude });
+        host.setState({centerPoint: {latitude:loc.latitude, longitude:loc.longitude}});
+
+        host.setState({center: "zoom:" + sender.zoomLevel + ", lat:" + loc.latitude + ", lon:" + loc.longitude });
+    }
+    function zoomChanged(sender) {
+        host.setState({zoomLevel: sender.zoomLevel});
+    }
+
+    function renderPin() {
+        return <Xaml.Rectangle map$location={{latitude:47.5219, longitude:-122.5875 }} fill='red' width={50} height={50} />
     }
 
     export function render() {
 
         return ( 
             <Xaml.Grid rows={["*", "auto"]}>
-                <Xaml.MapControl mapServiceToken={key} onCenterChanged={centerChanged} />
-                <Xaml.TextBlock grid$row={1} text={host.getState().center} />
+                <Xaml.MapControl 
+                    zoomLevel={host.getState().zoomLevel} 
+                    center={host.getState().centerPoint} 
+                    mapServiceToken={key} 
+                    onCenterChanged={centerChanged}>
+                    <Xaml.MapItemsControl itemsSource={[renderPin()]} />
+                </Xaml.MapControl>
+                <Xaml.TextBlock fontSize={18} grid$row={1} text={host.getState().center} />
             </Xaml.Grid>
         );
     }

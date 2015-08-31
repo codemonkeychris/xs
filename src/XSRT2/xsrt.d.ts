@@ -10,8 +10,17 @@ declare module JSX {
     }
 }
 declare module Xaml {
+    interface Geopoint {
+        latitude: number;
+        longitude: number;
+    }
+    interface MapItemsControlProps {
+        name?: string;
+        itemsSource?: any;
+    }
     interface MapControlProps extends ControlProps {
         businessLandmarksVisible?: boolean;
+        center?: Geopoint;
         desiredPitch?: number;
         heading?: number;
         landmarksVisible?: boolean;
@@ -45,6 +54,9 @@ declare module Xaml {
     interface EllipseProps extends ShapeProps {
     }
     interface RectangleProps extends ShapeProps {
+    }
+    interface MapControlAttachedProps {
+        map$location?: Geopoint;
     }
     interface ScrollViewerAttachedProps {
         scrollViewer$verticalScrollBarVisibility?: string;
@@ -85,7 +97,7 @@ declare module Xaml {
         onKeyDown?: any;
         onKeyUp?: any;
     }
-    interface FrameworkElementProps extends UIElementProps, ScrollViewerAttachedProps, GridAttachedProps, AccessibilityProps, RelativePanelAttachedProps {
+    interface FrameworkElementProps extends UIElementProps, ScrollViewerAttachedProps, GridAttachedProps, AccessibilityProps, RelativePanelAttachedProps, MapControlAttachedProps {
         name?: string;
         width?: number;
         height?: number;
@@ -229,6 +241,11 @@ declare module Xaml {
     interface GridProps extends PanelProps {
         rows?: [string];
         columns?: [string];
+    }
+    class MapItemsControl {
+        type: string;
+        constructor();
+        props: MapItemsControlProps;
     }
     class MapControl {
         type: string;

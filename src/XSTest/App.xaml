@@ -4,5 +4,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:XSTest"
     RequestedTheme="Light">
-
+    <Application.Resources>
+        <DataTemplate x:Key="emptyTemplate">
+            <Button Width="100" Height="100" Content="{Binding Content}" />
+        </DataTemplate>
+    </Application.Resources>
 </Application>

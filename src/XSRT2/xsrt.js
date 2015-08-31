@@ -39,6 +39,14 @@ var React;
 })(React || (React = {}));
 var Xaml;
 (function (Xaml) {
+    var MapItemsControl = (function () {
+        function MapItemsControl() {
+            this.type = 'MapItemsControl';
+        }
+        return MapItemsControl;
+    })();
+    Xaml.MapItemsControl = MapItemsControl;
+    ;
     var MapControl = (function () {
         function MapControl() {
             this.type = 'MapControl';

@@ -50,10 +50,18 @@ module JSX {
 }
 
 module Xaml {
+    export interface Geopoint {
+        latitude: number;
+        longitude: number;
+    }
+    export interface MapItemsControlProps {
+        name?: string; // UNDONE: move to more "root" object for sharing
+        itemsSource?: any; // UNDONE
+    }
     export interface MapControlProps extends ControlProps {
         // UNDONE: ActualCamera
         businessLandmarksVisible?: boolean;
-        // UNDONE: Center
+        center?: Geopoint;
         // UNDONE: Children
         // UNDONE: public MapColorScheme ColorScheme { get; set; }
         // UNDONE: public MapCustomExperience CustomExperience { get; set; }
@@ -114,6 +122,9 @@ module Xaml {
 
     }
 
+    export interface MapControlAttachedProps {
+        map$location?: Geopoint
+    }
     export interface ScrollViewerAttachedProps {
         scrollViewer$verticalScrollBarVisibility?: string;
         scrollViewer$horizontalScrollBarVisibility?: string;
@@ -154,7 +165,7 @@ module Xaml {
         onKeyDown?: any; // callback?
         onKeyUp?: any; // callback?
     }
-    export interface FrameworkElementProps extends UIElementProps, ScrollViewerAttachedProps, GridAttachedProps, AccessibilityProps, RelativePanelAttachedProps {
+    export interface FrameworkElementProps extends UIElementProps, ScrollViewerAttachedProps, GridAttachedProps, AccessibilityProps, RelativePanelAttachedProps, MapControlAttachedProps {
         name?: string;
         width?: number;
         height?: number;
@@ -314,6 +325,14 @@ module Xaml {
         rows?: [string];
         columns?: [string];
     }
+    
+    export class MapItemsControl {
+        type: string;
+        constructor() {
+            this.type = 'MapItemsControl';
+        }
+        props: MapItemsControlProps
+    };
 
     export class MapControl {
         type: string;
