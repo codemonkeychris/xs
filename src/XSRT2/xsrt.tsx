@@ -56,7 +56,7 @@ module Xaml {
     }
     export interface MapItemsControlProps {
         name?: string; // UNDONE: move to more "root" object for sharing
-        itemsSource?: any; // UNDONE
+        items?: any; // UNDONE
     }
     export interface MapControlProps extends ControlProps {
         // UNDONE: ActualCamera

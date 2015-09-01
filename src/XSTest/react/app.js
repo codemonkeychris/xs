@@ -20,10 +20,10 @@ var App;
         host.setState({ zoomLevel: sender.zoomLevel });
     }
     function renderPin() {
-        return React.createElement(Xaml.Button, {"map$location": { latitude: 47.5219, longitude: -122.5875 }, "content": 'home!!!'});
+        return React.createElement(Xaml.Rectangle, {"map$location": { latitude: 47.5219, longitude: -122.5875 }, "fill": 'red', "width": 50, "height": 50});
     }
     function render() {
-        return (React.createElement(Xaml.Grid, {"rows": ["*", "auto"]}, React.createElement(Xaml.MapControl, {"zoomLevel": host.getState().zoomLevel, "center": host.getState().centerPoint, "mapServiceToken": key, "onCenterChanged": centerChanged}, React.createElement(Xaml.MapItemsControl, {"itemsSource": [renderPin()]})), React.createElement(Xaml.TextBlock, {"fontSize": 18, "grid$row": 1, "text": host.getState().center})));
+        return (React.createElement(Xaml.Grid, {"rows": ["*", "auto"]}, React.createElement(Xaml.MapControl, {"zoomLevel": host.getState().zoomLevel, "center": host.getState().centerPoint, "mapServiceToken": key, "onCenterChanged": centerChanged}, React.createElement(Xaml.MapItemsControl, {"items": [renderPin()]})), React.createElement(Xaml.TextBlock, {"fontSize": 18, "grid$row": 1, "text": host.getState().center})));
     }
     App.render = render;
 })(App || (App = {}));

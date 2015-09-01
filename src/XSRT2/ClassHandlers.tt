@@ -36,13 +36,8 @@ namespace XSRT2 {
             "MapItemsControl",
             true,
             null,
-            postInitCall:@"
-object templ;
-Application.Current.Resources.TryGetValue(""emptyTemplate"", out templ);
-createResult.Value.ItemTemplate = (DataTemplate)templ;
-",
             props:new PropEntry[] {
-                new PropEntry() { Name="itemsSource", SetBody="{ SetItemsSource(target, valueToken, lastValueToken, context); }" },
+                new PropEntry() { Name="items", SetBody="{ SetItems(target, valueToken, lastValueToken, context); }" },
             }
         );
         #>
@@ -856,9 +851,14 @@ createResult.Value.ItemTemplate = (DataTemplate)templ;
             return collection;
         }
 
-        internal static void SetItemsSource(MapItemsControl control, JToken source, JToken lastSource, Handler.DiffContext context)
+        internal static void SetItems(MapItemsControl control, JToken source, JToken lastSource, Handler.DiffContext context)
         {
-            control.ItemsSource = CollectItemsSourceItems(source, lastSource, context);
+            var items = CollectItemsSourceItems(source, lastSource, context);
+            control.Items.Clear();
+            foreach (var i in items) 
+            {
+                control.Items.Add((DependencyObject)i);
+            }
         }
 
         internal static void SetItemsSource(ItemsControl control, JToken source, JToken lastSource, Handler.DiffContext context)

@@ -34,7 +34,7 @@ module App {
                     center={host.getState().centerPoint} 
                     mapServiceToken={key} 
                     onCenterChanged={centerChanged}>
-                    <Xaml.MapItemsControl itemsSource={[renderPin()]} />
+                    <Xaml.MapItemsControl items={[renderPin()]} />
                 </Xaml.MapControl>
                 <Xaml.TextBlock fontSize={18} grid$row={1} text={host.getState().center} />
             </Xaml.Grid>

@@ -16,7 +16,7 @@ declare module Xaml {
     }
     interface MapItemsControlProps {
         name?: string;
-        itemsSource?: any;
+        items?: any;
     }
     interface MapControlProps extends ControlProps {
         businessLandmarksVisible?: boolean;

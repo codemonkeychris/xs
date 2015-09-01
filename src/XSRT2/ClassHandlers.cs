@@ -32,21 +32,16 @@ namespace XSRT2 {
                 var createResult = CreateOrGetLast<MapItemsControl>(obj, context);
                 context.PushName(createResult.Name);
                 SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
-                
-                object templ;
-                Application.Current.Resources.TryGetValue("emptyTemplate", out templ);
-                createResult.Value.ItemTemplate = (DataTemplate)templ;
-
                 context.PopName(createResult.Name);
                 return createResult.Value;
             }
             internal static void SetProperties(MapItemsControl t, JObject obj, JObject lastObj, DiffContext context)
             {
                 TrySet(context, obj, lastObj,
-                    "itemsSource", 
+                    "items", 
                     false,
                     t,
-                    (target, valueToken, lastValueToken) => { SetItemsSource(target, valueToken, lastValueToken, context); });
+                    (target, valueToken, lastValueToken) => { SetItems(target, valueToken, lastValueToken, context); });
             }
         }
                 
@@ -2091,9 +2086,14 @@ namespace XSRT2 {
             return collection;
         }
 
-        internal static void SetItemsSource(MapItemsControl control, JToken source, JToken lastSource, Handler.DiffContext context)
+        internal static void SetItems(MapItemsControl control, JToken source, JToken lastSource, Handler.DiffContext context)
         {
-            control.ItemsSource = CollectItemsSourceItems(source, lastSource, context);
+            var items = CollectItemsSourceItems(source, lastSource, context);
+            control.Items.Clear();
+            foreach (var i in items) 
+            {
+                control.Items.Add((DependencyObject)i);
+            }
         }
 
         internal static void SetItemsSource(ItemsControl control, JToken source, JToken lastSource, Handler.DiffContext context)
