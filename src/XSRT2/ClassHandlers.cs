@@ -2088,7 +2088,15 @@ namespace XSRT2 {
 
         internal static void SetItems(MapItemsControl control, JToken source, JToken lastSource, Handler.DiffContext context)
         {
+            // UNDONE: can't diff... for some reason :(
+            context.BeginForceCreate();
             var items = CollectItemsSourceItems(source, lastSource, context);
+            context.EndForceCreate();
+            // var items = CollectItemsSourceItems(source, lastSource, context);
+            // foreach (var child in control.Items) 
+            // {
+            //     Unparent((UIElement)child);
+            // }
             control.Items.Clear();
             foreach (var i in items) 
             {
@@ -2338,6 +2346,7 @@ namespace XSRT2 {
             Dictionary<string, object> currentNamedObjectMap = new Dictionary<string, object>();
             Dictionary<string, int> surrogateKeys = new Dictionary<string, int>();
             List<string> nameStack = new List<string>();
+            int forceCreateCount = 0;
 
             internal DiffContext(Dictionary<string, object> lastNamedObjectMap)
             {
@@ -2352,6 +2361,14 @@ namespace XSRT2 {
             public DateTime End;
             public FrameworkElement HostElement;
                 
+            public void BeginForceCreate() 
+            {
+                forceCreateCount++;
+            }
+            public void EndForceCreate()
+            {
+                forceCreateCount--;
+            }
             public Dictionary<String, object> GetNamedObjectMap() { return currentNamedObjectMap; }
 
             public object ReferenceObject(string name) 
@@ -2366,6 +2383,8 @@ namespace XSRT2 {
             }
             public bool TryGetObject(string name, out object value)
             {
+                if (forceCreateCount > 0) { value = null; return false; }
+
                 var ret = lastNamedObjectMap.TryGetValue(name, out value);
                 if (ret) { currentNamedObjectMap[name] = value; }
                 return ret;

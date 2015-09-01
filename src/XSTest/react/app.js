@@ -20,7 +20,7 @@ var App;
         host.setState({ zoomLevel: sender.zoomLevel });
     }
     function renderPin() {
-        return React.createElement(Xaml.Rectangle, {"map$location": { latitude: 47.5219, longitude: -122.5875 }, "fill": 'red', "width": 50, "height": 50});
+        return React.createElement(Xaml.Rectangle, {"map$location": { latitude: 47.521, longitude: -122.5875 }, "fill": 'green', "width": 50, "height": 50});
     }
     function render() {
         return (React.createElement(Xaml.Grid, {"rows": ["*", "auto"]}, React.createElement(Xaml.MapControl, {"zoomLevel": host.getState().zoomLevel, "center": host.getState().centerPoint, "mapServiceToken": key, "onCenterChanged": centerChanged}, React.createElement(Xaml.MapItemsControl, {"items": [renderPin()]})), React.createElement(Xaml.TextBlock, {"fontSize": 18, "grid$row": 1, "text": host.getState().center})));

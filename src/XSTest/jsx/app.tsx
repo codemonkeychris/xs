@@ -22,7 +22,7 @@ module App {
     }
 
     function renderPin() {
-        return <Xaml.Rectangle map$location={{latitude:47.5219, longitude:-122.5875 }} fill='red' width={50} height={50} />
+        return <Xaml.Rectangle map$location={{latitude:47.55, longitude:-122.35 }} fill='yellow' width={50} height={50} />
     }
 
     export function render() {
