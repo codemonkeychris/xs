@@ -20,6 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{8992
 		..\samples\js-notebook.tsx = ..\samples\js-notebook.tsx
 		..\samples\listview-demo.tsx = ..\samples\listview-demo.tsx
 		..\samples\map.tsx = ..\samples\map.tsx
+		..\samples\photos-map-experiment.tsx = ..\samples\photos-map-experiment.tsx
 		..\samples\relative-panel.tsx = ..\samples\relative-panel.tsx
 		..\samples\repl.tsx = ..\samples\repl.tsx
 		..\samples\simple-demo.tsx = ..\samples\simple-demo.tsx
