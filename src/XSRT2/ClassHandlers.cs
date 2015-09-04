@@ -499,6 +499,11 @@ namespace XSRT2 {
         {
             internal static void SetProperties(UIElement t, JObject obj, JObject lastObj, DiffContext context)
             {
+                TrySet(context, obj, lastObj,
+                    "opacity", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.Opacity = valueToken.Value<double>());
                 TrySetEvent(context, obj, lastObj, "KeyDown", t, (target, valueToken, lastValueToken) => SetKeyDownEventHandler(valueToken.ToString(), target));
                 TrySetEvent(context, obj, lastObj, "KeyUp", t, (target, valueToken, lastValueToken) => SetKeyUpEventHandler(valueToken.ToString(), target));
             }

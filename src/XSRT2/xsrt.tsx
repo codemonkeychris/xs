@@ -33,6 +33,7 @@ module React {
         if (arguments.length > 2) {
             result.children = Array.prototype.slice.call(arguments, 2);
         }
+        if (result.render) { return result.render(); }
         return result;
     }
 
@@ -162,6 +163,7 @@ module Xaml {
 
     export interface UIElementProps {
         style?: {}; // UNDONE
+        opacity?: number;
         onKeyDown?: any; // callback?
         onKeyUp?: any; // callback?
     }

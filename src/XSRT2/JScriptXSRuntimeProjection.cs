@@ -75,6 +75,7 @@ namespace XSRT2
 
         // hacky helpers to work around JSProjection issues... 
         //
+        public object GetSelectedItem(object v) { return ((Selector)v).SelectedItem; }
         public double GetRangeValue(object v) { return (((RangeBase)v).Value); }
         public bool? GetIsChecked(object v) { return ((ToggleButton)v).IsChecked; }
         public string GetText(object v)

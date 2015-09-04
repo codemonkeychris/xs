@@ -28,6 +28,9 @@ var React;
         if (arguments.length > 2) {
             result.children = Array.prototype.slice.call(arguments, 2);
         }
+        if (result.render) {
+            return result.render();
+        }
         return result;
     }
     React.createElement = createElement;

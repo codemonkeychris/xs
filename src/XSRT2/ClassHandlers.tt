@@ -127,6 +127,9 @@ namespace XSRT2 {
             "UIElement", 
             false,
             null,
+            props:new PropEntry[] {
+                DoubleProp("Opacity")
+            },
             events:new EventEntry[] {
                 new EventEntry() { Name="KeyDown", WinRTName="KeyDown", EventType="KeyRoutedEventArgs" },
                 new EventEntry() { Name="KeyUp", WinRTName="KeyUp", EventType="KeyRoutedEventArgs" }

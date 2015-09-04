@@ -94,6 +94,7 @@ declare module Xaml {
     }
     interface UIElementProps {
         style?: {};
+        opacity?: number;
         onKeyDown?: any;
         onKeyUp?: any;
     }
