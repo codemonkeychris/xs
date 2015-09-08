@@ -30,13 +30,27 @@ var App;
         return (Math.random() * (max - min) + min) | 0;
     }
     function generateRandomPhotoData(count, minLat, maxLat, minLon, maxLon) {
+        function createRandomPosition() {
+            return { latitude: randomDouble(minLat, maxLat), longitude: randomDouble(minLon, maxLon) };
+        }
+        function createRandomColor() {
+            return colorChoices[randomInt(0, colorChoices.length)];
+        }
+        function createRandomDate() {
+            var year = randomInt(2012, 2015);
+            var month = randomInt(1, 12);
+            var day = randomInt(0, 30); // date ctor will handle the trunc for us :)
+            var hour = randomInt(0, 23);
+            var minutes = randomInt(0, 59);
+            return (new Date(year, month, day, hour, minutes)).toString();
+        }
         var colorChoices = ['red', 'orange', 'yellow'];
         var res = [];
         for (var i = 0; i < count; i++) {
             res.push({
-                color: colorChoices[randomInt(0, colorChoices.length)],
-                geoposition: { latitude: randomDouble(minLat, maxLat), longitude: randomDouble(minLon, maxLon) },
-                created: "9/4/2015"
+                color: createRandomColor(),
+                geoposition: createRandomPosition(),
+                created: createRandomDate()
             });
         }
         return res;
