@@ -108,8 +108,16 @@ module App {
     }
 
     function renderCluster(cluster, index) {
-        return (<Xaml.Grid  map$location={{ latitude: cluster.mean[0], longitude: cluster.mean[1] }} background='white' >
-            <Xaml.TextBlock text={'C#' + index} />
+
+        var size = 10 + cluster.data.length * 8;
+        var fontSize = size / 6;
+
+        return (<Xaml.Grid  
+            map$location={{ latitude: cluster.mean[0], longitude: cluster.mean[1] }} 
+            margin={(-size/2) + ", " + (-size/2) + ",0,0"}
+            width={size} height={size}>
+            <Xaml.Ellipse stroke='black' fill='yellow' width={size} height={size} />
+            <Xaml.TextBlock fontSize={fontSize} horizontalAlignment="Center" verticalAlignment="Center" text={'Cluster - ' + index} />
         </Xaml.Grid>)
     }
 

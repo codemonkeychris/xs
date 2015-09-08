@@ -88,10 +88,12 @@ var App;
         host.setState({ zoomLevel: sender.zoomLevel });
     }
     function renderImage(image, index) {
-        return (React.createElement(Xaml.Grid, {"opacity": 0.5, "map$location": image.geoposition, "background": image.color}, React.createElement(Xaml.TextBlock, {"text": 'IMG#' + index})));
+        return (React.createElement(Xaml.Grid, {"opacity": 0.5, "map$location": image.geoposition, "background": image.color}, React.createElement(Xaml.TextBlock, {"text": 'IMG#' + index + "\n@" + new Date(image.created).toDateString()})));
     }
     function renderCluster(cluster, index) {
-        return (React.createElement(Xaml.Grid, {"map$location": { latitude: cluster.mean[0], longitude: cluster.mean[1] }, "background": 'white'}, React.createElement(Xaml.TextBlock, {"text": 'C#' + index})));
+        var size = 10 + cluster.data.length * 8;
+        var fontSize = size / 6;
+        return (React.createElement(Xaml.Grid, {"map$location": { latitude: cluster.mean[0], longitude: cluster.mean[1] }, "margin": (-size / 2) + ", " + (-size / 2) + ",0,0", "width": size, "height": size}, React.createElement(Xaml.Ellipse, {"stroke": 'black', "fill": 'yellow', "width": size, "height": size}), React.createElement(Xaml.TextBlock, {"fontSize": fontSize, "horizontalAlignment": "Center", "verticalAlignment": "Center", "text": 'Cluster - ' + index})));
     }
     function modeChanged(sender, e) {
         host.setState({ activeDisplayMode: xsrt.getSelectedItem(sender) });
