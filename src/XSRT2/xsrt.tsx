@@ -55,6 +55,14 @@ module Xaml {
         latitude: number;
         longitude: number;
     }
+    export interface MapElementProps {
+        name?: string; // UNDONE: move to more "root" object for sharing
+    }
+    export interface MapPolygonProps {
+        fillColor?: string;
+        strokeColor?: string;
+        path: Geopoint[];
+    }
     export interface MapItemsControlProps {
         name?: string; // UNDONE: move to more "root" object for sharing
         items?: any; // UNDONE
@@ -72,7 +80,7 @@ module Xaml {
         // READONLY: BooleanProp("IsStreetsideSupported"),
         landmarksVisible?: boolean;
         // UNDONE: public MapLoadingStatus LoadingStatus { get; }
-        // UNDONE: public IList<MapElement> MapElements { get; }
+        mapElements: any;
         mapServiceToken: string; // not optional
         // READONLY: DoubleProp("MaxZoomLevel"),
         // READONLY: DoubleProp("MinZoomLevel"),
@@ -336,6 +344,13 @@ module Xaml {
         props: MapItemsControlProps
     };
 
+    export class MapPolygon {
+        type: string;
+        constructor() {
+            this.type = 'MapPolygon';
+        }
+        props: MapPolygonProps
+    }
     export class MapControl {
         type: string;
         constructor() {

@@ -44,10 +44,32 @@ namespace XSRT2 {
                 
         <#
         ClassDef(
+            "MapElement",
+            false,
+            null
+        );
+        #>
+                
+        <#
+        ClassDef(
+            "MapPolygon",
+            true,
+            "MapElement",
+            props:new PropEntry[] {
+                XamlProp("FillColor", "Color"),
+                XamlProp("StrokeColor", "Color"),
+                GeopathProp("Path")
+            }
+        );
+        #>
+                
+        <#
+        ClassDef(
             "MapControl",
             true,
             "Control",
-            postInitCall:"SetChildren(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);",
+            postInitCall:@"SetChildren(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+SetMapElements(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);",
             props:new PropEntry[] {
                 // UNDONE: ActualCamera
                 BooleanProp("BusinessLandmarksVisible"),
@@ -61,7 +83,6 @@ namespace XSRT2 {
                 // READONLY: BooleanProp("IsStreetsideSupported"),
                 BooleanProp("LandmarksVisible"),
                 // UNDONE: public MapLoadingStatus LoadingStatus { get; }
-                // UNDONE: public IList<MapElement> MapElements { get; }
                 StringProp("MapServiceToken"),
                 // READONLY: DoubleProp("MaxZoomLevel"),
                 // READONLY: DoubleProp("MinZoomLevel"),
@@ -537,6 +558,42 @@ namespace XSRT2 {
                     foreach (var child in children)
                     {
                         t.Children.Add(child);
+                    }
+                }
+            }
+
+            static void SetMapElements(MapControl t, JObject obj, JObject lastObj, DiffContext context)
+            {
+                List<DependencyObject> children = new List<DependencyObject>();
+                IJEnumerable<JToken> lastChildren = null;
+                JToken last;
+                if (lastObj != null && lastObj.TryGetValue("mapElements", out last))
+                {
+                    lastChildren = last.AsJEnumerable();
+                }
+                CollectChildrenWorker(obj["mapElements"].AsJEnumerable(), lastChildren, children, context);
+                var setChildrenNeeded = false;
+                if (t.Children.Count == children.Count)
+                {
+                    for (int i = 0; i < children.Count; i++)
+                    {
+                        if (!object.ReferenceEquals(children[i], t.Children[i]))
+                        {
+                            setChildrenNeeded = true;
+                        }
+                    }
+                }
+                else
+                {
+                    setChildrenNeeded = true;
+                }
+
+                if (setChildrenNeeded)
+                {
+                    t.MapElements.Clear();
+                    foreach (var child in children.OfType<MapElement>())
+                    {
+                        t.MapElements.Add(child);
                     }
                 }
             }
@@ -1187,6 +1244,26 @@ class EventEntry {
     public string WinRTName;
     public string EventType;
 }
+PropEntry GeopathProp(string name)
+{
+    return new PropEntry() 
+        {  
+            Name=CamelCase(name), 
+            SetBody = @"{
+    JArray valueObj = (JArray)valueToken;
+    var path = new List<BasicGeoposition>();
+    foreach (var posToken in valueObj.AsJEnumerable().OfType<JObject>())
+    {
+        path.Add(new BasicGeoposition() {
+            Latitude = posToken[""latitude""].Value<double>(),
+            Longitude = posToken[""longitude""].Value<double>()
+        });
+    }
+
+    target." + name +@" = new Geopath(path);
+}" 
+        };
+}
 PropEntry GeopointProp(string name) 
 {
     return new PropEntry() 
@@ -1198,7 +1275,7 @@ PropEntry GeopointProp(string name)
         Latitude = valueObj[""latitude""].Value<double>(),
         Longitude = valueObj[""longitude""].Value<double>()
     };
-    target.Center = new Geopoint(pos);
+    target." + name + @" = new Geopoint(pos);
 }" 
         };
 }

@@ -50,6 +50,13 @@ var Xaml;
     })();
     Xaml.MapItemsControl = MapItemsControl;
     ;
+    var MapPolygon = (function () {
+        function MapPolygon() {
+            this.type = 'MapPolygon';
+        }
+        return MapPolygon;
+    })();
+    Xaml.MapPolygon = MapPolygon;
     var MapControl = (function () {
         function MapControl() {
             this.type = 'MapControl';

@@ -45,6 +45,56 @@ namespace XSRT2 {
             }
         }
                 
+        internal static partial class MapElementHandler
+        {
+            internal static void SetProperties(MapElement t, JObject obj, JObject lastObj, DiffContext context)
+            {
+            }
+        }
+                
+        internal static partial class MapPolygonHandler
+        {
+            internal static MapPolygon Create(JObject obj, JObject lastObj, DiffContext context)
+            {
+                var createResult = CreateOrGetLast<MapPolygon>(obj, context);
+                context.PushName(createResult.Name);
+                SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                context.PopName(createResult.Name);
+                return createResult.Value;
+            }
+            internal static void SetProperties(MapPolygon t, JObject obj, JObject lastObj, DiffContext context)
+            {
+                MapElementHandler.SetProperties(t, obj, lastObj, context);
+                TrySet(context, obj, lastObj,
+                    "fillColor", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.FillColor = XamlStringParse<Color>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "strokeColor", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => target.StrokeColor = XamlStringParse<Color>(valueToken));
+                TrySet(context, obj, lastObj,
+                    "path", 
+                    false,
+                    t,
+                    (target, valueToken, lastValueToken) => {
+                    JArray valueObj = (JArray)valueToken;
+                    var path = new List<BasicGeoposition>();
+                    foreach (var posToken in valueObj.AsJEnumerable().OfType<JObject>())
+                    {
+                        path.Add(new BasicGeoposition() {
+                            Latitude = posToken["latitude"].Value<double>(),
+                            Longitude = posToken["longitude"].Value<double>()
+                        });
+                    }
+                
+                    target.Path = new Geopath(path);
+                });
+            }
+        }
+                
         internal static partial class MapControlHandler
         {
             internal static MapControl Create(JObject obj, JObject lastObj, DiffContext context)
@@ -53,6 +103,7 @@ namespace XSRT2 {
                 context.PushName(createResult.Name);
                 SetProperties(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
                 SetChildren(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
+                SetMapElements(createResult.Value, obj, createResult.Recycled ? lastObj : null, context);
                 context.PopName(createResult.Name);
                 return createResult.Value;
             }
@@ -1777,6 +1828,42 @@ namespace XSRT2 {
                     }
                 }
             }
+
+            static void SetMapElements(MapControl t, JObject obj, JObject lastObj, DiffContext context)
+            {
+                List<DependencyObject> children = new List<DependencyObject>();
+                IJEnumerable<JToken> lastChildren = null;
+                JToken last;
+                if (lastObj != null && lastObj.TryGetValue("mapElements", out last))
+                {
+                    lastChildren = last.AsJEnumerable();
+                }
+                CollectChildrenWorker(obj["mapElements"].AsJEnumerable(), lastChildren, children, context);
+                var setChildrenNeeded = false;
+                if (t.Children.Count == children.Count)
+                {
+                    for (int i = 0; i < children.Count; i++)
+                    {
+                        if (!object.ReferenceEquals(children[i], t.Children[i]))
+                        {
+                            setChildrenNeeded = true;
+                        }
+                    }
+                }
+                else
+                {
+                    setChildrenNeeded = true;
+                }
+
+                if (setChildrenNeeded)
+                {
+                    t.MapElements.Clear();
+                    foreach (var child in children.OfType<MapElement>())
+                    {
+                        t.MapElements.Add(child);
+                    }
+                }
+            }
         }
 
         internal static class PanelHandler
@@ -2261,6 +2348,7 @@ namespace XSRT2 {
             {
                 handlers = new Dictionary<string, CreateCallback>();
                 handlers["MapItemsControl"] = MapItemsControlHandler.Create;
+                handlers["MapPolygon"] = MapPolygonHandler.Create;
                 handlers["MapControl"] = MapControlHandler.Create;
                 handlers["Ellipse"] = EllipseHandler.Create;
                 handlers["Rectangle"] = RectangleHandler.Create;

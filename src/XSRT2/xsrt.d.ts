@@ -14,6 +14,14 @@ declare module Xaml {
         latitude: number;
         longitude: number;
     }
+    interface MapElementProps {
+        name?: string;
+    }
+    interface MapPolygonProps {
+        fillColor?: string;
+        strokeColor?: string;
+        path: Geopoint[];
+    }
     interface MapItemsControlProps {
         name?: string;
         items?: any;
@@ -24,6 +32,7 @@ declare module Xaml {
         desiredPitch?: number;
         heading?: number;
         landmarksVisible?: boolean;
+        mapElements: any;
         mapServiceToken: string;
         pedestrianFeaturesVisible?: boolean;
         trafficFlowVisible?: boolean;
@@ -247,6 +256,11 @@ declare module Xaml {
         type: string;
         constructor();
         props: MapItemsControlProps;
+    }
+    class MapPolygon {
+        type: string;
+        constructor();
+        props: MapPolygonProps;
     }
     class MapControl {
         type: string;

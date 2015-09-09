@@ -4,21 +4,13 @@ module App {
 
     export function setInitialState() {
         host.setState({ 
-            center: "",
-            zoomLevel: 7.3,
             centerPoint: {latitude:47.5219, longitude:-122.5875 }
         });
     };
 
     function centerChanged(sender) {
         var loc = sender.center.position;
-
         host.setState({centerPoint: {latitude:loc.latitude, longitude:loc.longitude}});
-
-        host.setState({center: "zoom:" + sender.zoomLevel + ", lat:" + loc.latitude + ", lon:" + loc.longitude });
-    }
-    function zoomChanged(sender) {
-        host.setState({zoomLevel: sender.zoomLevel});
     }
 
     function renderPin() {
@@ -26,16 +18,26 @@ module App {
     }
 
     export function render() {
+        var center = {latitude:47.55, longitude:-122.35 };
+        function sqaureCoords(centerPoint : Xaml.Geopoint, width, height) : Xaml.Geopoint[] {
+            return [
+                {latitude:centerPoint.latitude-(height/2), longitude:centerPoint.longitude-(width/2) },
+                {latitude:centerPoint.latitude+(height/2), longitude:centerPoint.longitude-(width/2) },
+                {latitude:centerPoint.latitude+(height/2), longitude:centerPoint.longitude+(width/2) },
+                {latitude:centerPoint.latitude-(height/2), longitude:centerPoint.longitude+(width/2) }
+            ];
+        }
+
+        var polygon = <Xaml.MapPolygon path={sqaureCoords(center, .1, .1)} />;
 
         return ( 
             <Xaml.Grid rows={["*", "auto"]}>
                 <Xaml.MapControl 
-                    zoomLevel={host.getState().zoomLevel} 
+                    zoomLevel={7.3} 
                     center={host.getState().centerPoint} 
                     mapServiceToken={key} 
-                    onCenterChanged={centerChanged}>
-                    <Xaml.MapItemsControl items={[renderPin()]} />
-                </Xaml.MapControl>
+                    onCenterChanged={centerChanged} 
+                    mapElements={[ polygon ]}/>
                 <Xaml.TextBlock fontSize={18} grid$row={1} text={host.getState().center} />
             </Xaml.Grid>
         );
