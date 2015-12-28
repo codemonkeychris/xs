@@ -32,7 +32,7 @@ declare module Xaml {
         desiredPitch?: number;
         heading?: number;
         landmarksVisible?: boolean;
-        mapElements: any;
+        mapElements?: any;
         mapServiceToken: string;
         pedestrianFeaturesVisible?: boolean;
         trafficFlowVisible?: boolean;

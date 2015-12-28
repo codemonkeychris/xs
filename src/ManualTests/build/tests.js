@@ -20,7 +20,7 @@ var App;
                 xsrt.assert(c2.date, "date should be set: " + c2.date);
             },
             render: function () {
-                return (React.createElement(Xaml.Viewbox, null, React.createElement(Xaml.StackPanel, {"horizontalAlignment": 'Stretch', "verticalAlignment": 'Stretch'}, React.createElement(Xaml.CalendarView, {"name": 'vc1', "minDate": '6/5/2015', "maxDate": '6/7/2015'}), React.createElement(Xaml.CalendarDatePicker, {"name": 'vc2', "date": '6/5/2015'}))));
+                return (React.createElement(Xaml.Viewbox, null, React.createElement(Xaml.StackPanel, {horizontalAlignment: 'Stretch', verticalAlignment: 'Stretch'}, React.createElement(Xaml.CalendarView, {name: 'vc1', minDate: '6/5/2015', maxDate: '6/7/2015'}), React.createElement(Xaml.CalendarDatePicker, {name: 'vc2', date: '6/5/2015'}))));
             }
         },
         calendarview: {
@@ -35,7 +35,7 @@ var App;
                 xsrt.assert(c2.date, "date should be set: " + c2.date);
             },
             render: function () {
-                return (React.createElement(Xaml.StackPanel, {"horizontalAlignment": 'Stretch', "verticalAlignment": 'Stretch'}, React.createElement(Xaml.CalendarView, {"name": 'c1', "minDate": '6/5/2015', "maxDate": '6/7/2015'}), React.createElement(Xaml.CalendarDatePicker, {"name": 'c2', "date": '6/5/2015'})));
+                return (React.createElement(Xaml.StackPanel, {horizontalAlignment: 'Stretch', verticalAlignment: 'Stretch'}, React.createElement(Xaml.CalendarView, {name: 'c1', minDate: '6/5/2015', maxDate: '6/7/2015'}), React.createElement(Xaml.CalendarDatePicker, {name: 'c2', date: '6/5/2015'})));
             }
         },
         couple_controls: {
@@ -54,7 +54,7 @@ var App;
                 xsrt.assert(xsrt.getRangeValue(s1) == 5, "s1.value should be set to 5");
             },
             render: function () {
-                return (React.createElement(Xaml.StackPanel, {"horizontalAlignment": 'Stretch', "verticalAlignment": 'Stretch'}, React.createElement(Xaml.Button, {"name": 'b1', "content": 'hello'}), React.createElement(Xaml.ProgressBar, {"name": 'p1', "minimum": 0, "maximum": 10, "value": host.getState().n}), React.createElement(Xaml.Slider, {"name": 's1', "minimum": 0, "maximum": 10, "value": host.getState().n})));
+                return (React.createElement(Xaml.StackPanel, {horizontalAlignment: 'Stretch', verticalAlignment: 'Stretch'}, React.createElement(Xaml.Button, {name: 'b1', content: 'hello'}), React.createElement(Xaml.ProgressBar, {name: 'p1', minimum: 0, maximum: 10, value: host.getState().n}), React.createElement(Xaml.Slider, {name: 's1', minimum: 0, maximum: 10, value: host.getState().n})));
             }
         },
         fg_color: {
@@ -68,7 +68,7 @@ var App;
                 xsrt.assert(label1 && label1.foreground, "should have foreground label");
             },
             render: function () {
-                return (React.createElement(Xaml.Grid, {"horizontalAlignment": 'Stretch', "verticalAlignment": 'Stretch', "rows": ['auto', '*'], "columns": ['*']}, React.createElement(Xaml.TextBlock, {"foreground": 'red', "name": 'label1', "grid$row": 0}, host.getState().text.length)));
+                return (React.createElement(Xaml.Grid, {horizontalAlignment: 'Stretch', verticalAlignment: 'Stretch', rows: ['auto', '*'], columns: ['*']}, React.createElement(Xaml.TextBlock, {foreground: 'red', name: 'label1', "grid$row": 0}, host.getState().text.length)));
             }
         },
         fg_color_style: {
@@ -82,7 +82,7 @@ var App;
                 xsrt.assert(label1 && label1.foreground, "should have foreground label");
             },
             render: function () {
-                return (React.createElement(Xaml.Grid, {"horizontalAlignment": 'Stretch', "verticalAlignment": 'Stretch', "rows": ['auto', '*'], "columns": ['*']}, React.createElement(Xaml.TextBlock, {"style": { foreground: 'red' }, "name": 'label1', "grid$row": 0}, host.getState().text.length)));
+                return (React.createElement(Xaml.Grid, {horizontalAlignment: 'Stretch', verticalAlignment: 'Stretch', rows: ['auto', '*'], columns: ['*']}, React.createElement(Xaml.TextBlock, {style: { foreground: 'red' }, name: 'label1', "grid$row": 0}, host.getState().text.length)));
             }
         },
         fg_color_spread: {
@@ -96,7 +96,7 @@ var App;
                 xsrt.assert(label1 && label1.foreground, "should have foreground label");
             },
             render: function () {
-                return (React.createElement(Xaml.Grid, {"horizontalAlignment": 'Stretch', "verticalAlignment": 'Stretch', "rows": ['auto', '*'], "columns": ['*']}, React.createElement(Xaml.TextBlock, React.__spread({}, { foreground: 'red' }, {"name": 'label1', "grid$row": 0}), host.getState().text.length)));
+                return (React.createElement(Xaml.Grid, {horizontalAlignment: 'Stretch', verticalAlignment: 'Stretch', rows: ['auto', '*'], columns: ['*']}, React.createElement(Xaml.TextBlock, React.__spread({}, { foreground: 'red' }, {name: 'label1', "grid$row": 0}), host.getState().text.length)));
             }
         },
         simple_test_1: {
@@ -109,7 +109,7 @@ var App;
                 xsrt.assert(label1 && label1.text === "1", "should have number '1' in label");
             },
             render: function () {
-                return (React.createElement(Xaml.Grid, {"horizontalAlignment": 'Stretch', "verticalAlignment": 'Stretch', "rows": ['auto', '*'], "columns": ['*']}, React.createElement(Xaml.TextBlock, {"name": 'label1', "grid$row": 0}, host.getState().text.length), React.createElement(MultiLineTextBox, {"name": 'textBox1', "grid$row": '1', "grid$column": '0', "fontFamily": 'Consolas', "fontSize": '14', "onTextChanged": textChanged, "text": host.getState().text})));
+                return (React.createElement(Xaml.Grid, {horizontalAlignment: 'Stretch', verticalAlignment: 'Stretch', rows: ['auto', '*'], columns: ['*']}, React.createElement(Xaml.TextBlock, {name: 'label1', "grid$row": 0}, host.getState().text.length), React.createElement(MultiLineTextBox, {name: 'textBox1', "grid$row": '1', "grid$column": '0', fontFamily: 'Consolas', fontSize: '14', onTextChanged: textChanged, text: host.getState().text})));
             }
         },
         simple_test_2: {
@@ -125,7 +125,7 @@ var App;
                 xsrt.assert(textBox1 && textBox1.text === "ab", "should have number 'ab' in textBox1");
             },
             render: function () {
-                return (React.createElement(Xaml.Grid, {"horizontalAlignment": 'Stretch', "verticalAlignment": 'Stretch', "rows": ['auto', '*'], "columns": ['*']}, React.createElement(Xaml.TextBlock, {"name": 'label2', "grid$row": 0}, host.getState().text.length), React.createElement(MultiLineTextBox, {"name": 'textBox1', "grid$row": '1', "grid$column": '0', "fontFamily": 'Consolas', "fontSize": '14', "onTextChanged": textChanged, "text": host.getState().text})));
+                return (React.createElement(Xaml.Grid, {horizontalAlignment: 'Stretch', verticalAlignment: 'Stretch', rows: ['auto', '*'], columns: ['*']}, React.createElement(Xaml.TextBlock, {name: 'label2', "grid$row": 0}, host.getState().text.length), React.createElement(MultiLineTextBox, {name: 'textBox1', "grid$row": '1', "grid$column": '0', fontFamily: 'Consolas', fontSize: '14', onTextChanged: textChanged, text: host.getState().text})));
             }
         }
     };
@@ -145,7 +145,7 @@ var App;
         host.setState({ text: sender.text });
     }
     function MultiLineTextBox() {
-        return React.createElement(Xaml.TextBox, {"scrollViewer$horizontalScrollBarVisibility": 'Auto', "scrollViewer$verticalScrollBarVisibility": 'Auto', "acceptsReturn": true, "textWrapping": 'Wrap', "horizontalAlignment": 'Stretch', "verticalAlignment": 'Stretch'});
+        return React.createElement(Xaml.TextBox, {"scrollViewer$horizontalScrollBarVisibility": 'Auto', "scrollViewer$verticalScrollBarVisibility": 'Auto', acceptsReturn: true, textWrapping: 'Wrap', horizontalAlignment: 'Stretch', verticalAlignment: 'Stretch'});
     }
     function renderResults() {
         var logs = xsrt.getLogs();
@@ -156,7 +156,7 @@ var App;
                 testIndex++;
             }
             lastTest = entry.test;
-            return (React.createElement(Xaml.StackPanel, {"orientation": 'Horizontal', "background": testIndex % 2 == 0 ? "#EEE" : "#00FFFFFF"}, React.createElement(Xaml.TextBlock, {"margin": '0,0,10,0', "fontFamily": 'Consolas', "text": entry.test}), React.createElement(Xaml.TextBlock, {"fontFamily": 'Consolas', "text": (entry.result ? "       " : "failed:") + entry.message})));
+            return (React.createElement(Xaml.StackPanel, {orientation: 'Horizontal', background: testIndex % 2 == 0 ? "#EEE" : "#00FFFFFF"}, React.createElement(Xaml.TextBlock, {margin: '0,0,10,0', fontFamily: 'Consolas', text: entry.test}), React.createElement(Xaml.TextBlock, {fontFamily: 'Consolas', text: (entry.result ? "       " : "failed:") + entry.message})));
         }))));
     }
     function render() {
@@ -166,7 +166,7 @@ var App;
             case "results":
                 return renderResults();
             default:
-                return React.createElement(Xaml.TextBlock, {"text": 'loading...'});
+                return React.createElement(Xaml.TextBlock, {text: 'loading...'});
         }
     }
     App.render = render;

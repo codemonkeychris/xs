@@ -80,7 +80,7 @@ module Xaml {
         // READONLY: BooleanProp("IsStreetsideSupported"),
         landmarksVisible?: boolean;
         // UNDONE: public MapLoadingStatus LoadingStatus { get; }
-        mapElements: any;
+        mapElements?: any;
         mapServiceToken: string; // not optional
         // READONLY: DoubleProp("MaxZoomLevel"),
         // READONLY: DoubleProp("MinZoomLevel"),

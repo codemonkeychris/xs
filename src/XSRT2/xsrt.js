@@ -256,7 +256,7 @@ var XsrtJS;
         xsrt.forceCleanReload();
     }
     function displayError(errorMessage) {
-        return (React.createElement(Xaml.StackPanel, null, React.createElement(Xaml.TextBlock, {"fontFamily": 'Consolas', "text": errorMessage}), React.createElement(Xaml.Button, {"onClick": refreshClicked, "content": 'Refresh'})));
+        return (React.createElement(Xaml.StackPanel, null, React.createElement(Xaml.TextBlock, {fontFamily: 'Consolas', text: errorMessage}), React.createElement(Xaml.Button, {onClick: refreshClicked, content: 'Refresh'})));
     }
     XsrtJS.displayError = displayError;
     function render(ev) {
