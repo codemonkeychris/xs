@@ -173,7 +173,7 @@ handlers to update the app.
 ### App.render
 This is the work horse of your program. You create a JSON block that defines the UI.
 Different (for now) than React, this is a pure data block, no function are allowed, etc.
-Each node has a `type` member which is an abreviated WinRT type name, and then the
+Each node has a `type` member which is an abbreviated WinRT type name, and then the
 set of members that we have implemented the parsing for.
 
 The system is smart and diffs the JSON between calls to render and performs the minimal 
